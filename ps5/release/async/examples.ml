@@ -43,7 +43,7 @@ let deferred_map_example () =
   return ()
 
 (** Run the examples *)
-let _ = deferred_map_example ()
+let _ = deferred_map_example () >>> fun () -> shutdown 0
 
 (** Start the async scheduler *)
 let _ =
