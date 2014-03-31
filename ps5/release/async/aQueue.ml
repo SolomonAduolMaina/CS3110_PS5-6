@@ -11,7 +11,7 @@ let push ((r, w, s): 'a t) x =
   don't_wait_for (write w x)
 
 let pop ((r, w, s): 'a t) = 
-  if !s = 0 then failwith "Empty Queue"
+  if !s = 0 then return (failwith "Empty Queue")
   else begin
     s := !s - 1;
     read r >>= fun result -> match result with 
