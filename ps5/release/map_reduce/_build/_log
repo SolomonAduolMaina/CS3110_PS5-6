@@ -1,0 +1,14 @@
+### Starting build.
+# Target: worker.ml.depends, tags: { extension:ml, file:worker.ml, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(bin_prot), syntax(camlp4o), thread }
+ocamlfind ocamldep -package pa_ounit.syntax -package oUnit -package pa_ounit -package qcheck -syntax bin_prot -syntax camlp4o -modules worker.ml > worker.ml.depends
+# Target: worker.mli.depends, tags: { extension:mli, file:worker.mli, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(bin_prot), syntax(camlp4o), thread }
+ocamlfind ocamldep -package pa_ounit.syntax -package oUnit -package pa_ounit -package qcheck -syntax bin_prot -syntax camlp4o -modules worker.mli > worker.mli.depends
+# Target: mapReduce.mli.depends, tags: { extension:mli, file:mapReduce.mli, ocaml, ocamldep, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(bin_prot), syntax(camlp4o), thread }
+ocamlfind ocamldep -package pa_ounit.syntax -package oUnit -package pa_ounit -package qcheck -syntax bin_prot -syntax camlp4o -modules mapReduce.mli > mapReduce.mli.depends
+# Target: mapReduce.cmi, tags: { byte, compile, extension:mli, file:mapReduce.mli, interf, ocaml, package(oUnit), package(pa_ounit), package(pa_ounit.syntax), package(qcheck), quiet, syntax(bin_prot), syntax(camlp4o), thread }
+ocamlfind ocamlc -c -warn-error +a -thread -package pa_ounit.syntax -package oUnit -package pa_ounit -package qcheck -syntax bin_prot -syntax camlp4o -o mapReduce.cmi mapReduce.mli
++ ocamlfind ocamlc -c -warn-error +a -thread -package pa_ounit.syntax -package oUnit -package pa_ounit -package qcheck -syntax bin_prot -syntax camlp4o -o mapReduce.cmi mapReduce.mli
+File "mapReduce.mli", line 3, characters 0-14:
+Error: Unbound module Async
+Command exited with code 2.
+# Compilation unsuccessful.

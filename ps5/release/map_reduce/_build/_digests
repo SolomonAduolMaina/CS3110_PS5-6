@@ -1,0 +1,6 @@
+"Rule: ocaml dependencies mli (%=mapReduce )": "y\239\199\231\132z\166\159N\228\234\146\146\157V\025"
+"Rule: ocaml dependencies ml (%=worker )": "c\156\025\143\212\203\185\182\212\014\021\139\t@\205\150"
+"Resource: /home/solomon/Dropbox/CS3110_PS5-6/ps5/release/map_reduce/worker.mli": "\014d\242\183\169\"\195\226\216 c\186\157\162G\180"
+"Resource: /home/solomon/Dropbox/CS3110_PS5-6/ps5/release/map_reduce/mapReduce.mli": "D\233\194:\181\226M\020\187\200 \015\015\134\206\002"
+"Rule: ocaml dependencies mli (%=worker )": "\230\228\031\162\216\150\216\020e}\174_\253\140`\128"
+"Resource: /home/solomon/Dropbox/CS3110_PS5-6/ps5/release/map_reduce/worker.ml": "\2125?S\217\169\237d\135\t[\027\243 _\135"

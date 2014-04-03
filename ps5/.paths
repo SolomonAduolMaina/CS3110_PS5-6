@@ -1,0 +1,14 @@
+.
+writeup
+release
+release/map_reduce
+release/async
+release/apps
+release/apps/word_count
+release/apps/word_count/data
+release/apps/inverted_index
+release/apps/inverted_index/data
+release/apps/dna_sequencing
+release/apps/dna_sequencing/data
+doc
+/usr/lib/ocaml
