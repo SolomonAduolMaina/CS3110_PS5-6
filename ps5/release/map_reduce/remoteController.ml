@@ -22,22 +22,23 @@ module Make (Job : MapReduce.Job) = struct
   (***************************************************************************)
   let workers = Hashtbl.create 10 (* binds a unique int to each worker *)
   let rev_workers = Hashtbl.create 10 (* holds the reverse binings of hastable workers*)
-  let current = ref 0 
-  let size = ref 0
+  let current = ref 0  (* current avaliable worker *)
+  let size = ref 0 (* total number of all workers that have ever been added. Remain unchanged when remove_worker is called *)
   
   let add_worker (r, w) = 
+    let id = !size in
     size := !size + 1;
-    Hashtbl.add workers (Hashtbl.length workers) (r, w);
-    Hashtbl.add rev_workers (r, w) (Hashtbl.length workers) 
+    Hashtbl.add workers id (r, w);
+    Hashtbl.add rev_workers (r, w) id 
   
   let remove_worker (r, w) = 
     Hashtbl.remove workers (Hashtbl.find rev_workers (r, w))
   
-  let rec get_next_worker () =
-    let x = !current in 
+  let rec get_next_worker () = 
     if Hashtbl.length workers = 0 then raise InfrastructureFailure
     else begin 
-      current := (!current + 1) mod (Hashtbl.length workers);
+      let x = !current in
+      current := (!current + 1) mod !size;
       try Hashtbl.find workers x with Not_found -> get_next_worker ()
     end
   (***************************************************************************)
