@@ -8,49 +8,91 @@ let init addrs = hosts_ports := addrs
 
 module Make (Job : MapReduce.Job) = struct
 
+  exception InfrastructureFailure
+  exception MapFailed of string
+  exception ReduceFailed of string
+
   module C = Combiner.Make(Job)
-
-  let workers = Hashtbl.create 10
-  let current = ref 0 
-  let add_worker (r, w) = Hashtbl.add workers (Hashtbl.length workers) (r, w)
-  let get_next_worker () =
-    let x = !current in 
-      current := (!current + 1) mod (Hashtbl.length workers);
-      Hashtbl.find workers x
-
-  (* connect to the worker with the given host and port, and adds it to workers. *)
-  let connect (host : string) (port : int) : unit Deferred.t = 
-  	Tcp.connect (Tcp.to_host_and_port host port) >>= fun (_, r, w) -> return (add_worker (r, w))
+  module W = Worker.Make(Job)
+  module WRequest = Protocol.WorkerRequest(Job)
+  module WResponse = Protocol.WorkerResponse (Job)
   
-  (* connect to all the workers with the given hosts and ports in lst, and adds them to workers *)
-  let rec connect_to_all (lst : (string * int) list) : unit Deferred.t = 
-    match lst with
-    | [] -> return ()
-    | (host, port)::t -> connect host port >>= fun () -> connect_to_all t
+  (***************************************************************************)
+  (* keep track of current avaliable workers.                                *)
+  (***************************************************************************)
+  let workers = Hashtbl.create 10 (* binds a unique int to each worker *)
+  let rev_workers = Hashtbl.create 10 (* holds the reverse binings of hastable workers*)
+  let current = ref 0 
+  let size = ref 0
+  
+  let add_worker (r, w) = 
+    size := !size + 1;
+    Hashtbl.add workers (Hashtbl.length workers) (r, w);
+    Hashtbl.add rev_workers (r, w) (Hashtbl.length workers) 
+  
+  let remove_worker (r, w) = 
+    Hashtbl.remove workers (Hashtbl.find rev_workers (r, w))
+  
+  let rec get_next_worker () =
+    let x = !current in 
+    if Hashtbl.length workers = 0 then raise InfrastructureFailure
+    else begin 
+      current := (!current + 1) mod (Hashtbl.length workers);
+      try Hashtbl.find workers x with Not_found -> get_next_worker ()
+    end
+  (***************************************************************************)
+
+  (* connect to all workers with given hosts and ports in lst, send them 
+   * the job name, and add them to the hashtable workers *)
+  let connect_to_all (lst : (string * int) list) : unit Deferred.t = 
+    (* MapReduce.register_job (module Job); *)
+    let name = Job.name in
+    let connect host port = 
+      Tcp.connect (Tcp.to_host_and_port host port) >>= fun (_, r, w) ->
+        Writer.write_line w name;
+        return (add_worker (r, w))
+    in 
+    let rec helper = function
+      | [] -> return ()
+      | (host, port)::t -> connect host port >>= fun () -> helper t
+    in
+      helper lst
 
   (* sends a map request to worker (r, w) with input i. return the map result *)
-  let map_job i (r, w) = failwith "<map_job> NOT IMPLEMENTED "
+  let rec map_job i (r, w) = 
+    WRequest.send w (WRequest.MapRequest i);
+    W.run r w >>= fun () ->
+      WResponse.receive r >>= function 
+        | `Eof -> map_job i (get_next_worker ()) 
+        (* TODO: handle this error by assigning the job to another worker *)
+        | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
+        | `Ok (WResponse.MapResult results) -> return results    
+        | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
+        (* TODO: handle this error by closing the connection with this 
+        worker and assigning the job to another worker *)
 
-  (* sends a reduce request to worker (r, w) with input i. return the reduce result *)
-  let reduce_job i (r, w) = failwith "<reduce_job> NOT IMPLEMENTED "
+
+  (* sends a reduce request to worker (r, w) with input (k, interLst). 
+   * return the reduce result *)
+  let rec reduce_job (k, interLst) (r, w) = 
+    WRequest.send w (WRequest.ReduceRequest (k, interLst));
+    W.run r w >>= fun () ->
+      WResponse.receive r >>= function 
+        | `Eof -> reduce_job (k, interLst) (get_next_worker ())
+        (* TODO: handle this error by assigning the job to another worker *)
+        | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
+        | `Ok (WResponse.ReduceResult results) -> return (k, results)    
+        | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
+        (* TODO: handle this error by closing the connection with this
+         worker and assigning the job to another worker *)
 
   (* get the map results of inputs from workers *)
   let map inputs = 
-    let rec helper inputs results = 
-      match inputs with 
-      | [] -> return results
-      | h::t -> helper t ((map_job h (get_next_worker ())) :: results)
-    in
-      helper inputs []
+    Deferred.List.map inputs (fun x -> map_job x (get_next_worker()))
 
   (* get the reduce results of inters from workers *)
   let reduce inters = 
-    let rec helper inters results = 
-      match inters with 
-      | [] -> return results
-      | h::t -> helper t ((reduce_job h (get_next_worker ())) :: results)
-    in
-      helper inters []
+    Deferred.List.map inters (fun x -> reduce_job x (get_next_worker()))
 
   (* see mli *)
   let map_reduce inputs =
@@ -58,7 +100,8 @@ module Make (Job : MapReduce.Job) = struct
       map inputs 
       >>| List.flatten
       >>| C.combine
-      >>= fun l -> reduce l
+      >>= fun inters -> reduce inters
 
 end
+
 
