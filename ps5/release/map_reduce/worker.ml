@@ -2,24 +2,43 @@ open Async.Std
   
 open Reader
   
-open Pipe
-  
-open Protocol
-  
 module Make (Job : MapReduce.Job) =
   struct
+    open Pipe
+      
+    module ReqChan = Protocol.WorkerRequest(Job)
+      
+    module ResChan = Protocol.WorkerResponse(Job)
+      
     (* Pipe for processing requests *)
     let (reqreader, reqwriter) = Pipe.create ()
       
     (* Pipe for processing responses *)
     let (resreader, reswriter) = Pipe.create ()
       
-    (* Listens to controller and enques request onto request pipe if found *)
-    let queue_message r =
-      (WorkerRequest.receive r) >>=
+    (* Listen to controller and enque request onto request pipe if found *)
+    let queue_message r : unit Deferred.t =
+      (ReqChan.receive r) >>=
         (function
          | `Eof -> return ()
          | `Ok message -> write reqwriter message)
+      
+    (* Process map request and enqueue output to response pipe *)
+    let process_map input = return ()
+      
+    (* Process reduce request and enqueue output to response pipe *)
+    let process_reduce (key, list) = return ()
+      
+    (* Pass message to apporopriate processing ... process? *)
+    let process_message () : unit Deferred.t =
+      (Pipe.read reqreader) >>=
+        (fun request ->
+           match request with
+           | `Eof -> return ()
+           | `Ok req ->
+               (match req with
+                | ReqChan.MapRequest input -> process_map input
+                | ReqChan.ReduceRequest (k, l) -> process_reduce (k, l)))
       
     let run r w = return (don't_wait_for (queue_message r))
       

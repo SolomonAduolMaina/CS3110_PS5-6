@@ -21,12 +21,12 @@ end
 (** {2 protocol messages}                                                     *)
 (******************************************************************************)
 
-module WorkerRequest (Job : MapReduce.Job) = struct
+module WorkerRequest (Job : MapReduce.Job) = struct	
   type t =
     | MapRequest of Job.input
     | ReduceRequest of Job.key * Job.inter list
-
-  include Marshaller
+		
+	include Marshaller
 end
 
 module WorkerResponse (Job : MapReduce.Job) = struct
