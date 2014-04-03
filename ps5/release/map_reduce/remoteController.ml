@@ -52,6 +52,7 @@ module Make (Job : MapReduce.Job) = struct
     in
       helper inters []
 
+  (* see mli *)
   let map_reduce inputs =
     connect_to_all !hosts_ports >>= fun () ->
       map inputs 
