@@ -1,6 +1,6 @@
 open Async.Std
   
-open Reader
+open Reader 
   
 module Make (Job : MapReduce.Job) =
   struct
@@ -51,8 +51,8 @@ module Make (Job : MapReduce.Job) =
          | `Ok result -> return (ResChannel.send w result))
       
     (** Handle the requests for a single connection.  The Reader and Writer should
-      be used to send and receive messages of type WorkerResponse(Job) and
-      WorkerRequest(Job). *)
+      * be used to send and receive messages of type WorkerResponse(Job) and
+      * WorkerRequest(Job). *)
     let rec run r w =
       (don't_wait_for (receive_message r);
        don't_wait_for (process_message ());
