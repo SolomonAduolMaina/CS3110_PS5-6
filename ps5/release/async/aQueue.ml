@@ -1,7 +1,6 @@
 open Async.Std
 open Pipe
 
-(* a pipe with a size *)
 type 'a t = 'a Reader.t * 'a Writer.t
 
 let create () : 'a t = Pipe.create ()   
