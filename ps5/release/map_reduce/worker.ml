@@ -8,17 +8,11 @@ module Make (Job : MapReduce.Job) =
       
     module ResChannel = Protocol.WorkerResponse(Job)
       
-    (* Pipe for processing requests *)
-    let (reqreader, reqwriter) = Pipe.create ()
-      
-    (* Pipe for processing responses *)
-    let (resreader, reswriter) = Pipe.create ()
-      
     (* Receive request from controller *)
-    let receive_request reader =
+    let rec receive_request reader =
       (ReqChannel.receive reader) >>=
         (function
-         | `Eof -> failwith "No request received"
+         | `Eof -> receive_request reader
          | `Ok request -> return request)
       
     (* Process map request *)
