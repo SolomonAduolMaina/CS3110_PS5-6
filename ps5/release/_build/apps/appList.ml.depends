@@ -1,1 +1,0 @@
-apps/appList.ml: DnaSequencing InvertedIndex MapReduce Pa_ounit_lib String WordCount

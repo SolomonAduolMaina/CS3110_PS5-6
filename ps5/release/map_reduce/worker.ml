@@ -1,11 +1,9 @@
 open Async.Std
   
-open Reader 
+open Reader
   
 module Make (Job : MapReduce.Job) =
   struct
-    open Pipe
-      
     module ReqChannel = Protocol.WorkerRequest(Job)
       
     module ResChannel = Protocol.WorkerResponse(Job)
@@ -16,48 +14,39 @@ module Make (Job : MapReduce.Job) =
     (* Pipe for processing responses *)
     let (resreader, reswriter) = Pipe.create ()
       
-    (* Listen to controller and enque request onto request pipe if found *)
-    let receive_message r : unit Deferred.t =
-      (ReqChannel.receive r) >>=
+    (* Receive request from controller *)
+    let receive_request reader =
+      (ReqChannel.receive reader) >>=
         (function
-         | `Eof -> return ()
-         | `Ok message -> write reqwriter message)
+         | `Eof -> failwith "No request received"
+         | `Ok request -> return request)
       
-    (* Process map request and enqueue output to response pipe *)
-    let process_map input : unit Deferred.t =
-      (Job.map input) >>=
-        (fun list -> Pipe.write reswriter (ResChannel.MapResult list))
+    (* Process map request *)
+    let process_map input =
+      (Job.map input) >>= (fun list -> return (ResChannel.MapResult list))
       
-    (* Process reduce request and enqueue output to response pipe *)
-    let process_reduce (key, list) : unit Deferred.t =
+    (* Process reduce request *)
+    let process_reduce (key, list) =
       (Job.reduce (key, list)) >>=
-        (fun output -> Pipe.write reswriter (ResChannel.ReduceResult output))
+        (fun output -> return (ResChannel.ReduceResult output))
       
-    (* Pass message to apporopriate processing channel *)
-    let process_message () : unit Deferred.t =
-      (Pipe.read reqreader) >>=
-        (function
-         | `Eof -> return ()
-         | `Ok request ->
-             (match request with
-              | ReqChannel.MapRequest input -> process_map input
-              | ReqChannel.ReduceRequest (k, l) -> process_reduce (k, l)))
+    (* Process a request send from the server *)
+    let process_request request =
+      match request with
+      | ReqChannel.MapRequest input -> process_map input
+      | ReqChannel.ReduceRequest (k, l) -> process_reduce (k, l)
       
     (* Send response back to controller *)
-    let send_response w : unit Deferred.t =
-      (Pipe.read resreader) >>=
-        (function
-         | `Eof -> return ()
-         | `Ok result -> return (ResChannel.send w result))
+    let send_result writer result =
+      (ResChannel.send writer result; return ())
       
-    (** Handle the requests for a single connection.  The Reader and Writer should
-      * be used to send and receive messages of type WorkerResponse(Job) and
-      * WorkerRequest(Job). *)
-    let rec run r w =
-      (don't_wait_for (receive_message r);
-       don't_wait_for (process_message ());
-       don't_wait_for (send_response w);
-       run r w)
+    (* Handle the requests for a single connection *)
+    let rec run reader writer =
+      (receive_request reader) >>=
+        (fun request ->
+           (process_request request) >>=
+             (fun result ->
+                (send_result writer result) >>= (fun () -> run reader writer)))
       
   end
   
@@ -65,7 +54,7 @@ module Make (Job : MapReduce.Job) =
 let init port =
   (Tcp.Server.create ~on_handler_error: `Raise (Tcp.on_port port)
      (fun _ r w ->
-        (read_line r) >>=
+        (Reader.read_line r) >>=
           (function
            | `Eof -> return ()
            | `Ok job ->
