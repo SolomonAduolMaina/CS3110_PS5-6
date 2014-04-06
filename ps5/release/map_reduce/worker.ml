@@ -1,19 +1,10 @@
 open Async.Std
   
-open Reader
-  
 module Make (Job : MapReduce.Job) =
   struct
     module ReqChannel = Protocol.WorkerRequest(Job)
       
     module ResChannel = Protocol.WorkerResponse(Job)
-      
-    (* Receive request from controller *)
-    let rec receive_request reader =
-      (ReqChannel.receive reader) >>=
-        (function
-         | `Eof -> receive_request reader
-         | `Ok request -> return request)
       
     (* Process map request *)
     let process_map input =
@@ -24,23 +15,22 @@ module Make (Job : MapReduce.Job) =
       (Job.reduce (key, list)) >>=
         (fun output -> return (ResChannel.ReduceResult output))
       
-    (* Process a request send from the server *)
+    (* Process a request sent from the controller *)
     let process_request request =
       match request with
       | ReqChannel.MapRequest input -> process_map input
       | ReqChannel.ReduceRequest (k, l) -> process_reduce (k, l)
       
-    (* Send response back to controller *)
-    let send_result writer result =
-      (ResChannel.send writer result; return ())
-      
     (* Handle the requests for a single connection *)
     let rec run reader writer =
-      (receive_request reader) >>=
-        (fun request ->
-           (process_request request) >>=
-             (fun result ->
-                (send_result writer result) >>= (fun () -> run reader writer)))
+      (ReqChannel.receive reader) >>=
+        (function
+         | `Eof -> return ()
+         | `Ok request ->
+             (process_request request) >>=
+               (fun result ->
+                  (return (ResChannel.send writer result)) >>=
+                    (fun () -> run reader writer)))
       
   end
   
