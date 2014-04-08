@@ -671,7 +671,7 @@ apps/inverted_index/data/TEMPLE_INLAND_INT'L_PAPER_UP_ON_RAISED_OPINION.txt
 apps/inverted_index/data/TRADING_DELAYED_ON_SINGAPORE'S_NEW_BILL_MARKET.txt
 apps/inverted_index/data/LITTLE_PRINCE_PRODUCTIONS_LTD_lt_LTLP_1ST_QTR_LOSS.txt
 apps/inverted_index/data/MERCURY_ENTERTAINMENT_CORP_lt_MCRY_YEAR_NOV_30.txt
-apps/inverted_index/data/BAKER_SAYS_REAGAN_TO_MEET_PRESS_"VERY_SOON".txt
+apps/inverted_index/data/BAKER_SAYS_REAGAN_TO_MEET_PRESS_VERY_SOON_.txt
 apps/inverted_index/data/BANKEAST_CORP_lt_BENH_COMPLETES_ACQUISITION.txt
 apps/inverted_index/data/(RPT)_U.S._SAYS_TIN_DISPOSALS_WILL_NOT_AFFECT_ACCORD.txt
 apps/inverted_index/data/ROPAK_lt_ROPK_HAS_34_PCT_OF_BUCKHORN_lt_BKN_.txt
