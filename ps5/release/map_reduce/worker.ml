@@ -8,12 +8,16 @@ module Make (Job : MapReduce.Job) =
       
     (* Process map request *)
     let process_map input =
-      (Job.map input) >>= (fun list -> return (ResChannel.MapResult list))
+      try
+        (Job.map input) >>= (fun list -> return (ResChannel.MapResult list))
+      with | _ -> return (ResChannel.JobFailed (Printexc.get_backtrace ()))
       
     (* Process reduce request *)
     let process_reduce (key, list) =
-      (Job.reduce (key, list)) >>=
-        (fun output -> return (ResChannel.ReduceResult output))
+      try
+        (Job.reduce (key, list)) >>=
+          (fun output -> return (ResChannel.ReduceResult output))
+      with | _ -> return (ResChannel.JobFailed (Printexc.get_backtrace ()))
       
     (* Process a request sent from the controller *)
     let process_request request =
