@@ -23,14 +23,16 @@ module Make (Job : MapReduce.Job) =
       
     (* Handle the requests for a single connection *)
     let rec run reader writer =
-      (ReqChannel.receive reader) >>=
-        (function
-         | `Eof -> return ()
-         | `Ok request ->
-             (process_request request) >>=
-               (fun result ->
-                  (return (ResChannel.send writer result)) >>=
-                    (fun () -> run reader writer)))
+      try
+        (ReqChannel.receive reader) >>=
+          (function
+           | `Eof -> return ()
+           | `Ok request ->
+               (process_request request) >>=
+                 (fun result ->
+                    try (ResChannel.send writer result; run reader writer)
+                    with | _ -> Writer.close writer))
+      with | _ -> Reader.close reader
       
   end
   

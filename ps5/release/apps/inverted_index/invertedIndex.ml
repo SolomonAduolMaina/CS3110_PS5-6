@@ -35,9 +35,8 @@ module Job =
     let reduce (key, inters) : output Deferred.t =
       let module M = Map.Make(String)
       in
-        let f table inter =
-          if M.mem inter table then table else M.add inter None table in
-        let g inter_list (inter, opt) = inter :: inter_list in
+        let f table inter = M.add inter () table in
+        let g inter_list (inter, ()) = inter :: inter_list in
         let pairs = M.bindings (List.fold_left f M.empty inters)
         in return (List.fold_left g [] pairs)
       
