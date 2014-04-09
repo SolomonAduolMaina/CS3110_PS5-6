@@ -58,22 +58,22 @@ module Make (Job : MapReduce.Job) = struct
   (* sends a map request to worker (r, w) with input i. return the map result *)
   let rec map_job i (r, w) = 
     WRequest.send w (WRequest.MapRequest i);
-      WResponse.receive r >>= function 
-        | `Eof -> map_job i (get_next_worker ()) 
-        | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
-        | `Ok (WResponse.MapResult results) -> return results    
-        | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
+    WResponse.receive r >>= function 
+      | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
+      | `Ok (WResponse.MapResult results) -> return results    
+      | `Eof -> map_job i (get_next_worker ()) 
+      | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
 
 
   (* sends a reduce request to worker (r, w) with input (k, interLst). 
    * return the reduce result *)
   let rec reduce_job (k, interLst) (r, w) = 
     WRequest.send w (WRequest.ReduceRequest (k, interLst));
-      WResponse.receive r >>= function 
-        | `Eof -> reduce_job (k, interLst) (get_next_worker ())
-        | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
-        | `Ok (WResponse.ReduceResult results) -> return (k, results)    
-        | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
+    WResponse.receive r >>= function 
+      | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
+      | `Ok (WResponse.ReduceResult results) -> return (k, results)    
+      | `Eof -> reduce_job (k, interLst) (get_next_worker ())
+      | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
 
   (* get the map results of inputs from workers *)
   let map inputs = 
