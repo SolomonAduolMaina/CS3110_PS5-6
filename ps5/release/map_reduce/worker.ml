@@ -32,10 +32,11 @@ module Make (Job : MapReduce.Job) =
           (function
            | `Eof -> return ()
            | `Ok request ->
-               (process_request request) >>=
-                 (fun result ->
-                    try (ResChannel.send writer result; run reader writer)
-                    with | _ -> Writer.close writer))
+               (Printexc.record_backtrace true;
+                (process_request request) >>=
+                  (fun result ->
+                     try (ResChannel.send writer result; run reader writer)
+                     with | _ -> Writer.close writer)))
       with | _ -> Reader.close reader
       
   end
