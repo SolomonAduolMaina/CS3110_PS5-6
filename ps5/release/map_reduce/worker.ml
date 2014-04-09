@@ -35,8 +35,13 @@ module Make (Job : MapReduce.Job) =
                (Printexc.record_backtrace true;
                 (process_request request) >>=
                   (fun result ->
-                     try (ResChannel.send writer result; run reader writer)
-                     with | _ -> Writer.close writer)))
+                     let sent =
+                       try (ResChannel.send writer result; true)
+                       with | _ -> false
+                     in
+                       if sent
+                       then run reader writer
+                       else Writer.close writer)))
       with | _ -> Reader.close reader
       
   end
