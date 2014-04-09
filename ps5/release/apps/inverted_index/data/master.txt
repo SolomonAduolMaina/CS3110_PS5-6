@@ -1,0 +1,2 @@
+apps/inverted_index/data/zar.txt
+apps/inverted_index/data/doz.txt

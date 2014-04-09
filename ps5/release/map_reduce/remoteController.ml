@@ -61,7 +61,6 @@ module Make (Job : MapReduce.Job) = struct
     WResponse.receive r >>= function 
       | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
       | `Ok (WResponse.MapResult results) -> return results    
-      | `Eof -> map_job i (get_next_worker ()) 
       | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
 
 
@@ -72,7 +71,6 @@ module Make (Job : MapReduce.Job) = struct
     WResponse.receive r >>= function 
       | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
       | `Ok (WResponse.ReduceResult results) -> return (k, results)    
-      | `Eof -> reduce_job (k, interLst) (get_next_worker ())
       | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
 
   (* get the map results of inputs from workers *)
