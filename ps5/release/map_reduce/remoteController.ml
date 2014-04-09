@@ -15,7 +15,7 @@ module Make (Job : MapReduce.Job) = struct
   module C = Combiner.Make(Job)
   module W = Worker.Make(Job)
   module WRequest = Protocol.WorkerRequest(Job)
-  module WResponse = Protocol.WorkerResponse (Job)
+  module WResponse = Protocol.WorkerResponse(Job)
   
   (***************************************************************************)
   (* keep track of current avaliable workers.                                *)
@@ -45,47 +45,35 @@ module Make (Job : MapReduce.Job) = struct
 
   (* connect to all workers with given hosts and ports in lst, send them 
    * the job name, and add them to the hashtable workers *)
-  let connect_to_all (lst : (string * int) list) : unit Deferred.t = 
-    (* MapReduce.register_job (module Job); *)
+  let connect_to_all (lst : (string * int) list) = 
     let name = Job.name in
     let connect host port = 
       Tcp.connect (Tcp.to_host_and_port host port) >>= fun (_, r, w) ->
         Writer.write_line w name;
         return (add_worker (r, w))
     in 
-    let rec helper = function
-      | [] -> return ()
-      | (host, port)::t -> connect host port >>= fun () -> helper t
-    in
-      helper lst
+      Deferred.List.map lst (fun (host, port) -> connect host port)
+
 
   (* sends a map request to worker (r, w) with input i. return the map result *)
   let rec map_job i (r, w) = 
     WRequest.send w (WRequest.MapRequest i);
-(*     W.run r w >>= fun () -> *)
       WResponse.receive r >>= function 
         | `Eof -> map_job i (get_next_worker ()) 
-        (* TODO: handle this error by assigning the job to another worker *)
         | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
         | `Ok (WResponse.MapResult results) -> return results    
         | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
-        (* TODO: handle this error by closing the connection with this 
-        worker and assigning the job to another worker *)
 
 
   (* sends a reduce request to worker (r, w) with input (k, interLst). 
    * return the reduce result *)
   let rec reduce_job (k, interLst) (r, w) = 
     WRequest.send w (WRequest.ReduceRequest (k, interLst));
-    (* W.run r w >>= fun () -> *)
       WResponse.receive r >>= function 
         | `Eof -> reduce_job (k, interLst) (get_next_worker ())
-        (* TODO: handle this error by assigning the job to another worker *)
         | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
         | `Ok (WResponse.ReduceResult results) -> return (k, results)    
         | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
-        (* TODO: handle this error by closing the connection with this
-         worker and assigning the job to another worker *)
 
   (* get the map results of inputs from workers *)
   let map inputs = 
@@ -97,7 +85,7 @@ module Make (Job : MapReduce.Job) = struct
 
   (* see mli *)
   let map_reduce inputs =
-    connect_to_all !hosts_ports >>= fun () ->
+    connect_to_all !hosts_ports >>= fun _ ->
       map inputs 
       >>| List.flatten
       >>| C.combine
