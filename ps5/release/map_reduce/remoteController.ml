@@ -23,7 +23,7 @@ module Make (Job : MapReduce.Job) = struct
   let workers = Hashtbl.create 10 (* binds a unique int to each worker *)
   let rev_workers = Hashtbl.create 10 (* holds the reverse binings of hastable workers*)
   let current = ref 0  (* current avaliable worker *)
-  let size = ref 0 (* total number of all workers that have ever been added. Remain unchanged when remove_worker is called *)
+  let size = ref 0 (* total number of workers that were ever added. Remain unchanged when remove_worker is called *)
   
   let add_worker (r, w) = 
     let id = !size in
@@ -57,22 +57,29 @@ module Make (Job : MapReduce.Job) = struct
 
   (* sends a map request to worker (r, w) with input i. return the map result *)
   let rec map_job i (r, w) = 
-    WRequest.send w (WRequest.MapRequest i);
-    WResponse.receive r >>= function 
-      | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
-      | `Ok (WResponse.MapResult results) -> return results    
-      | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
-
+    try
+      WRequest.send w (WRequest.MapRequest i);
+      WResponse.receive r >>= function 
+        | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
+        | `Ok (WResponse.MapResult results) -> return results    
+        | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
+    with 
+    | MapFailed msg -> raise (MapFailed msg)
+    | _ -> map_job i (get_next_worker ())
 
   (* sends a reduce request to worker (r, w) with input (k, interLst). 
    * return the reduce result *)
   let rec reduce_job (k, interLst) (r, w) = 
-    WRequest.send w (WRequest.ReduceRequest (k, interLst));
-    WResponse.receive r >>= function 
-      | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
-      | `Ok (WResponse.ReduceResult results) -> return (k, results)    
-      | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
-
+    try
+      WRequest.send w (WRequest.ReduceRequest (k, interLst));
+      WResponse.receive r >>= function 
+        | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
+        | `Ok (WResponse.ReduceResult results) -> return (k, results)    
+        | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
+    with
+    | ReduceFailed msg -> raise (ReduceFailed msg)
+    | _ -> reduce_job (k, interLst) (get_next_worker ())
+    
   (* get the map results of inputs from workers *)
   let map inputs = 
     Deferred.List.map inputs (fun x -> map_job x (get_next_worker()))
