@@ -16,7 +16,7 @@ let job name time () =
   return name
 
 
-(** Run deferred_map *)
+(* Run deferred_map *)
 let deferred_map_example () =
   print_endline "running deferred_map example";
   print_endline "expected output (after 30 seconds):";
