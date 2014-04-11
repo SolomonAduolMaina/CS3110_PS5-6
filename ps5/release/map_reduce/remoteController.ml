@@ -2,8 +2,6 @@ open Async.Std
 
 let hosts_ports : (string * int) list ref = ref []
 
-type worker = Reader.t * Writer.t
-
 let init addrs = hosts_ports := addrs
 
 module Make (Job : MapReduce.Job) = struct
@@ -25,14 +23,15 @@ module Make (Job : MapReduce.Job) = struct
   let current = ref 0  (* current avaliable worker *)
   let size = ref 0 (* total number of workers that were ever added. Remain unchanged when remove_worker is called *)
   
-  let add_worker (r, w) = 
+  let add_worker (s, r, w) = 
     let id = !size in
     size := !size + 1;
-    Hashtbl.add workers id (r, w);
-    Hashtbl.add rev_workers (r, w) id 
+    Hashtbl.add workers id (s, r, w);
+    Hashtbl.add rev_workers (s, r, w) id 
   
-  let remove_worker (r, w) = 
-    Hashtbl.remove workers (Hashtbl.find rev_workers (r, w))
+  let remove_worker (s, r, w) = 
+    Socket.shutdown s `Both;
+    Hashtbl.remove workers (Hashtbl.find rev_workers (s, r, w))
   
   let rec get_next_worker () = 
     if Hashtbl.length workers = 0 then raise InfrastructureFailure
@@ -48,38 +47,45 @@ module Make (Job : MapReduce.Job) = struct
   let connect_to_all (lst : (string * int) list) = 
     let name = Job.name in
     let connect host port = 
-      Tcp.connect (Tcp.to_host_and_port host port) >>= fun (_, r, w) ->
-        Writer.write_line w name;
-        return (add_worker (r, w))
+      try_with (fun () ->
+        Tcp.connect (Tcp.to_host_and_port host port) >>= fun (s, r, w) ->
+          Writer.write_line w name;
+          return (add_worker (s, r, w))
+      ) >>= fun _ ->  return ()
     in 
       Deferred.List.map lst (fun (host, port) -> connect host port)
 
+  (* close all open connections with workers *)
+  let close_all_connections () = 
+    Hashtbl.iter (fun _ (s, _, _) -> Socket.shutdown s `Both) workers
 
-  (* sends a map request to worker (r, w) with input i. return the map result *)
-  let rec map_job i (r, w) = 
-    try
+  (* sends a map request to worker (s, r, w) with input i. return the map result *)
+  let rec map_job i (s, r, w) = 
+    try_with (fun () ->
       WRequest.send w (WRequest.MapRequest i);
       WResponse.receive r >>= function 
         | `Ok (WResponse.JobFailed msg) -> raise (MapFailed msg)
         | `Ok (WResponse.MapResult results) -> return results    
-        | _ -> remove_worker (r, w); map_job i (get_next_worker ()) 
-    with 
-    | MapFailed msg -> raise (MapFailed msg)
-    | _ -> map_job i (get_next_worker ())
+        | _ -> remove_worker (s, r, w); map_job i (get_next_worker ()) 
+    ) >>= function
+      | Core.Std.Ok x -> return x
+      | Core.Std.Error (MapFailed msg) -> raise (MapFailed msg)
+      | _ -> map_job i (get_next_worker ())
 
-  (* sends a reduce request to worker (r, w) with input (k, interLst). 
+  (* sends a reduce request to worker (s, r, w) with input (k, interLst). 
    * return the reduce result *)
-  let rec reduce_job (k, interLst) (r, w) = 
-    try
+  let rec reduce_job (k, interLst) (s, r, w) = 
+    try_with (fun () ->
       WRequest.send w (WRequest.ReduceRequest (k, interLst));
       WResponse.receive r >>= function 
         | `Ok (WResponse.JobFailed msg) -> raise (ReduceFailed msg)
         | `Ok (WResponse.ReduceResult results) -> return (k, results)    
-        | _ -> remove_worker (r, w); reduce_job (k, interLst) (get_next_worker ())
-    with
-    | ReduceFailed msg -> raise (ReduceFailed msg)
-    | _ -> reduce_job (k, interLst) (get_next_worker ())
-    
+        | _ -> remove_worker (s, r, w); reduce_job (k, interLst) (get_next_worker ())
+    ) >>= function
+      | Core.Std.Ok x -> return x
+      | Core.Std.Error (ReduceFailed msg) -> raise (ReduceFailed msg)
+      | _ -> reduce_job (k, interLst) (get_next_worker ())
+      
   (* get the map results of inputs from workers *)
   let map inputs = 
     Deferred.List.map inputs (fun x -> map_job x (get_next_worker()))
@@ -95,6 +101,9 @@ module Make (Job : MapReduce.Job) = struct
       >>| List.flatten
       >>| C.combine
       >>= fun inters -> reduce inters
+      >>= fun results -> 
+        close_all_connections ();
+        return results
 
 end
 

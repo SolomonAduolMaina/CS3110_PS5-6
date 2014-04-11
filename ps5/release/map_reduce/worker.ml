@@ -8,16 +8,22 @@ module Make (Job : MapReduce.Job) =
       
     (* Process map request *)
     let process_map input =
-      try
+      try_with (fun () -> 
         (Job.map input) >>= (fun list -> return (ResChannel.MapResult list))
-      with | _ -> return (ResChannel.JobFailed (Printexc.get_backtrace ()))
+      ) >>= 
+        function
+        | Core.Std.Ok x -> return x
+        | Core.Std.Error e -> return (ResChannel.JobFailed (Printexc.get_backtrace ()))
       
     (* Process reduce request *)
     let process_reduce (key, list) =
-      try
+      try_with (fun () -> 
         (Job.reduce (key, list)) >>=
           (fun output -> return (ResChannel.ReduceResult output))
-      with | _ -> return (ResChannel.JobFailed (Printexc.get_backtrace ()))
+      ) >>= 
+        function
+        | Core.Std.Ok x -> return x
+        | Core.Std.Error e -> return (ResChannel.JobFailed (Printexc.get_backtrace ()))
       
     (* Process a request sent from the controller *)
     let process_request request =
@@ -27,22 +33,20 @@ module Make (Job : MapReduce.Job) =
       
     (* Handle the requests for a single connection *)
     let rec run reader writer =
-      try
-        (ReqChannel.receive reader) >>=
-          (function
+      Printexc.record_backtrace true;
+      try_with (fun () -> 
+        ReqChannel.receive reader >>=
+          function
            | `Eof -> return ()
            | `Ok request ->
-               (Printexc.record_backtrace true;
-                (process_request request) >>=
-                  (fun result ->
-                     let sent =
-                       try (ResChannel.send writer result; true)
-                       with | _ -> false
-                     in
-                       if sent
-                       then run reader writer
-                       else Writer.close writer)))
-      with | _ -> Reader.close reader
+               (process_request request >>= fun result ->
+                  return (ResChannel.send writer result))
+      ) >>= 
+        function
+        | Core.Std.Ok _ -> run reader writer
+        | Core.Std.Error _ -> 
+            (Deferred.both (Writer.close writer) (Reader.close reader) >>= 
+              fun _ -> return () )
       
   end
   
