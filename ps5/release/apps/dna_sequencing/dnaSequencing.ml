@@ -52,7 +52,16 @@ let print_result result =
 
 (** Write out the output data *)
 let print_results results : unit =
-  List.iter print_result results
+  let f r1 r2 =
+    match r1.read - r2.read, r1.read_off - r2.read_off, 
+      r1.ref - r2.ref, r1.ref_off - r2.ref_off with 
+    | 0, 0, 0, x 
+    | 0, 0, x, _
+    | 0, x, _, _
+    | x, _, _, _ -> x
+  in
+  let sorted = List.sort f results in
+  List.iter print_result sorted
 
 (******************************************************************************)
 (** Dna sequencing jobs                                                       *)
@@ -128,29 +137,52 @@ module Job2 = struct
   let map input : (key * inter) list Deferred.t =
     return [((input.read, input.ref), (input.read_off, input.ref_off))]
 
-
   let reduce ((read_id, ref_id), inters) : output Deferred.t =
-    let sorted_inters = List.sort (fun (x, _) (y, _) -> compare y x) inters in
     let create_result (read_off, ref_off) : result = 
       {length=10; read=read_id; read_off=read_off; ref=ref_id; ref_off=ref_off;}
     in
-    let results = List.fold_left (fun acc elem -> create_result elem :: acc) [] sorted_inters
+
+    let results = List.fold_left (fun acc elem -> create_result elem :: acc) [] inters
     in
-    let merge (r1: result) (r2 : result) : result = 
-      {length=r2.length + (r2.read_off-r1.read_off); 
-      read=r1.read; read_off=r1.read_off; ref=r1.ref; ref_off=r1.ref_off;}
+
+    let rec merge_all h lst = 
+      let merge (x1: result) (x2 : result) : result = 
+        let (r1, r2) = 
+          if x2.read_off - x1.read_off >= 0 then (x1, x2) 
+          else (x2, x1)
+        in 
+          {length= (max (r1.length + r1.read_off) (r2.length + r2.read_off)) - r1.read_off; 
+          read=r1.read; read_off=r1.read_off; ref=r1.ref; ref_off=r1.ref_off;}
+      in 
+        match lst with 
+        | [] -> h
+        | x::t -> merge_all (merge h x) t
     in 
-    let are_mergable (r1: result) (r2 : result) : bool = 
-      (r2.read_off - r1.read_off <= r1.length) &&
-      (r2.read_off - r1.read_off = r2.ref_off - r1.ref_off)
+
+    let are_mergeable (x1: result) (x2 : result) : bool =
+      let (r1, r2) = 
+        if x2.read_off - x1.read_off >= 0 then (x1, x2) 
+        else (x2, x1)
+      in 
+        (r2.read_off - r1.read_off <= r1.length) &&
+        (r2.read_off - r1.read_off = r2.ref_off - r1.ref_off)
     in
-    let rec helper working out = 
-      match working, out with
-      | [], _ -> out
-      | h::t, [] -> helper t [h]
-      | h2::t2, h1::t1 -> begin
-        if are_mergable h1 h2 then helper t2 (merge h1 h2 :: t1)
-        else helper t2 (h2::out) 
+
+    let check_and_merge (h : 'a) (lst : 'a list) : 'a * 'a list * bool = 
+      let (mergable, not_mergeable) = List.partition (are_mergeable h) lst 
+      in 
+        match mergable with 
+        | [] -> (h, lst, false)
+        | _ -> (merge_all h mergable, not_mergeable, true)
+    in
+
+    let rec helper working out  = 
+      match working with
+      | [] -> out
+      | h::t -> begin
+        match check_and_merge h t with 
+        | x, lst, false -> helper lst (x::out)
+        | x, lst, true -> helper (x::lst) out
       end
     in
       return (helper results [])

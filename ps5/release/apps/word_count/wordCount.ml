@@ -50,7 +50,7 @@ module App  = struct
     let print (word,count) =
       printf "%-15s %i\n%!" ("\""^word^"\":") count
     in
-    let sorted = List.sort (fun (_,v1) (_,v2) -> v1 - v2) l in
+    let sorted = List.sort (fun (s1,v1) (s2,v2) -> compare s1 s2) l in
     List.iter print sorted
 
 
