@@ -1,0 +1,2630 @@
+commit 1474db5c3ca5e42b6997117bb04ff12f4f0793a1
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Apr 14 22:35:39 2014 -0400
+
+    FINALLY remoteController.ml is running concurrently and with no bugs
+
+ ps5/release/map_reduce/remoteController.ml | 274 ++++++++++++++++++++---------
+ 1 file changed, 190 insertions(+), 84 deletions(-)
+
+commit d27264cd714dc5638d61ddb58647c5d97b9c0a63
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Apr 14 22:06:59 2014 -0400
+
+    fixed dnaSequencing.ml bug in job2.reduce and changed the wordCount result sorting to be based on the word and not how many times it occured
+
+ ps5/release/apps/dna_sequencing/dnaSequencing.ml | 66 ++++++++++++++++++------
+ ps5/release/apps/word_count/wordCount.ml         |  2 +-
+ 2 files changed, 50 insertions(+), 18 deletions(-)
+
+commit d5d679f132fdbc3248e6efe62f82e5beb23590a3
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Fri Apr 11 14:22:49 2014 -0400
+
+    changed all OCaml standard "try with" to Async try_with function in both remoteController.ml and worker.ml
+
+ ps5/release/map_reduce/remoteController.ml | 59 +++++++++++++++++-------------
+ ps5/release/map_reduce/worker.ml           | 40 +++++++++++---------
+ 2 files changed, 56 insertions(+), 43 deletions(-)
+
+commit 6afe1b12c121e8350a63a449156fb858c5b4002e
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Thu Apr 10 21:16:51 2014 -0400
+
+    applied the version 2 patch
+
+ ps5/release/async/aQueue.mli                |  7 +++++++
+ ps5/release/async/examples.ml               |  2 +-
+ ps5/release/map_reduce/combiner.mli         |  4 +++-
+ ps5/release/map_reduce/mapReduce.mli        |  6 ++++--
+ ps5/release/map_reduce/protocol.mli         | 21 +++++++++++++--------
+ ps5/release/map_reduce/remoteController.mli |  2 +-
+ ps5/release/map_reduce/worker.mli           | 10 +++++++---
+ 7 files changed, 36 insertions(+), 16 deletions(-)
+
+commit f958609b63076ddb1c6c9a71500ec26aefdbb22e
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Thu Apr 10 11:00:31 2014 -0400
+
+    added error handling in remoteController.ml
+
+ ps5/release/map_reduce/remoteController.ml | 33 ++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
+
+commit b174d4d9f185bba4c364648c47d81091c4b6de5d
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Wed Apr 9 17:50:17 2014 -0400
+
+    Refactored some sections in worker.ml
+
+ ps5/release/map_reduce/worker.ml | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+commit 4b00899a6e08990a4b2774ceb411929206a25341
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Wed Apr 9 14:07:56 2014 -0400
+
+    finished final check and testing
+
+ ps5/release/apps/inverted_index/data/doz.txt    | 2 ++
+ ps5/release/apps/inverted_index/data/master.txt | 2 ++
+ ps5/release/apps/inverted_index/data/zar.txt    | 2 ++
+ ps5/release/map_reduce/remoteController.ml      | 2 --
+ 4 files changed, 6 insertions(+), 2 deletions(-)
+
+commit 3932dd043ec42b983095d222afa6337bd64455e0
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Wed Apr 9 06:06:50 2014 -0400
+
+    finished implmenting and testing dnaSequencing.ml
+
+ ps5/release/apps/dna_sequencing/dnaSequencing.ml | 108 +++++++++++++++++++----
+ ps5/release/map_reduce/remoteController.ml       |  20 ++---
+ 2 files changed, 99 insertions(+), 29 deletions(-)
+
+commit 9d79d2ab9b4568416703af940a1e6e7d368ba469
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Wed Apr 9 00:59:07 2014 -0400
+
+    Forced worker to record backtrace
+
+ ps5/release/map_reduce/worker.ml | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+commit 24921f7ea6663819b6038e5174b05a75b4b2320c
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Wed Apr 9 00:41:28 2014 -0400
+
+    Made worker throw JobFailed message if error encountered in map or reduce phase
+
+ ps5/release/map_reduce/worker.ml | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+commit ed8e44c88001cc1734e9a0d188048ff30b0a37c0
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Wed Apr 9 00:17:31 2014 -0400
+
+    cleaned up remoteController.ml and tested it
+
+ ps5/release/map_reduce/remoteController.ml | 22 +++++-----------------
+ 1 file changed, 5 insertions(+), 17 deletions(-)
+
+commit c9001af90142cd6c8851cd46c5c507653fdae854
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Wed Apr 9 00:11:36 2014 -0400
+
+    Made worker close connection to controller in case of error
+
+ ps5/.project                                     |  6 ++++++
+ ps5/release/apps/inverted_index/invertedIndex.ml |  5 ++---
+ ps5/release/map_reduce/worker.ml                 | 18 ++++++++++--------
+ 3 files changed, 18 insertions(+), 11 deletions(-)
+
+commit 3240e749e3cc3ce8945e48bd3858c4951ec647cf
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Mon Apr 7 22:50:03 2014 -0400
+
+    Finished InvertedIndex app
+
+ .../BAKER_SAYS_REAGAN_TO_MEET_PRESS_VERY_SOON_.txt |   9 ++
+ ...BAKER_SAYS_REAGAN_TO_MEET_PRESS__VERY_SOON_.txt |   9 --
+ ps5/release/apps/inverted_index/invertedIndex.ml   | 127 ++++++++++++---------
+ ps5/release/apps/inverted_index/reuters.txt        |   2 +-
+ 4 files changed, 84 insertions(+), 63 deletions(-)
+
+commit 79ca553191d9f5dc079580f4949a04b416e9bbc8
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Sun Apr 6 00:22:36 2014 -0400
+
+    Made minor editing changes and made worker do nothing instead of recurse infinitely when done
+
+ ps5/release/map_reduce/worker.ml | 28 +++++++++-------------------
+ 1 file changed, 9 insertions(+), 19 deletions(-)
+
+commit 85211385498e8fa636c3fe0599d33fe43cb254ef
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Sat Apr 5 17:33:07 2014 -0400
+
+    fixed remoteController.ml formatting
+
+ ps5/release/map_reduce/remoteController.ml | 213 ++++++++++++++---------------
+ 1 file changed, 100 insertions(+), 113 deletions(-)
+
+commit e8be008bfcd4053e7df71b2df3cf7f2aa3b1d963
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Sat Apr 5 00:54:28 2014 -0400
+
+    made worker recurse infinitely instead of fail when done, kind of like local controller
+
+ ps5/release/map_reduce/worker.ml | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+commit 1a3c100032f57302dc1602f881d0e77095dc3226
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Fri Apr 4 23:32:53 2014 -0400
+
+    Got the framework to run!
+
+ ps5/release/_build/_digests                        |  76 --------
+ ps5/release/_build/_log                            |  96 ----------
+ ps5/release/_build/apps/appList.cmi                | Bin 2205 -> 0 bytes
+ ps5/release/_build/apps/appList.cmo                | Bin 2542 -> 0 bytes
+ ps5/release/_build/apps/appList.d.cmi              | Bin 2205 -> 0 bytes
+ ps5/release/_build/apps/appList.d.cmo              | Bin 4313 -> 0 bytes
+ ps5/release/_build/apps/appList.ml                 |   9 -
+ ps5/release/_build/apps/appList.ml.depends         |   1 -
+ ps5/release/_build/apps/appUtils.cmi               | Bin 250 -> 0 bytes
+ ps5/release/_build/apps/appUtils.d.cmo             | Bin 2573 -> 0 bytes
+ ps5/release/_build/apps/appUtils.ml                |   6 -
+ ps5/release/_build/apps/appUtils.ml.depends        |   1 -
+ ps5/release/_build/apps/appUtils.mli               |   6 -
+ ps5/release/_build/apps/appUtils.mli.depends       |   1 -
+ .../_build/apps/dna_sequencing/dnaSequencing.cmi   | Bin 2066 -> 0 bytes
+ .../_build/apps/dna_sequencing/dnaSequencing.d.cmo | Bin 12991 -> 0 bytes
+ .../_build/apps/dna_sequencing/dnaSequencing.ml    | 118 ------------
+ .../apps/dna_sequencing/dnaSequencing.ml.depends   |   1 -
+ .../_build/apps/dna_sequencing/dnaSequencing.mli   |   4 -
+ .../apps/dna_sequencing/dnaSequencing.mli.depends  |   1 -
+ .../_build/apps/inverted_index/invertedIndex.cmi   | Bin 2066 -> 0 bytes
+ .../_build/apps/inverted_index/invertedIndex.d.cmo | Bin 9124 -> 0 bytes
+ .../_build/apps/inverted_index/invertedIndex.ml    |  70 -------
+ .../apps/inverted_index/invertedIndex.ml.depends   |   1 -
+ .../_build/apps/inverted_index/invertedIndex.mli   |   4 -
+ .../apps/inverted_index/invertedIndex.mli.depends  |   1 -
+ ps5/release/_build/apps/word_count/wordCount.cmi   | Bin 2058 -> 0 bytes
+ ps5/release/_build/apps/word_count/wordCount.d.cmo | Bin 14331 -> 0 bytes
+ ps5/release/_build/apps/word_count/wordCount.ml    |  74 -------
+ .../_build/apps/word_count/wordCount.ml.depends    |   1 -
+ ps5/release/_build/apps/word_count/wordCount.mli   |   4 -
+ .../_build/apps/word_count/wordCount.mli.depends   |   1 -
+ ps5/release/_build/controllerMain.cmi              | Bin 2689 -> 0 bytes
+ ps5/release/_build/controllerMain.cmo              | Bin 4918 -> 0 bytes
+ ps5/release/_build/controllerMain.d.byte           | Bin 71444944 -> 0 bytes
+ ps5/release/_build/controllerMain.d.cmi            | Bin 2689 -> 0 bytes
+ ps5/release/_build/controllerMain.d.cmo            | Bin 12161 -> 0 bytes
+ ps5/release/_build/controllerMain.ml               |  49 -----
+ ps5/release/_build/controllerMain.ml.depends       |   1 -
+ ps5/release/_build/map_reduce/combiner.cmi         | Bin 2278 -> 0 bytes
+ ps5/release/_build/map_reduce/combiner.d.cmo       | Bin 8383 -> 0 bytes
+ ps5/release/_build/map_reduce/combiner.ml          |  21 --
+ ps5/release/_build/map_reduce/combiner.ml.depends  |   1 -
+ ps5/release/_build/map_reduce/combiner.mli         |   6 -
+ ps5/release/_build/map_reduce/combiner.mli.depends |   1 -
+ ps5/release/_build/map_reduce/localController.cmi  | Bin 2078 -> 0 bytes
+ .../_build/map_reduce/localController.d.cmo        | Bin 6015 -> 0 bytes
+ ps5/release/_build/map_reduce/localController.ml   |  21 --
+ .../_build/map_reduce/localController.ml.depends   |   1 -
+ ps5/release/_build/map_reduce/localController.mli  |   4 -
+ .../_build/map_reduce/localController.mli.depends  |   1 -
+ ps5/release/_build/map_reduce/mapReduce.cmi        | Bin 3340 -> 0 bytes
+ ps5/release/_build/map_reduce/mapReduce.d.cmo      | Bin 9105 -> 0 bytes
+ ps5/release/_build/map_reduce/mapReduce.ml         |  66 -------
+ ps5/release/_build/map_reduce/mapReduce.ml.depends |   1 -
+ ps5/release/_build/map_reduce/mapReduce.mli        |  82 --------
+ .../_build/map_reduce/mapReduce.mli.depends        |   1 -
+ ps5/release/_build/map_reduce/protocol.cmi         | Bin 3283 -> 0 bytes
+ ps5/release/_build/map_reduce/protocol.d.cmo       | Bin 5704 -> 0 bytes
+ ps5/release/_build/map_reduce/protocol.ml          |  40 ----
+ ps5/release/_build/map_reduce/protocol.ml.depends  |   1 -
+ ps5/release/_build/map_reduce/protocol.mli         |  53 -----
+ ps5/release/_build/map_reduce/protocol.mli.depends |   1 -
+ ps5/release/_build/map_reduce/remoteController.cmi | Bin 2219 -> 0 bytes
+ .../_build/map_reduce/remoteController.d.byte      | Bin 71398698 -> 0 bytes
+ .../_build/map_reduce/remoteController.d.cmo       | Bin 21299 -> 0 bytes
+ ps5/release/_build/map_reduce/remoteController.ml  | 108 -----------
+ .../_build/map_reduce/remoteController.ml.depends  |   1 -
+ ps5/release/_build/map_reduce/remoteController.mli |   7 -
+ .../_build/map_reduce/remoteController.mli.depends |   1 -
+ ps5/release/_build/map_reduce/worker.cmi           | Bin 2337 -> 0 bytes
+ ps5/release/_build/map_reduce/worker.d.byte        | Bin 71373605 -> 0 bytes
+ ps5/release/_build/map_reduce/worker.d.cmo         | Bin 14511 -> 0 bytes
+ ps5/release/_build/map_reduce/worker.ml            |  83 --------
+ ps5/release/_build/map_reduce/worker.ml.depends    |   1 -
+ ps5/release/_build/map_reduce/worker.mli           |  14 --
+ ps5/release/_build/map_reduce/worker.mli.depends   |   1 -
+ ps5/release/_build/ocamlc.where                    |   1 -
+ ps5/release/_build/workerMain.cmi                  | Bin 2174 -> 0 bytes
+ ps5/release/_build/workerMain.cmo                  | Bin 2821 -> 0 bytes
+ ps5/release/_build/workerMain.d.byte               | Bin 71408988 -> 0 bytes
+ ps5/release/_build/workerMain.d.cmi                | Bin 2174 -> 0 bytes
+ ps5/release/_build/workerMain.d.cmo                | Bin 4644 -> 0 bytes
+ ps5/release/_build/workerMain.ml                   |  12 --
+ ps5/release/_build/workerMain.ml.depends           |   1 -
+ ps5/release/map_reduce/remoteController.ml         | 213 +++++++++++----------
+ ps5/release/map_reduce/worker.ml                   |  65 +++----
+ 87 files changed, 140 insertions(+), 1195 deletions(-)
+
+commit 4ed5d260f1d506382a1f8c608030a42612a444b5
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Fri Apr 4 19:09:23 2014 -0400
+
+    added build directory to testing branch
+
+ ps5/release/_build/_digests                        |  76 +++++++++++++
+ ps5/release/_build/_log                            |  96 +++++++++++++++++
+ ps5/release/_build/apps/appList.cmi                | Bin 0 -> 2205 bytes
+ ps5/release/_build/apps/appList.cmo                | Bin 0 -> 2542 bytes
+ ps5/release/_build/apps/appList.d.cmi              | Bin 0 -> 2205 bytes
+ ps5/release/_build/apps/appList.d.cmo              | Bin 0 -> 4313 bytes
+ ps5/release/_build/apps/appList.ml                 |   9 ++
+ ps5/release/_build/apps/appList.ml.depends         |   1 +
+ ps5/release/_build/apps/appUtils.cmi               | Bin 0 -> 250 bytes
+ ps5/release/_build/apps/appUtils.d.cmo             | Bin 0 -> 2573 bytes
+ ps5/release/_build/apps/appUtils.ml                |   6 ++
+ ps5/release/_build/apps/appUtils.ml.depends        |   1 +
+ ps5/release/_build/apps/appUtils.mli               |   6 ++
+ ps5/release/_build/apps/appUtils.mli.depends       |   1 +
+ .../_build/apps/dna_sequencing/dnaSequencing.cmi   | Bin 0 -> 2066 bytes
+ .../_build/apps/dna_sequencing/dnaSequencing.d.cmo | Bin 0 -> 12991 bytes
+ .../_build/apps/dna_sequencing/dnaSequencing.ml    | 118 +++++++++++++++++++++
+ .../apps/dna_sequencing/dnaSequencing.ml.depends   |   1 +
+ .../_build/apps/dna_sequencing/dnaSequencing.mli   |   4 +
+ .../apps/dna_sequencing/dnaSequencing.mli.depends  |   1 +
+ .../_build/apps/inverted_index/invertedIndex.cmi   | Bin 0 -> 2066 bytes
+ .../_build/apps/inverted_index/invertedIndex.d.cmo | Bin 0 -> 9124 bytes
+ .../_build/apps/inverted_index/invertedIndex.ml    |  70 ++++++++++++
+ .../apps/inverted_index/invertedIndex.ml.depends   |   1 +
+ .../_build/apps/inverted_index/invertedIndex.mli   |   4 +
+ .../apps/inverted_index/invertedIndex.mli.depends  |   1 +
+ ps5/release/_build/apps/word_count/wordCount.cmi   | Bin 0 -> 2058 bytes
+ ps5/release/_build/apps/word_count/wordCount.d.cmo | Bin 0 -> 14331 bytes
+ ps5/release/_build/apps/word_count/wordCount.ml    |  74 +++++++++++++
+ .../_build/apps/word_count/wordCount.ml.depends    |   1 +
+ ps5/release/_build/apps/word_count/wordCount.mli   |   4 +
+ .../_build/apps/word_count/wordCount.mli.depends   |   1 +
+ ps5/release/_build/controllerMain.cmi              | Bin 0 -> 2689 bytes
+ ps5/release/_build/controllerMain.cmo              | Bin 0 -> 4918 bytes
+ ps5/release/_build/controllerMain.d.byte           | Bin 0 -> 71444944 bytes
+ ps5/release/_build/controllerMain.d.cmi            | Bin 0 -> 2689 bytes
+ ps5/release/_build/controllerMain.d.cmo            | Bin 0 -> 12161 bytes
+ ps5/release/_build/controllerMain.ml               |  49 +++++++++
+ ps5/release/_build/controllerMain.ml.depends       |   1 +
+ ps5/release/_build/map_reduce/combiner.cmi         | Bin 0 -> 2278 bytes
+ ps5/release/_build/map_reduce/combiner.d.cmo       | Bin 0 -> 8383 bytes
+ ps5/release/_build/map_reduce/combiner.ml          |  21 ++++
+ ps5/release/_build/map_reduce/combiner.ml.depends  |   1 +
+ ps5/release/_build/map_reduce/combiner.mli         |   6 ++
+ ps5/release/_build/map_reduce/combiner.mli.depends |   1 +
+ ps5/release/_build/map_reduce/localController.cmi  | Bin 0 -> 2078 bytes
+ .../_build/map_reduce/localController.d.cmo        | Bin 0 -> 6015 bytes
+ ps5/release/_build/map_reduce/localController.ml   |  21 ++++
+ .../_build/map_reduce/localController.ml.depends   |   1 +
+ ps5/release/_build/map_reduce/localController.mli  |   4 +
+ .../_build/map_reduce/localController.mli.depends  |   1 +
+ ps5/release/_build/map_reduce/mapReduce.cmi        | Bin 0 -> 3340 bytes
+ ps5/release/_build/map_reduce/mapReduce.d.cmo      | Bin 0 -> 9105 bytes
+ ps5/release/_build/map_reduce/mapReduce.ml         |  66 ++++++++++++
+ ps5/release/_build/map_reduce/mapReduce.ml.depends |   1 +
+ ps5/release/_build/map_reduce/mapReduce.mli        |  82 ++++++++++++++
+ .../_build/map_reduce/mapReduce.mli.depends        |   1 +
+ ps5/release/_build/map_reduce/protocol.cmi         | Bin 0 -> 3283 bytes
+ ps5/release/_build/map_reduce/protocol.d.cmo       | Bin 0 -> 5704 bytes
+ ps5/release/_build/map_reduce/protocol.ml          |  40 +++++++
+ ps5/release/_build/map_reduce/protocol.ml.depends  |   1 +
+ ps5/release/_build/map_reduce/protocol.mli         |  53 +++++++++
+ ps5/release/_build/map_reduce/protocol.mli.depends |   1 +
+ ps5/release/_build/map_reduce/remoteController.cmi | Bin 0 -> 2219 bytes
+ .../_build/map_reduce/remoteController.d.byte      | Bin 0 -> 71398698 bytes
+ .../_build/map_reduce/remoteController.d.cmo       | Bin 0 -> 21299 bytes
+ ps5/release/_build/map_reduce/remoteController.ml  | 108 +++++++++++++++++++
+ .../_build/map_reduce/remoteController.ml.depends  |   1 +
+ ps5/release/_build/map_reduce/remoteController.mli |   7 ++
+ .../_build/map_reduce/remoteController.mli.depends |   1 +
+ ps5/release/_build/map_reduce/worker.cmi           | Bin 0 -> 2337 bytes
+ ps5/release/_build/map_reduce/worker.d.byte        | Bin 0 -> 71373605 bytes
+ ps5/release/_build/map_reduce/worker.d.cmo         | Bin 0 -> 14511 bytes
+ ps5/release/_build/map_reduce/worker.ml            |  83 +++++++++++++++
+ ps5/release/_build/map_reduce/worker.ml.depends    |   1 +
+ ps5/release/_build/map_reduce/worker.mli           |  14 +++
+ ps5/release/_build/map_reduce/worker.mli.depends   |   1 +
+ ps5/release/_build/ocamlc.where                    |   1 +
+ ps5/release/_build/workerMain.cmi                  | Bin 0 -> 2174 bytes
+ ps5/release/_build/workerMain.cmo                  | Bin 0 -> 2821 bytes
+ ps5/release/_build/workerMain.d.byte               | Bin 0 -> 71408988 bytes
+ ps5/release/_build/workerMain.d.cmi                | Bin 0 -> 2174 bytes
+ ps5/release/_build/workerMain.d.cmo                | Bin 0 -> 4644 bytes
+ ps5/release/_build/workerMain.ml                   |  12 +++
+ ps5/release/_build/workerMain.ml.depends           |   1 +
+ 85 files changed, 1057 insertions(+)
+
+commit 8d2fd09ebeb10068ec042cea754f354feedd2492
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Fri Apr 4 01:43:04 2014 -0400
+
+    updated .gitignore
+
+ .gitignore | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit fadb4a802e9772d248a11520a840c04f48d0f211
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Fri Apr 4 00:05:14 2014 -0400
+
+    qwert
+
+ ps5/release/async/aQueue.ml | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit 5982f9f50989641dc7f04e88cd378656d2623f1b
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Thu Apr 3 21:47:45 2014 -0400
+
+    update worker.ml
+
+ ps5/release/map_reduce/worker.ml | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 0f062bb01272cfbaeb85e3a1ad0859f840061720
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Thu Apr 3 14:05:05 2014 -0400
+
+    Almost done with worker.ml. Still need to incorporate error handling though this seems like a good job for the apps
+
+ ps5/release/map_reduce/worker.ml | 47 +++++++++++++++++++++++++++-------------
+ 1 file changed, 32 insertions(+), 15 deletions(-)
+
+commit b84216f25bb02d2a204e2be8b3acf36560eff5ed
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Thu Apr 3 13:26:49 2014 -0400
+
+    Fixed unbound value error
+
+ ps5/release/_build/_digests                        |  16 ----
+ ps5/release/_build/_log                            |  22 ------
+ ps5/release/_build/map_reduce/mapReduce.cmi        | Bin 3311 -> 0 bytes
+ ps5/release/_build/map_reduce/mapReduce.d.cmo      | Bin 9076 -> 0 bytes
+ ps5/release/_build/map_reduce/mapReduce.ml         |  66 -----------------
+ ps5/release/_build/map_reduce/mapReduce.ml.depends |   1 -
+ ps5/release/_build/map_reduce/mapReduce.mli        |  82 ---------------------
+ .../_build/map_reduce/mapReduce.mli.depends        |   1 -
+ ps5/release/_build/map_reduce/protocol.cmi         | Bin 3254 -> 0 bytes
+ ps5/release/_build/map_reduce/protocol.mli         |  53 -------------
+ ps5/release/_build/map_reduce/protocol.mli.depends |   1 -
+ ps5/release/_build/map_reduce/worker.cmi           | Bin 2308 -> 0 bytes
+ ps5/release/_build/map_reduce/worker.d.byte        | Bin 70455222 -> 0 bytes
+ ps5/release/_build/map_reduce/worker.ml            |  47 ------------
+ ps5/release/_build/map_reduce/worker.ml.depends    |   1 -
+ ps5/release/_build/map_reduce/worker.mli           |  14 ----
+ ps5/release/_build/map_reduce/worker.mli.depends   |   1 -
+ ps5/release/_build/ocamlc.where                    |   1 -
+ ps5/release/map_reduce/protocol.ml                 |   6 +-
+ ps5/release/map_reduce/worker.ml                   |  33 +++++++--
+ 20 files changed, 29 insertions(+), 316 deletions(-)
+
+commit 9c112c05cbaedbca008aa19047f4156588c71836
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Thu Apr 3 12:44:42 2014 -0400
+
+    Set up request and response pipes. Attempted to write code for sending and receiving messages but get compilation error "unbound value WorkerRequest.receive. Probably has to do with file hierarchy. Will fix!"
+
+ ps5/.paths                                         |  14 ++++
+ ps5/release/_build/_digests                        |  16 ++++
+ ps5/release/_build/_log                            |  22 ++++++
+ ps5/release/_build/map_reduce/mapReduce.cmi        | Bin 0 -> 3311 bytes
+ ps5/release/_build/map_reduce/mapReduce.d.cmo      | Bin 0 -> 9076 bytes
+ ps5/release/_build/map_reduce/mapReduce.ml         |  66 +++++++++++++++++
+ ps5/release/_build/map_reduce/mapReduce.ml.depends |   1 +
+ ps5/release/_build/map_reduce/mapReduce.mli        |  82 +++++++++++++++++++++
+ .../_build/map_reduce/mapReduce.mli.depends        |   1 +
+ ps5/release/_build/map_reduce/protocol.cmi         | Bin 0 -> 3254 bytes
+ ps5/release/_build/map_reduce/protocol.mli         |  53 +++++++++++++
+ ps5/release/_build/map_reduce/protocol.mli.depends |   1 +
+ ps5/release/_build/map_reduce/worker.cmi           | Bin 0 -> 2308 bytes
+ ps5/release/_build/map_reduce/worker.d.byte        | Bin 0 -> 70455222 bytes
+ ps5/release/_build/map_reduce/worker.ml            |  47 ++++++++++++
+ ps5/release/_build/map_reduce/worker.ml.depends    |   1 +
+ ps5/release/_build/map_reduce/worker.mli           |  14 ++++
+ ps5/release/_build/map_reduce/worker.mli.depends   |   1 +
+ ps5/release/_build/ocamlc.where                    |   1 +
+ ps5/release/map_reduce/_build/_digests             |   6 ++
+ ps5/release/map_reduce/_build/_log                 |  14 ++++
+ ps5/release/map_reduce/_build/mapReduce.mli        |  82 +++++++++++++++++++++
+ .../map_reduce/_build/mapReduce.mli.depends        |   1 +
+ ps5/release/map_reduce/_build/ocamlc.where         |   1 +
+ ps5/release/map_reduce/_build/worker.ml            |  47 ++++++++++++
+ ps5/release/map_reduce/_build/worker.ml.depends    |   1 +
+ ps5/release/map_reduce/_build/worker.mli           |  14 ++++
+ ps5/release/map_reduce/_build/worker.mli.depends   |   1 +
+ ps5/release/map_reduce/worker.ml                   |  74 +++++++++++--------
+ 29 files changed, 531 insertions(+), 30 deletions(-)
+
+commit aeddac588be2bc9f661c5c8270bc0456747af3e7
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Thu Apr 3 04:23:09 2014 -0400
+
+    fixed a bug in functions add_worker and get_next_worker in remoteController.ml. added some comments too
+
+ ps5/release/map_reduce/remoteController.ml | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+commit 4e2ccf6e10363700f8470bc62ec3d5b3a55085ac
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Thu Apr 3 04:08:37 2014 -0400
+
+    finished remoteController.ml
+
+ ps5/release/map_reduce/remoteController.ml | 103 ++++++++++++++++++++---------
+ 1 file changed, 73 insertions(+), 30 deletions(-)
+
+commit 4601162c4923af0e1a22a361f34bc235a5346c82
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Thu Apr 3 01:00:57 2014 -0400
+
+    worked a bit on remoteController.ml
+
+ ps5/release/map_reduce/remoteController.ml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 8fec9ef19ef72e549cfd06e959724923b6121187
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Wed Apr 2 02:44:24 2014 -0400
+
+    started remoteController.ml -- added skeleton code, and finished some parts
+
+ ps5/release/map_reduce/remoteController.ml | 58 ++++++++++++++++++++++++++++--
+ 1 file changed, 55 insertions(+), 3 deletions(-)
+
+commit acc2e9ef6a709ca674bdd1945a3bfd7fea89daaa
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Mar 31 22:59:53 2014 -0400
+
+    finished aQueue with testing -- no bugs and everything works
+
+ ps5/release/async/aQueue.ml    | 22 ++++++++--------------
+ ps5/release/async/testQueue.ml | 22 +++++++++++-----------
+ 2 files changed, 19 insertions(+), 25 deletions(-)
+
+commit 1747bd974d1b4c6a8a34aefb9dd6a93857336133
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Mon Mar 31 22:53:18 2014 -0400
+
+    added repo to eclipse workspace
+
+ ps5/.project                | 11 +++++++++++
+ ps5/release/async/warmup.ml | 16 ++++++++--------
+ test.txt                    |  1 +
+ 3 files changed, 20 insertions(+), 8 deletions(-)
+
+commit 7b4275aefdca90d23af31212d0797b8149b5bf06
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Mar 31 19:47:01 2014 -0400
+
+    edit aQueue.ml -- still have a bug for pop on empty queue
+
+ ps5/release/async/aQueue.ml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 80517ee4d536b4dc18944d1cab86bbb353ec6b0a
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Mar 31 18:56:14 2014 -0400
+
+    finished aQueue.ml
+
+ ps5/release/async/aQueue.ml    | 22 +++++++++++++++-------
+ ps5/release/async/testQueue.ml | 31 +++++++++++++++++++++++++++++++
+ 2 files changed, 46 insertions(+), 7 deletions(-)
+
+commit 4751e4a1c2c7e1f7e456224ceb9678f133ad6e12
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Mar 31 17:50:19 2014 -0400
+
+    finished warmup.ml
+
+ ps5/release/async/examples.ml |  2 +-
+ ps5/release/async/warmup.ml   | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 9986612d770520354799c5c9b233c8c630e55c6c
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Mar 31 16:58:26 2014 -0400
+
+    finished fork in warmup.ml
+
+ ps5/release/async/warmup.ml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit a0a60c079bd4b1cc1e1ab1125b09f98f6ab9596a
+Merge: c5e1d78 48d72b5
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Mon Mar 31 16:34:21 2014 -0400
+
+    Merge branch 'master' of github.com:HumamAlwassel/CS3110_PS5-6
+
+commit c5e1d7891a6cfdfa5d83127a0f4aa8ed17ad0ca5
+Author: Solomon Aduol Maina <sam524@cornell.edu>
+Date:   Mon Mar 31 16:32:41 2014 -0400
+
+    changed failwith in warmup.ml
+
+ ps5/release/async/warmup.ml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 48d72b5316d4efeb8bc4e19bbea45d7263a2ed50
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Mon Mar 31 16:16:07 2014 -0400
+
+    fixed warmup.ml
+
+ ps5/release/async/warmup.ml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 9d616286b20315652b9f0c5a2502502ceae20ec4
+Merge: 804d34b 48b3268
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Sun Mar 30 17:46:09 2014 -0400
+
+    Merge branch 'master' of github.com:HumamAlwassel/CS3110_PS5-6
+
+commit 804d34bfd7389372a17989c33c4f80b7755f14f7
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Sun Mar 30 20:40:35 2014 +0000
+
+    initial version
+
+ .gitignore                                         |   2 +
+ README.txt                                         |   3 +
+ ps5/doc/AQueue.html                                |  38 +
+ ps5/doc/Async.Std.Deferred.List.html               |  34 +
+ ps5/doc/Async.Std.Deferred.html                    |  47 ++
+ ps5/doc/Async.Std.Ivar.html                        |  64 ++
+ ps5/doc/Async.Std.Pipe.Reader.html                 |  32 +
+ ps5/doc/Async.Std.Pipe.Writer.html                 |  32 +
+ ps5/doc/Async.Std.Pipe.html                        |  51 ++
+ ps5/doc/Async.Std.Reader.html                      |  56 ++
+ ps5/doc/Async.Std.Socket.Address.html              |  30 +
+ ps5/doc/Async.Std.Socket.html                      |  40 +
+ ps5/doc/Async.Std.Tcp.html                         |  48 ++
+ ps5/doc/Async.Std.Writer.html                      |  45 +
+ ps5/doc/Async.Std.html                             | 234 ++++++
+ ps5/doc/Async.html                                 |  39 +
+ ps5/doc/Combiner.Make.html                         |  42 +
+ ps5/doc/Combiner.html                              |  35 +
+ ps5/doc/LocalController.Make.html                  |  41 +
+ ps5/doc/LocalController.html                       |  35 +
+ ps5/doc/MapReduce.App.Make.html                    |  45 +
+ ps5/doc/MapReduce.App.html                         |  34 +
+ ps5/doc/MapReduce.Controller.html                  |  59 ++
+ ps5/doc/MapReduce.EntryPoint.html                  |  35 +
+ ps5/doc/MapReduce.Job.html                         |  56 ++
+ ps5/doc/MapReduce.html                             |  70 ++
+ ps5/doc/Protocol.Marshalable.html                  |  35 +
+ ps5/doc/Protocol.WorkerRequest.html                |  66 ++
+ ps5/doc/Protocol.WorkerResponse.html               |  73 ++
+ ps5/doc/Protocol.html                              |  58 ++
+ ps5/doc/RemoteController.Make.html                 |  41 +
+ ps5/doc/RemoteController.html                      |  39 +
+ ps5/doc/Worker.Make.html                           |  47 ++
+ ps5/doc/Worker.html                                |  39 +
+ ps5/doc/html.stamp                                 |   1 +
+ ps5/doc/index.html                                 |  65 ++
+ ps5/doc/index_attributes.html                      |  26 +
+ ps5/doc/index_class_types.html                     |  26 +
+ ps5/doc/index_classes.html                         |  26 +
+ ps5/doc/index_exceptions.html                      |  26 +
+ ps5/doc/index_methods.html                         |  26 +
+ ps5/doc/index_module_types.html                    |  47 ++
+ ps5/doc/index_modules.html                         | 147 ++++
+ ps5/doc/index_types.html                           |  76 ++
+ ps5/doc/index_values.html                          | 271 ++++++
+ ps5/doc/style.css                                  |  41 +
+ ps5/doc/type_AQueue.html                           |  24 +
+ ps5/doc/type_Async.Std.Deferred.List.html          |  34 +
+ ps5/doc/type_Async.Std.Deferred.html               |  45 +
+ ps5/doc/type_Async.Std.Ivar.html                   |  27 +
+ ps5/doc/type_Async.Std.Pipe.Reader.html            |  19 +
+ ps5/doc/type_Async.Std.Pipe.Writer.html            |  19 +
+ ps5/doc/type_Async.Std.Pipe.html                   |  27 +
+ ps5/doc/type_Async.Std.Reader.html                 |  25 +
+ ps5/doc/type_Async.Std.Socket.Address.html         |  19 +
+ ps5/doc/type_Async.Std.Socket.html                 |  19 +
+ ps5/doc/type_Async.Std.Tcp.html                    |  28 +
+ ps5/doc/type_Async.Std.Writer.html                 |  19 +
+ ps5/doc/type_Async.Std.html                        | 114 +++
+ ps5/doc/type_Async.html                            | 123 +++
+ ps5/doc/type_Combiner.Make.html                    |  23 +
+ ps5/doc/type_Combiner.html                         |  26 +
+ ps5/doc/type_LocalController.Make.html             |  19 +
+ ps5/doc/type_LocalController.html                  |  19 +
+ ps5/doc/type_MapReduce.App.Make.html               |  19 +
+ ps5/doc/type_MapReduce.App.html                    |  22 +
+ ps5/doc/type_MapReduce.Controller.html             |  24 +
+ ps5/doc/type_MapReduce.EntryPoint.html             |  19 +
+ ps5/doc/type_MapReduce.Job.html                    |  31 +
+ ps5/doc/type_MapReduce.html                        |  56 ++
+ ps5/doc/type_Protocol.Marshalable.html             |  25 +
+ ps5/doc/type_Protocol.WorkerRequest.html           |  27 +
+ ps5/doc/type_Protocol.WorkerResponse.html          |  28 +
+ ps5/doc/type_Protocol.html                         |  49 ++
+ ps5/doc/type_RemoteController.Make.html            |  19 +
+ ps5/doc/type_RemoteController.html                 |  22 +
+ ps5/doc/type_Worker.Make.html                      |  23 +
+ ps5/doc/type_Worker.html                           |  28 +
+ ps5/release.zip                                    | Bin 0 -> 1205201 bytes
+ ps5/release/.depend                                |   8 +
+ ps5/release/.libs                                  |   1 +
+ ps5/release/.opam_packages                         |   2 +
+ ps5/release/addresses.txt                          |   2 +
+ ps5/release/apps/appList.ml                        |   9 +
+ ps5/release/apps/appUtils.ml                       |   6 +
+ ps5/release/apps/appUtils.mli                      |   6 +
+ .../apps/dna_sequencing/data/test_dna_medium.txt   |   9 +
+ .../apps/dna_sequencing/data/test_dna_small.txt    |   9 +
+ .../dna_sequencing/data/test_dna_tiny_match.txt    |   2 +
+ .../dna_sequencing/data/test_dna_tiny_no_match.txt |   2 +
+ ps5/release/apps/dna_sequencing/dnaSequencing.ml   | 118 +++
+ ps5/release/apps/dna_sequencing/dnaSequencing.mli  |   4 +
+ ...(CORRECTED)_-_BANPONCE_lt_BDEP_PLACES_NOTES.txt |   7 +
+ ...TED)_-_lt_TRANSALTA_UTILITIES_CORP_YEAR_NET.txt |   5 +
+ .../data/(MARSHALL_STEEL_LTD)_YEAR_NET.txt         |   6 +
+ ...._SAYS_TIN_DISPOSALS_WILL_NOT_AFFECT_ACCORD.txt |  11 +
+ ...VANCED_SYSTEMS_lt_ASY_TO_DISTRIBUTE_COURSES.txt |   6 +
+ ...DVANCE_CIRCUITS_lt_ADVC_GETS_LOAN_AGREEMENT.txt |  11 +
+ ...FG_INDUSTRIES_INC_lt_AFG_QUARTERLY_DIVIDEND.txt |   2 +
+ ...CY_REPORTS_39_SHIPS_WAITING_AT_PANAMA_CANAL.txt |   8 +
+ ...GENCY_VOTES_TO_END_LOCAL_NUCLEAR_PLANT_VETO.txt |  18 +
+ ...CEDEL,_EUROCLEAR_JOIN_IN_TRADE_MATCH_SYSTEM.txt |  18 +
+ ...BUS_SIGNS_ONE_BILLION_DLR_JAPANESE_CONTRACT.txt |  18 +
+ ...S_lt_AGA_DECLINES_TO_COMMENT_ON_STOCK_MOVES.txt |   4 +
+ ...FORCE_EXERCISES_OPTION_FOR_AAR_lt_AIR_ORDER.txt |   4 +
+ .../AIR_WIS_SERVICES_INC_lt_ARWS_4TH_QTR_NET.txt   |   6 +
+ ...SKA_HOUSING_HAS_150_MLN_DLR_SYNDICATED_LOAN.txt |  12 +
+ .../ALATENN_RESOURCES_INC_lt_ATNG_4TH_QTR_NET.txt  |   4 +
+ .../ALBERTSON'S_INC_lt_ABS_4TH_QTR_JAN_29_NET.txt  |   4 +
+ ...ALBERTSON'S_INC_lt_ABS_RAISES_QTLY_DIVIDEND.txt |   2 +
+ ...SON'S_lt_ABS_ADOPTS_STOCKHOLDER_RIGHTS_PLAN.txt |   9 +
+ ...SON'S_lt_ABS_TO_INCREASE_NEW_STORE_OPENINGS.txt |   5 +
+ .../ALCAN_ALUMINIUM_LTD_lt_AL_SETS_STOCK_SPLIT.txt |   6 +
+ ...LCAN_TO_CLOSE_WEST_GERMAN_ALUMINIUM_SMELTER.txt |  10 +
+ .../data/AMAX_lt_AMX_IN_GOLD,_SILVER_FIND.txt      |   9 +
+ ..._lt_AIL_TO_SELL_SOME_DOMINION_BRIDGE_ASSETS.txt |   9 +
+ .../data/AMC_lt_AMO_EXTENDS_INCENTIVE_PROGRAM.txt  |  14 +
+ ...t_AMO_SAYS_STEPS_TAKEN_AFTER_UAW_TALKS_FAIL.txt |  31 +
+ ...N_AIRLINES_TO_ANNOUNCE_BUYS,_NEWSPAPER_SAYS.txt |   9 +
+ ...ERICAN_ELECTRIC_lt_AEP_UNIT_REDEEMING_BONDS.txt |   6 +
+ ...ERICAN_EXPRESS_STUDIES_OPTIONS_FOR_SHEARSON.txt |  16 +
+ ...AN_EXPRESS_lt_AXP_SEEN_IN_POSSIBLE_SPINNOFF.txt |  49 ++
+ ...CAN_EXPRESS_lt_AXP_VIEWING_SHEARSON_OPTIONS.txt |  48 ++
+ ...CAN_MOTORS_lt_AMO_BREAKS_OFF_TALKS_ON_PLANT.txt |   9 +
+ ...ERICAN_NURSERY_lt_ANSY_BUYS_FLORIDA_NURSERY.txt |   5 +
+ .../AMERICAN_NURSERY_lt_ANSY_MAKES_ACQUISITION.txt |   5 +
+ .../AMERICAN_PORK_CONGRESS_KICKS_OFF_TOMORROW.txt  |  11 +
+ ...RICAN_TRAVELLERS_lt_ATVC_EXPANDS_OPERATIONS.txt |   4 +
+ .../AMERICA_FIRST_MORTGAGE_SETS_SPECIAL_PAYOUT.txt |   4 +
+ .../AMERICUS_TRUST_lt_HPU_EXTENDS_DEADLINE.txt     |   7 +
+ .../data/AMGEN_lt_AMGN_TO_FORM_PARTNERSHIP.txt     |   7 +
+ ...t_AMR_TO_ACQUIRE_40_LONG-RANGE_JET_AIRCRAFT.txt |  18 +
+ ...t_AMR_TO_HOLD_PRESS_CONFERENCE_THIS_MORNING.txt |  11 +
+ .../AM_INTERNATIONAL_INC_lt_AM_2ND_QTR_JAN_31.txt  |   9 +
+ ..._INTERNATIONAL_lt_AM_CITES_STRONG_PROSPECTS.txt |  15 +
+ ...S_SEE_NO_OTHER_BIDDER_FOR_PUROLATOR_lt_PCC_.txt |  24 +
+ ...OR_GLASS_lt_AGLS_CLEARED_FOR_LISTED_ON_NYSE.txt |   9 +
+ ...NNUAL_MAILING_TO_DELINQUENT_FARMERS_--_USDA.txt |   9 +
+ ...TITRUST_LAWYER_NOMINATED_CLAIMS_COURT_JUDGE.txt |   7 +
+ .../data/AOI_COAL_CO_lt_AOI_4TH_QTR_NET.txt        |   7 +
+ ...E_COMPUTER_lt_AAPL_HAS_NEW_MACINTOSH_MODELS.txt |  11 +
+ ...LE_COMPUTER_lt_AAPL_UPGRADES_MACINTOSH_LINE.txt |  42 +
+ ...lt_AAPL_,_AST_lt_ASTA_OFFER_MS-DOS_PRODUCTS.txt |  14 +
+ .../data/AQUINO_ANNOUNCES_LAND_REFORM_PLANS.txt    |  26 +
+ .../ARBOR_DRUGS_INC_lt_ARBR_2ND_QTR_JAN_31_NET.txt |   4 +
+ ...VE_CORP_lt_ACHV_SIGNS_DISTRIBUTOR_AGREEMENT.txt |   6 +
+ ...ENTINA_COULD_SUSPEND_DEBT_PAYMENTS_-_DEPUTY.txt |  16 +
+ ...GENTINE_1986_87_GRAIN_OILSEED_REGISTRATIONS.txt |  18 +
+ ...GENTINE_DEBT_NEGOTIATOR_CONFIDENT_OF_ACCORD.txt |  17 +
+ ...GENTINE_OIL_PRODUCTION_DOWN_IN_JANUARY_1987.txt |   6 +
+ ...ARMCO_lt_AS_CHANGES_EUROPEAN_MARKETING_UNIT.txt |   6 +
+ ...MOR_ALL_PRODUCTS_CORP_lt_ARMR_QUARTERLY_DIV.txt |   2 +
+ .../ARMTEK_lt_ARM_TO_SELL_INDUSTRIAL_TIRE_UNIT.txt |   8 +
+ ...MY_TO_RENEGOTIATE_ITT_lt_ITT_RADIO_CONTRACT.txt |   8 +
+ ...VIN_INDS_lt_ARV_PROMOTES_EVANS_TO_PRESIDENT.txt |   4 +
+ .../ASCS_TERMINAL_MARKET_VALUES_FOR_PIK_GRAIN.txt  |  31 +
+ .../data/ASHTON-TATE_lt_TATE_4TH_QTR_NET.txt       |   6 +
+ .../ASHTON-TATE_lt_TATE_TO_OFFER_COMMON_SHARES.txt |   6 +
+ .../ASSETS_OF_U.S._MONEY_FUNDS_ROSE_IN_WEEK.txt    |   6 +
+ .../ATICO_FINANCIAL_CORP_lt_ATFC_4TH_QTR_NET.txt   |   9 +
+ .../ATPC_MEMBERS_FIND_WAYS_TO_CURB_TIN_EXPORTS.txt |  60 ++
+ .../data/ATT_lt_ATT_GETS_57.3_MLN_DLR_CONTRACT.txt |   4 +
+ ...TRALIA'S_KEATING_CHANGES_ECONOMIC_FORECASTS.txt |  35 +
+ ...LIAN_JANUARY_ANNUAL_BROAD_MONEY_UP_10.3_PCT.txt |  13 +
+ ...STRALIAN_POLICE_ARREST_FORMER_WESTPAC_CLERK.txt |   9 +
+ .../AVERAGE_YEN_CD_RATES_FALL_IN_LATEST_WEEK.txt   |  15 +
+ .../AVERY_lt_AVY_SETS_TWO_FOR_ONE_STOCK_SPLIT.txt  |  10 +
+ .../data/AVX_CORP_lt_AVX_DEBT_AFFIRMED_BY_S_P.txt  |   7 +
+ .../AW_COMPUTER_lt_AWCSA_IN_SUPPLY_AGREEMENT.txt   |   9 +
+ .../inverted_index/data/BAHIA_COCOA_REVIEW.txt     |  38 +
+ ...BAKER_SAYS_REAGAN_TO_MEET_PRESS__VERY_SOON_.txt |   9 +
+ ...UR_EXPECTS_IMPROVED_FEBRUARY_INFLATION_DATA.txt |  13 +
+ ..._lt_BLY_COMPLETES_PURCHASE_OF_GOLDEN_NUGGET.txt |   6 +
+ .../BANC_ONE_lt_ONE_HAS_MICHIGAN_AFFILIATE.txt     |   3 +
+ .../BANGLADESH_MOVES_AGAINST_LOAN_DEFAULTERS.txt   |  10 +
+ ...BANKEAST_CORP_lt_BENH_COMPLETES_ACQUISITION.txt |   4 +
+ ...KERS_REPORT_BREAKTHROUGH_ON_VENEZUELAN_DEBT.txt |  24 +
+ ...ERS_SEE_SHARP_RISE_IN_THAI_FOREIGN_RESERVES.txt |  18 +
+ ...S_EXPRESS_GRAVE_CONCERN_ON_BRAZIL_DEBT_MOVE.txt |  25 +
+ ..._EXPRESS_GRAVE_CONCERN_ON_BRAZIL_DEBT_MOVES.txt |  25 +
+ ...NK_OF_ENGLAND_ANNOUNCES_ONE_BILLION_STG_TAP.txt |   7 +
+ ...K_OF_NEW_ENGLAND_CORP_lt_BKNE_QTLY_DIVIDEND.txt |   3 +
+ ...OF_NEW_YORK_lt_BK_TO_HAVE_GAIN_ON_UNIT_SALE.txt |  12 +
+ ...lt_BNR_COMPLETES_TENDER_FOR_REXNORD_lt_REX_.txt |   8 +
+ ...NNER_lt_BNR_TO_ACCEPT_REXNORD_lt_REX_SHARES.txt |  14 +
+ ...RNETT_BANKS_OF_FLORIDA_lt_BBF_REDEEMS_STOCK.txt |   9 +
+ .../data/BASIX_CORP_lt_BAS_4TH_QTR_LOSS.txt        |  10 +
+ .../data/BAYER_lt_BAYRY_MAKES_U.S._ACQUISITION.txt |   6 +
+ ...AG_BROWN_BOVERI_UND_CIE_lt_BBCZ.Z_1986_YEAR.txt |   5 +
+ ...M_INTERNATIONAL_lt_BDM_INCREASES_QTRLY_DIVS.txt |   4 +
+ .../data/BEECHAM_UNIT_LAUNCHES_ARTHRITIS_DRUG.txt  |   8 +
+ ...ENETTON_IN_FINANCIAL_SERVICES_JOINT_VENTURE.txt |   8 +
+ .../data/BENGUET_CORP_lt_BE_CALENDAR_1986.txt      |   5 +
+ ...CK_MINERS_SUPPORT_S._AFRICAN_MINES_TAKEOVER.txt |  17 +
+ .../BLACK_SOUTH_AFRICAN_MINERS_SEEK_WAGE_RISE.txt  |  13 +
+ ...KBUSTER_lt_BBEC_UNIT_GETS_TWO_MORE_LICENSES.txt |   7 +
+ .../BONUS_WHEAT_FLOUR_FOR_NORTH_YEMEN_--_USDA.txt  |   8 +
+ .../data/BP_OIL_RAISES_OPERATING_PROFIT.txt        |  13 +
+ ...FF_lt_BAIR_FEBRUARY_LOAD_FACTOR_UP_SLIGHTLY.txt |  10 +
+ ...IL_ANTI-INFLATION_PLAN_LIMPS_TO_ANNIVERSARY.txt |  16 +
+ ...ZIL_CRITICISES_ADVISORY_COMMITTEE_STRUCTURE.txt |  27 +
+ ...ZIL_FINANCE_MINISTER_MEETS_FRENCH_OFFICIALS.txt |   9 +
+ .../BRENCO_INC_lt_BREN_DECLARES_QTLY_DIVIDEND.txt  |   3 +
+ ...TAIN'S_ALLIANCE_OPPOSITION_WINS_BY-ELECTION.txt |  10 +
+ ..._CONSERVATIVES_AHEAD_OF_LABOUR_IN_NEW_POLLS.txt |  17 +
+ .../data/BROWN-FORMAN_INC_lt_BFD_4TH_QTR_NET.txt   |   4 +
+ ...FORMAN_lt_BFDB_SETS_STOCK_SPLIT,_UPS_PAYOUT.txt |  16 +
+ ...N_BOVERI_OMITS_DIVIDEND,_PLANS_WARRANT_BOND.txt |   9 +
+ ...REALTY_TRUST_lt_BRT_RAISES_QUARTERLY_PAYOUT.txt |   8 +
+ ...ON_PAYS_5.4_MLN_DLRS_FOR_CENERGY_CORP_STAKE.txt |   9 +
+ .../data/BUFFETS_INC_lt_BOCB_4TH_QTR_NET.txt       |   5 +
+ ...GTON'S_EL_PASO_UNIT_lt_BNI_FILES_GAS_PRICES.txt |   9 +
+ ...GTON_COAT_FACTORY_WAREHOUSE_CORP_lt_BCF_NET.txt |   3 +
+ ...URLINGTON_lt_BUR_GETS_30.5_MLN_DLR_CONTRACT.txt |   4 +
+ .../data/CAECL_ISSUES_12_BILLION_YEN_EUROBOND.txt  |   7 +
+ .../CALNY_INC_lt_CLNY_SUES_PEPSICO_INC_lt_PEP_.txt |  11 +
+ ...BRIDGE_MEDICAL_lt_CMTC_IN_DEAL_ON_AIDS_TEST.txt |   7 +
+ .../CANADA'S_WILSON_SEEKS_TEMPORARY_BORROWING.txt  |   9 +
+ ...CANADA-EGYPT_WHEAT_NEGOTIATIONS_TO_CONTINUE.txt |   8 +
+ .../CANADA_GOVERNMENT_SPENDING_TO_RISE_3.8_PCT.txt |   9 +
+ ...ANADA_INDUSTRIAL_PRICES_UP_0.2_PCT_IN_MONTH.txt |   7 +
+ .../CANADA_LAUNCHES_1.2_BILLION_DLR_BOND_ISSUE.txt |   8 +
+ .../CANADA_PRICES_1.2_BILLION_DLR_BOND_ISSUE.txt   |  11 +
+ ...DA_RULING_ON_U.S._CORN_INJURY_DUE_THIS_WEEK.txt |  12 +
+ .../data/CANADIAN_SEAFARERS_THREATEN_STRIKE.txt    |  11 +
+ .../CANTREX_UNIT_TO_MERGE_WITH_ONTARIO_GROUP.txt   |   8 +
+ ...BIDE_lt_UK_LOOKS_TO_ACQUISITIONS_FOR_GROWTH.txt |  15 +
+ .../CAREMARK_lt_CMRK_CHANGES_FISCAL_YEAR-END.txt   |   3 +
+ .../data/CARGILL_U.K._STRIKE_TALKS_POSTPONED.txt   |   6 +
+ .../CARLTON_COMMUNICATIONS_OPTIMISTIC_FOR_1987.txt |   9 +
+ ...A_DI_RISPARMIO_DI_ROMA_LAUNCHING_CD_PROGRAM.txt |   7 +
+ ...T_FEBRUARY_VOLUME_DOWN_14_PCT_FROM_YEAR_AGO.txt |  12 +
+ ...CREDITS_FOR_HONDURAS_SWITCHED_TO_WHITE_CORN.txt |   8 +
+ ..._UNIT_ACQUIRES_NESTLE_CANADA_CAN_OPERATIONS.txt |   8 +
+ .../CCR_VIDEO_CORP_lt_CCCR_1ST_QTR_NOV_30_NET.txt  |   3 +
+ ...VIDEO_lt_CCCR_NOW_MEETS_NASDAQ_REQUIREMENTS.txt |  10 +
+ ...NETWORK_lt_CCXN_SECONDARY_OFFERING_UNDERWAY.txt |   6 +
+ .../CENERGY_lt_CRG_REPORTS_4TH_QTR_NET_PROFIT.txt  |  14 +
+ ...HAMPION_PRODUCTS_lt_CH_APPROVES_STOCK_SPLIT.txt |   6 +
+ ...MICAL_NEW_YORK_lt_CHL_TO_CLOSE_DUBAI_OFFICE.txt |   9 +
+ ...LAWN_lt_CHEM_RISES_ON_HOPES_FOR_HIGHER_BIDS.txt |  32 +
+ ...NG_KONG_(HOLDINGS)_LTD_lt_CKGH.HK_YEAR_1986.txt |   6 +
+ ...G_KONG_CHAIRMAN_SEES_STRONG_RESULTS_IN_1987.txt |  21 +
+ ...'S_HEILONGJIANG_PROVINCE_BOOSTS_GOLD_OUTPUT.txt |   9 +
+ ...CHINA_CALLS_FOR_BETTER_TRADE_DEAL_WITH_U.S..txt |  62 ++
+ ...HINA_SIGNS_WORLD_BANK_LOAN_FOR_TIANJIN_PORT.txt |  10 +
+ .../data/CHINA_TO_BORROW_390_MLN_DLRS.txt          |   8 +
+ ...SE_BANKS_TO_ISSUE_MORE_BONDS,_OFFICIAL_SAYS.txt |  12 +
+ .../CHINESE_PORK_OUTPUT_SEEN_LOWER_--_USDA.txt     |  10 +
+ ...ESE_WHEAT_CROP_THREATENED_BY_PESTS,_DISEASE.txt |   8 +
+ ...SLER_TO_SELL_CARS_IN_EUROPE_BEFORE_YEAR_END.txt |  24 +
+ ...CHRYSLER_lt_C_UNIT_SELLS_NOTES_AT_7-5_8_PCT.txt |   9 +
+ ...HILL_TO_MARKET_WESTERN_UNION_lt_WU_SERVICES.txt |   7 +
+ ...CINCINNATI_BELL_INC_lt_CSN_RAISES_QUARTERLY.txt |   3 +
+ .../CINCINNATI_BELL_lt_CSN_SETS_STOCK_SPLIT.txt    |   5 +
+ .../CIRCUIT_SYSTEMS_lt_CSYI_BUYS_BOARD_MAKER.txt   |   8 +
+ ...CITIZENS_FINANCIAL_CORP_lt_CTZN_4TH_QTR_NET.txt |   4 +
+ .../CITY_NATIONAL_CORP_lt_CTYN_RAISES_DIVIDEND.txt |   2 +
+ ...E_PLANS_RULE_CHANGES_TIGHTENING_S_P_TRADING.txt |  46 +
+ .../CME_SETS_FEBRUARY_TRADING_VOLUME_RECORD.txt    |  18 +
+ .../data/COBANCO_INC_lt_CBCO_YEAR_NET.txt          |   5 +
+ ...A_COLA_lt_KO_UNIT_AND_WORLD_FILM_IN_VENTURE.txt |   5 +
+ ...EUR_D'ALENE_MINES_CORP_lt_COUR_4TH_QTR_LOSS.txt |   6 +
+ ...FFEE_PRICE_FALL_SHORT_TERM_-_DUTCH_ROASTERS.txt |  24 +
+ ...QUOTA_TALKS_CONTINUE,_NO_ACCORD_SEEN_LIKELY.txt |  14 +
+ ...E_QUOTA_TALKS_CONTINUE_BUT_NO_AGREEMENT_YET.txt |  10 +
+ ...TRADERS_EXPECT_SELLOFF_AFTER_ICO_TALKS_FAIL.txt |  43 +
+ ...IVE_SYSTEMS_INC_lt_CSAI_4TH_QTR_NOV_30_LOSS.txt |   5 +
+ .../data/COLECO_INDUSTRIES_INC_lt_CLO_4TH_QTR.txt  |   5 +
+ ...OLECO_INDUSTRIES_lt_CLC_SEES_PROFIT_IN_1987.txt |  13 +
+ ...LL_AGREES_TO_BUY_U.S._WALLCOVERINGS_COMPANY.txt |   9 +
+ ...BIA_GAS_SYSTEM_INC_lt_CG_REDEEMS_DEBENTURES.txt |   8 +
+ ...BIA_GAS_lt_CG_FORMS_ERIE_PIPELINE_SUBIDIARY.txt |   9 +
+ .../data/COMALCO_LTD_lt_CMAC.S_1986_NET.txt        |  12 +
+ ...O_SAYS_LOWER_COSTS_HELPED_RETURN_TO_PROFITS.txt |  24 +
+ ...LCO_SAYS_LOWER_COSTS_HELP_RETURN_TO_PROFITS.txt |  16 +
+ ...MBUSTION_ENGINEERING_INC_lt_CSP_REGULAR_DIV.txt |   3 +
+ ...MBUSTION_ENGINEERING_lt_CSP_SETS_CHINA_PACT.txt |   6 +
+ ...OMMERCIAL_CREDIT_lt_CCC_SELLS_10-YEAR_NOTES.txt |   7 +
+ ...MMERCIAL_CREDIT_lt_CCC_TO_HAVE_GAIN_ON_SALE.txt |   8 +
+ .../COMMERZBANK_UNIT_ISSUES_STERLING_EUROBOND.txt  |   8 +
+ ...NIES_SET_BID_FOR_CANADA_HELICOPTER_CONTRACT.txt |   8 +
+ ...MPUTER_LANGUAGE_RESEARCH_IN_lt_CLRI_4TH_QTR.txt |   6 +
+ ...ER_LANGUAGE_lt_CLRI_UNIT_OFFERS_TAX_PRODUCT.txt |   6 +
+ ...TER_TERMINAL_SYSTEMS_lt_CPML_COMPLETES_SALE.txt |  19 +
+ ...CONDOR_COMPUTER_INTRODUCES_DATABASE_PRODUCT.txt |   5 +
+ ...ONGRESS_VIDEO_GROUP_INC_lt_CVGI_3RD_QTR_NET.txt |   8 +
+ ...IDATED_GAS_lt_CNG_UNIT_SAYS_NO_RULES_BROKEN.txt |   6 +
+ ...OLIDATED_TVX_TO_BUY_BRAZIL_GOLD_MINE_STAKES.txt |  22 +
+ ...STRUCTION_CONTRACTING_DOWN_THREE_PCT_IN_JAN.txt |  22 +
+ ...NTINENTAL_ILL_lt_CIL_TO_RECHARACTERIZE_LOSS.txt |  29 +
+ ...VERGENT_TECHNOLOGIES_lt_CVGT_TO_BUY_OAKLEAF.txt |   7 +
+ ...ER_STOCKS_OUTSIDE_U.S._INCREASE_IN_DECEMBER.txt |  12 +
+ .../data/CORADIAN_CORP_lt_CDIN_4TH_QTR_NET.txt     |   5 +
+ ...lt_GLW_,_HAZLETON_lt_HLC_SET_EXCAHNGE_RATIO.txt |   7 +
+ ...TED_-_BANKAMERICA_NEGOTIATING_SALE_OF_UNITS.txt |  10 +
+ ...RECTED_-_BANKAMERICA_NEGOTIATING_UNITS_SALE.txt |  11 +
+ ...NCIL_OF_EUROPE_ISSUES_LUXEMBOURG_FRANC_BOND.txt |   8 +
+ .../data/COUPON_ON_MITSUBISHI_WARRANT_BOND_CUT.txt |   8 +
+ .../COUPON_REDUCED_ON_BEST_DENKI_WARRANT_BOND.txt  |   7 +
+ ...NS_HOME_FURNISHINGS_lt_CUZZ_GET_CREDIT_LINE.txt |   8 +
+ .../data/CPL_REIT_lt_CNTRS_4TH_QTR_NET.txt         |   4 +
+ ...A_EXPECTS_TO_PAY_FINAL_DIVIDEND_OF_10_CENTS.txt |  42 +
+ .../data/CRA_LTD_lt_CRAA.S_1986_NET.txt            |   8 +
+ ...EDITORS_ALLOW_TECK_HOCK_TO_FULFIL_CONTRACTS.txt |  17 +
+ .../CREDIT_CARD_DISCLOSURE_BILLS_INTRODUCED.txt    |  10 +
+ .../CRONUS_INDUSTRIES_INC_lt_CRNS_4TH_QTR_LOSS.txt |   7 +
+ .../CRONUS_INDUSTRIES_INC_lt_CRNS_SELLS_UNIT.txt   |   7 +
+ ..._TELLS_TRADERS_SUGAR_EXPORTS_MAY_BE_DELAYED.txt |  16 +
+ ...NCIES_COULD_INFLUENCE_BULLION_AGAIN-MONTAGU.txt |  10 +
+ ..._SECTORS_CONTINUE_TO_FEATURE_EUROBOND_TRADE.txt |  37 +
+ .../data/CYBERTEK_lt_CKCP_FORMING_NEW_DIVISION.txt |   4 +
+ ...DAEWOO_MOTOR_TO_BOOST_IMPORTS_OF_U.S._GOODS.txt |   9 +
+ .../data/DAHLBERG_INC_lt_DAHL_4TH_QTR_NET.txt      |   5 +
+ ...DAIMLER_OUTPUT_COULD_BE_AFFECTED_BY_DISPUTE.txt |  19 +
+ ...ISY_SYSTEMS_lt_DAZY_INTRODUCES_WORKSTATIONS.txt |   9 +
+ .../data/DALLAS_CORP_lt_DLS_4TH_QTR_LOSS.txt       |   7 +
+ ...DAVIS_WATER_lt_DWWS_DECLARES_STOCK_DIVIDEND.txt |   3 +
+ ...AN_FOODS_lt_DF_SEES_STRONG_4TH_QTR_EARNINGS.txt |  20 +
+ .../DEGUSSA_COMBINES_PHARMACEUTICAL_INTERESTS.txt  |  10 +
+ ...LTA_AIR_lt_DAL_BEGINS_ATLANTA-TOKYO_SERVICE.txt |   4 +
+ ...DELTA_ROCKET_BLASTS_OFF_FROM_CAPE_CANAVERAL.txt |  10 +
+ .../data/DENG_SAYS_CHINA'S_TROUBLES_OVER.txt       |   8 +
+ ...DH_TECHNOLOGY_lt_DHTK_CHAIRMAN_SELLS_SHARES.txt |   9 +
+ ...OSTIC_PRODUCTS_lt_DPCZ_SEES_EARNINGS_GROWTH.txt |  17 +
+ ...IC_lt_DRS_MAKES_A_BID_FOR_ROSPATCH_lt_RPCH_.txt |   9 +
+ .../DIAMOND_SHAMROCK_(DIA)_CUTS_CRUDE_PRICES.txt   |   8 +
+ ...ND_SHAMROCK_lt_DIA_SETS_MEETING_RECORD_DATE.txt |   3 +
+ ...ITAL_AUDIO_TAPE_PLAYERS_GO_ON_SALE_IN_JAPAN.txt |  29 +
+ ...RD_DEPARTMENT_STORES_INC_lt_DDS_4TH_QTR_NET.txt |   6 +
+ ...DOT_REJECTS_SMOKING_BAN_ON_DOMESTIC_FLIGHTS.txt |  19 +
+ ..._CHEMICAL_LAUNCHES_200_MLN_SWISS_FRANC_BOND.txt |   6 +
+ ...lt_DOW_TO_OFFER_130_MLN_DLRS_IN_SWISS_NOTES.txt |   8 +
+ ...OFFICIAL_HAS_STAKE_IN_EPSILON_DATA_lt_EPSI_.txt |   9 +
+ ...NKIN'_DONUTS_INC_lt_DUNK_1ST_QTR_JAN_24_NET.txt |   3 +
+ .../DURO-TEST_CORP_lt_DUR_2ND_QTR_JAN_31_NET.txt   |   4 +
+ ...ANIMAL_FEED_USAGE_DOWN_IN_FIRST_HALF_SEASON.txt |  22 +
+ .../DUTCH_OILSEEDS_FATS_IMPORTS_ROSE_IN_1986.txt   |  22 +
+ ...NT_CO_lt_DD_LAUNCHES_IMPROVED_ARAMID_FIBERS.txt |   9 +
+ ...PONT_lt_DD_WINS_SUIT_AGAINST_PHILLIPS_lt_P_.txt |   8 +
+ ...E_ENTERTAINMENT_lt_EEGL_TO_MANAGE_AFFILIATE.txt |   7 +
+ .../EAGLE_TELEPHONICS_lt_EGLA_SELLS_TELEPHONES.txt |   5 +
+ ...ARTHQUAKES_CONTINUE_IN_NORTHERN_NEW_ZEALAND.txt |  12 +
+ ...AKES_CONTINUE_TO_SHAKE_NORTHERN_NEW_ZEALAND.txt |  25 +
+ ...EC,_EURATOM_FRENCH_FRANC_EUROBONDS_EXPECTED.txt |   7 +
+ ...C_SPOTLIGHT_-_AUSTERITY_MEASURES_IN_HUNGARY.txt |  65 ++
+ .../ECONOMIC_SPOTLIGHT_-_BANKAMERICA_lt_BAC_.txt   |  39 +
+ .../data/ECONOMIC_SPOTLIGHT_-_ITALIAN_BOOM.txt     |  69 ++
+ ...MIC_SPOTLIGHT_-_JAPAN_EYEING_FOREIGN_STOCKS.txt |  60 ++
+ ...OMMISSION_GIVEN_PLAN_TO_SAVE_STEEL_INDUSTRY.txt |  26 +
+ .../EC_ISSUES_600_MLN_FRENCH_FRANC_EUROBOND.txt    |   6 +
+ .../data/EC_MINISTERS_BID_TO_SAVE_DAIRY_ACCORD.txt |  37 +
+ ...NISTERS_CONSIDER_BIG_AGRICULTURE_PRICE_CUTS.txt |  33 +
+ ...NISTERS_POSTPONE_TALKS_ON_SAVING_DAIRY_PACT.txt |   9 +
+ ...C_MINISTERS_STRUGGLE_TO_AGREE_ON_DAIRY_CUTS.txt |  20 +
+ ...NS_ANTI-DUMPING_ENQUIRY_INTO_SOVIET_MERCURY.txt |  17 +
+ ..._CORP_lt_EDO_UNIT_WILL_BUILD_AIRCRAFT_PARTS.txt |   7 +
+ .../data/EGYPT_ALLOWS_FUGITIVE_LIBYANS_STAY.txt    |   9 +
+ ...O_HOST_NINE-NATION_AFRICAN_TALKS_THIS_MONTH.txt |   9 +
+ ...RONIC_CONTROL_lt_ECSIU_INITIAL_OFFER_STARTS.txt |   4 +
+ ...TRONIC_MAIL_lt_EMCA_FINANCING_ATTEMPT_FAILS.txt |   7 +
+ .../data/EMHART_CORP_lt_EMH_QTLY_DIVIDEND.txt      |   3 +
+ ...TOPE_lt_EPTO_SETS_THREE_FOR_ONE_STOCK_SPLIT.txt |   7 +
+ ...ORIAL_COMMUNICATIONS_lt_EQUA_TO_HAVE_LOSSES.txt |  33 +
+ .../data/ESI_INDUSTRIES_INC_lt_ESI_4TH_QTR_NET.txt |   7 +
+ ...IRE_RADIO_AND_ELECTRONICS_INC_lt_EE_4TH_QTR.txt |   6 +
+ ...LTE_BUSINESS_lt_ESB_UNIT_BUYS_ANTONSON_UNIT.txt |   8 +
+ ...TED_DROP_IN_JAPAN_CORPORATE_PROFITS_TRIMMED.txt |  17 +
+ .../data/EXCELAN_INC_SETS_INITIAL_STOCK_OFFER.txt  |   5 +
+ ...EXCO_BUYS_U.S._GOVERNMENT_SECURITIES_BROKER.txt |  26 +
+ .../EXXON_lt_XON_CUTS_HEATING_OIL_BARGE_PRICE.txt  |   6 +
+ .../F.W._WOOLWORTH_CO_lt_Z_4TH_QTR_JAN_31_NET.txt  |   6 +
+ ...A_FINES_DELTA_lt_DAL_140,400_DLRS_ON_SAFETY.txt |   9 +
+ .../FALLING_SOYBEAN_CRUSH_RATIOS_CUT_OUTPUT.txt    |  37 +
+ ...FAMOUS_RESTAURANTS_INC_lt_FAMS_4TH_QTR_LOSS.txt |   6 +
+ .../data/FARMERS_GROUP_INC_lt_FGRP_4TH_QTR_NET.txt |   5 +
+ ...OKAYS_DRUG_TO_LESSEN_HEMOPHILIACS'_BLEEDING.txt |   9 +
+ ...EBRUARY_U.S._PURCHASING_MANAGER_INDEX_FALLS.txt |  24 +
+ .../FEDERAL_INDUSTRIES_LAUNCHES_EUROBOND_ISSUE.txt |   5 +
+ ...DERAL_INDUSTRIES_PAPER_ISSUE_JUST_IN_CANADA.txt |   6 +
+ ...ERAL_INDUSTRIES_SETS_COMMERCIAL_PAPER_ISSUE.txt |   7 +
+ .../FED_ADDS_RESERVES_VIA_CUSTOMER_REPURCHASES.txt |   5 +
+ ...ED_DATA_SUGGEST_STABLE_U.S._MONETARY_POLICY.txt |  49 ++
+ .../FED_EXPECTED_TO_ADD_TEMPORARY_RESERVES.txt     |   9 +
+ .../data/FERRO_CORP_lt_FOE_SETS_JOINT_VENTURE.txt  |   9 +
+ ...T_UNIT_ISSUES_100_MLN_DLR_BOND_AND_WARRANTS.txt |  12 +
+ ...AL_TRUST_FOR_THRIFT_INSTITUTIONS_PAYOUT_SET.txt |   4 +
+ ...NCIAL_SANTA_BARBARA_lt_FSB_TO_MAKE_PURCHASE.txt |   4 +
+ ...FINNISH_UNEMPLOYMENT_AT_6.7_PCT_IN_DECEMBER.txt |   5 +
+ .../FIRSTCORP_lt_FCR_SEES_GAIN_ON_CONDEMNATION.txt |   6 +
+ ...T_FINANCIAL_MANAGEMENT_lt_FFMC_REVISES_PACT.txt |  10 +
+ .../FIRST_MISSISSIPPI_CORP_lt_FRM_SETS_PAYOUT.txt  |   3 +
+ ...UNION_lt_FUNC_FILES_100_MLN_DLR_NOTES_ISSUE.txt |   5 +
+ .../data/FISONS_PLC_lt_FISN.L_YEAR_TO_END-1986.txt |   9 +
+ ...NS_SEES_STRONG_INTERNATIONAL_GROWTH_IN_1986.txt |  18 +
+ ...GAN'S_ENTERPRISES_INC_lt_BDL_1ST_QTR_DEC_27.txt |   5 +
+ ...LUOR_CORP_lt_FLR_DEBT_DOWNGRADED_BY_MOODY'S.txt |  10 +
+ ...LUOR_lt_FLR_UNIT_GETS_CONSTRUCTION_CONTRACT.txt |   5 +
+ ...MA_lt_FNM_ARRANGES_MORTGAGE_SECURITIES_SWAP.txt |   9 +
+ .../FOOTE_MINERAL_lt_FTE_SELLS_CAMBRIDGE_PLANT.txt |   6 +
+ .../FOOTHILL_lt_GFI_ARRANGES_DEBT_PLACEMENT.txt    |   7 +
+ ...INCREASES_2ND_QTR_OUTPUT_PLANS,_REPORT_SAYS.txt |   8 +
+ ...FORD_MOTOR_CREDIT_lt_F_TO_REDEEM_DEBENTURES.txt |   7 +
+ ...FORD_lt_F_AIR-BAG_PROGRAM_FLAGGING_-_REPORT.txt |  16 +
+ ...RD_lt_F_EUROPE_EARNINGS_UP_71_PCT_LAST_YEAR.txt |   9 +
+ ...lt_F_INCREASES_2ND_QTR_OUTPUT_PLANS_-REPORT.txt |   8 +
+ ...RMER_BROKER,_INVESTOR_SENTENCED_FOR_TRADING.txt |  14 +
+ .../FOUR_SEASONS_BUYING_MARRIOTT_lt_MHS_HOTEL.txt  |   9 +
+ .../FRANCE_FACES_PRESSUE_TO_CHANGE_POLICIES.txt    |  59 ++
+ ...CE_HAS_LITTLE_ROOM_FOR_MANOEUVRE,_OECD_SAYS.txt |  45 +
+ .../FRANKLIN_CALIFORNIA_TAX-FREE_SETS_PAYOUT.txt   |   3 +
+ .../FRANKLIN_HIGH-YIELD_TAX-FREE_SETS_PAYOUT.txt   |   3 +
+ .../data/FRANKLIN_INSURED_TAX-FREE_SETS_PAYOUT.txt |   3 +
+ .../FRANKLIN_MASSACHUSETTS_INSURED_CUTS_PAYOUT.txt |   3 +
+ .../data/FRANKLIN_MICHIGAN_INSURED_SETS_PAYOUT.txt |   3 +
+ .../FRANKLIN_MINNESOTA_INSURED_SETS_PAYOUT.txt     |   3 +
+ .../FRANKLIN_OHIO_INSURED_TAX-FREE_SETS_PAYOUT.txt |   3 +
+ .../FRANKLIN_PUERTO_RICO_TAX-FREE_SETS_PAYOUT.txt  |   3 +
+ ...FRANKLIN_RESOURCES_lt_BEN_FORMS_THREE_FUNDS.txt |   9 +
+ ...FRENCH_BOND_COMMITTEE_APPROVES_THREE_ISSUES.txt |   9 +
+ ...H_ESTIMATE_86_87_WHEAT_DELIVERIES_UNCHANGED.txt |   8 +
+ .../FRENCH_TREASURY_DETAILS_PLANNED_TAP_ISSUE.txt  |   7 +
+ ...UNARO_REJECTS_SUGGESTION_OF_IMF_BRAZIL_PLAN.txt |  10 +
+ ...RO_REJECTS_UK_SUGGESTION_OF_IMF_BRAZIL_PLAN.txt |  38 +
+ ...NARO_SAYS_BRAZIL_NEEDS_MORE,_FASTER_FINANCE.txt |  38 +
+ .../data/G.D._RITZY'S_INC_lt_RITZ_4TH_QTR_LOSS.txt |   5 +
+ ..._LIKELY_TO_SHOW_CERTS_MORE_COSTLY_THAN_CASH.txt |  21 +
+ .../data/GELCO_CORP_lt_GEL_2ND_QTR_JAN_31_NET.txt  |   9 +
+ ..._lt_GEL_SEES_FLAT_1987_PRETAX_OPERATING_NET.txt |  11 +
+ ...ERAL_BINDING_lt_GBND_IN_MARKETING_AGREEMENT.txt |   6 +
+ ...MAN_BANKS_SEEK_GREATER_BRAZIL_LINK_WITH_IMF.txt |  46 +
+ ...MAN_EUROBOND_MARKET_EXPECTS_BREATHING_SPACE.txt |  43 +
+ ...LAMIS_GOLD_LTD_lt_GLGVF_SIX_MTHS_DEC_31_NET.txt |   3 +
+ ..._GM_CUTS_WAGE_BOOSTS_FOR_SALARIED_EMPLOYEES.txt |  15 +
+ .../GM_lt_GM_CUTTING_SALARIED_MERIT_RAISES.txt     |   8 +
+ .../data/GM_lt_GM_OUTPUT_FELL_LAST_MONTH.txt       |   6 +
+ .../GM_lt_GM_UNIT_TO_OFFER_PRE-APPROVED_CREDIT.txt |  12 +
+ ...GOODRICH_lt_GR_TO_PHASE_OUT_SOME_BUSINESSES.txt |  19 +
+ ...VERNMENT_BOND_BROKER_SEES_WIDER_DATA_ACCESS.txt |  29 +
+ .../data/GRAIN_SHIPS_LOADING_AT_PORTLAND.txt       |   3 +
+ ...CE_SAYS_IT_HAS_RIGHT_ON_AEGEAN_OIL_DRILLING.txt |  16 +
+ ...NWOOD_RESOURCES_lt_GRRL_SELLS_COMPANY_STAKE.txt |   9 +
+ ...EN_TREE_ACCEPTANCE_INC_lt_GNT_SETS_DIVIDEND.txt |   3 +
+ ...GREY_ADVERTISING_lt_GREY_FORMS_NEW_DIVISION.txt |   3 +
+ .../data/GTI_CORP_lt_GTI_4TH_QTR_OPER_NET.txt      |   8 +
+ ...LF_APPLIED_TECHNOLOGIES_lt_GATS_SELLS_UNITS.txt |   5 +
+ ...GULF_APPLIED_lt_GATS_SELLS_UNITS,_SEES_GAIN.txt |   5 +
+ ...RAB_DEPUTY_OIL_MINISTERS_TO_MEET_IN_BAHRAIN.txt |   9 +
+ .../data/GULF_ARAB_OIL_MEETING_ENDS.txt            |  19 +
+ ...GULF_BARGE_FREIGHT_RATES_UP_FURTHER_ON_CALL.txt |  17 +
+ ...LF_BOND,_STOCK_MARKETS_LAG_BEHIND,_GIB_SAYS.txt |  42 +
+ .../GULF_OF_MEXICO_RIG_COUNT_FALLS_THIS_WEEK.txt   |   9 +
+ .../data/HANDY_AND_HARMAN_lt_HNH_4TH_QTR_LOSS.txt  |   7 +
+ .../HARLEY-DAVIDSON_INC_lt_HDI_4TH_QTR_NET.txt     |   8 +
+ ...ISCHFEGER_INDUSTRIES_INC_lt_HPH_1ST_QTR_NET.txt |   6 +
+ .../data/HEALTH-MOR_INC_lt_HMI_4TH_QTR_NET.txt     |   4 +
+ ...ALTH_EXPERTS_URGE_ERADICATION_OF_RINDERPEST.txt |  10 +
+ ...HECK'S_lt_HEX_SAYS_CREDIT_AGREEMENT_EXPIRED.txt |   7 +
+ ...HEINZ_INTERESTED_IN_BUYING_GUINNESS_BREWING.txt |  17 +
+ .../HK_HOTELS_SOARS_ON_TAKEOVER_SPECULATION.txt    |  36 +
+ ...ST_TO_RESEARCH_DISCS_WITH_U.S.,_JAPAN_FIRMS.txt |   8 +
+ ...LIDAY_CORP_lt_HIA_TO_REDEEM_TWO_BOND_ISSUES.txt |   8 +
+ ...ONG_FIRM_UPS_WRATHER_lt_WCO_STAKE_TO_11_PCT.txt |   9 +
+ .../data/HONG_KONG_M3_RISES_2.2_PCT_IN_JANUARY.txt |  16 +
+ .../HOUSTON_OIL_lt_HO_RESERVES_STUDY_COMPLETED.txt |   9 +
+ ...WNERS_FEDERAL_lt_HFSL_HOLDERS_OK_MORE_STOCK.txt |   5 +
+ ...GHES'_U.S._RIG_COUNT_SLIPS_TO_801_THIS_WEEK.txt |  10 +
+ ...S_CAPITAL_UNIT_SIGNS_PACT_WITH_BEAR_STEARNS.txt |   7 +
+ ...ON_SEES_HIGHER_PAYOUT,_SATISFACTORY_PROFITS.txt |  37 +
+ ...S._INTERNATIONAL_INC_lt_IMSI_SETS_QUARTERLY.txt |   3 +
+ ..._lt_ICI_SEEKS_GAINS_IN_SPECIALTY_BUSINESSES.txt |  39 +
+ ...ICO_COUNCIL_ENDS_IN_FAILURE_TO_AGREE_QUOTAS.txt |  11 +
+ .../data/ICO_EXPORTERS_TO_MODIFY_NEW_PROPOSAL.txt  |   8 +
+ ...CO_PRODUCERS_TO_PRESENT_NEW_COFFEE_PROPOSAL.txt |   9 +
+ ...QUOTA_TALKS_CONTINUE,_OUTCOME_HARD_TO_GAUGE.txt |  15 +
+ ...CO_TALKS_ON_COFFEE_QUOTAS_TO_RESUME_AT_NOON.txt |   9 +
+ ...B_COMMUNICATIONS_GROUP_INC_lt_IDBX_YEAR_NET.txt |   3 +
+ ...ETS_100_MLN_DLR_NOTE_COMMERCIAL_PAPER_ISSUE.txt |  13 +
+ .../ILC_TECHNOLOGY_lt_ILCT_OFFICER_REMOVED.txt     |   9 +
+ .../IMPERIAL_CHEMICAL_lt_IMP_FORMS_NEW_UNIT.txt    |  18 +
+ .../INDIAN_BUDGET_COMES_IN_FOR_WIDE_CRITICISM.txt  |  35 +
+ ...NDIAN_BUDGET_DEFICIT_SEEN_FUELING_INFLATION.txt |  45 +
+ ...IAN_SUGAR_OUTPUT_RISES_IN_FIRST_FOUR_MONTHS.txt |  10 +
+ .../INDIA_BUYS_46,000_TONNES_OF_VEGETABLE_OILS.txt |   9 +
+ .../INDIA_TO_HOLD_WHITE_SUGAR_BUYING_TENDER.txt    |   3 +
+ .../INDONESIA'S_EXPORTS_DROP_IN_CALENDAR_1986.txt  |   8 +
+ ...ONESIAN_AGRICULTURE_GROWTH_EXPECTED_TO_SLOW.txt |  38 +
+ ...INDONESIAN_PALM_OIL_OUTPUT_EXPECTED_TO_RISE.txt |  14 +
+ ...INDONESIAN_SOYBEAN_IMPORTS_FORECAST_TO_RISE.txt |  20 +
+ ...NDONESIAN_SUGAR_OUTPUT_SEEN_SHORT_OF_TARGET.txt |  13 +
+ ...IAN_TEA,_COCOA_EXPORTS_SEEN_UP,_COFFEE_DOWN.txt |  30 +
+ ...SIAN_WHEAT_IMPORTS_EXPECTED_TO_FALL_IN_1987.txt |   9 +
+ ...SIA_SEEN_AT_CROSSROADS_OVER_ECONOMIC_CHANGE.txt |  37 +
+ ...ONESIA_UNLIKELY_TO_IMPORT_PHILIPPINES_COPRA.txt |   8 +
+ .../data/INSPEECH_lt_INSP_MAKES_ACQUISITIONS.txt   |   6 +
+ .../INT'L_HYDRON_CORP_lt_HYD_4TH_QTR_OPER_NET.txt  |   7 +
+ ...L_MINERALS_lt_IGL_BUYS_ANIMAL_PRODUCTS_UNIT.txt |   7 +
+ ...INTEGRATED_GENERICS_lt_IGN_WILL_NOT_COMMENT.txt |   6 +
+ ...NTERNATIONAL_HYDRON_CORP_lt_HYD_4TH_QTR_NET.txt |   8 +
+ ...NATIONAL_LEISURE_NEGOIATING_ON_BOEING_LEASE.txt |   7 +
+ ...CHANGE_FINANCIAL_SERVICES_lt_ISBJ_PAYOUT_UP.txt |   3 +
+ ...ERFACE_FLOORING_lt_IFSIA_FILES_FOR_OFFERING.txt |   8 +
+ .../INVESTMENT_FIRMS_CUT_CYCLOPS_lt_CYL_STAKE.txt  |   6 +
+ ...ESTMENT_FIRM_BOOSTS_LDBRINKMAN_lt_DBC_STAKE.txt |  10 +
+ ...VESTMENT_GROUP_RAISES_ROBESON_lt_RBSN_STAKE.txt |  10 +
+ ...R_GROUP_HAS_TALKS_WITH_PESCH_ON_AMI_lt_AMI_.txt |  21 +
+ ...NNOUNCES_END_OF_MAJOR_OFFENSIVE_IN_GULF_WAR.txt |  22 +
+ .../data/IRAN_CLAIMS_NEW_VICTORIES_NEAR_BASRA.txt  |   9 +
+ ...RAQ_DEFERS_PAYMENTS_ON_500_MLN_DLR_EUROLOAN.txt |  33 +
+ .../data/IRAQ_SAYS_IT_REPELS_IRANIAN_ATTACK.txt    |  10 +
+ ..._OIL_CONCERN_HAS_8.5_PCT_OF_CYNERGY_lt_CRG_.txt |  17 +
+ ..._COALITION_MEETS_AS_GOVERNMENT_CRISIS_LOOMS.txt |  18 +
+ ...LIAN_TREASURY_CUTS_INTEREST_ON_CERTIFICATES.txt |  11 +
+ ...LY_CONSUMER_PRICES_RISE_0.4_PCT_IN_FEBRUARY.txt |   8 +
+ ...T'S_lt_ITT_HARTFORD_UNIT_POSTS_4TH_QTR_GAIN.txt |  11 +
+ .../IVACO_SEES_MINIMAL_FIRST_QUARTER_EARNINGS.txt  |  11 +
+ ...NDUSTRIES_lt_JPI_FORMS_TWO_OPERATING_GROUPS.txt |  10 +
+ ...OBSON_lt_JCBS_VOTES_SPLIT,_INCREASES_PAYOUT.txt |   6 +
+ ...NUARY_HOUSING_SALES_DROP,_REALTY_GROUP_SAYS.txt |   9 +
+ ...PAN'S_NTT_FORECASTS_PROFITS_FALL_IN_1987_88.txt |   9 +
+ ...'S_UNEMPLOYMENT_RATE_SEEN_RISING_TO_3.5_PCT.txt |  25 +
+ ...N,_U.S._SET_TO_BEGIN_HIGH-LEVEL_TRADE_TALKS.txt |  50 ++
+ .../JAPANESE_BANKS_COOL_ON_NIGERIAN_DEBT_TALKS.txt |  30 +
+ ...SE_BANKS_PLAN_JOINT_FIRM_TO_AVOID_DEBT_RISK.txt |   7 +
+ .../JAPANESE_DEMAND_FOR_U.K._GILTS_SEEN_RISING.txt |  24 +
+ ...NESE_ECONOMIST_SEES_STABLE_YEN_DOLLAR_RATES.txt |  10 +
+ .../JAPANESE_FINANCIAL_FUTURES_PLAN_REVEALED.txt   |  24 +
+ ...BUYS_SOME_95,000_TONNES_SOYBEANS_FROM_CHINA.txt |  15 +
+ ...PAN_CONSUMER_PRICES_FALL_0.4_PCT_IN_JANUARY.txt |  14 +
+ ...DISTRIBUTOR_MAY_IMPORT_MAZDA_U.S.-MADE_CARS.txt |   8 +
+ ..._EXPECTED_TO_CUT_BASE_RATE_FOR_STATE_BODIES.txt |  24 +
+ .../JAPAN_FEBRUARY_INTERIM_TRADE_SURPLUS_JUMPS.txt |   9 +
+ ...FEBRUARY_RESERVES_RECORD_51.73_BILLION_DLRS.txt |   8 +
+ ...APAN_HOUSE_BUDGET_TALKS_TO_REOPEN_NEXT_WEEK.txt |   8 +
+ ...AN_LIKELY_TO_LET_U.S._BANKS_DEAL_SECURITIES.txt |  38 +
+ ...ARCH_BOND_COUPON_SEEN_UNCHANGED_AT_FIVE_PCT.txt |   9 +
+ .../JAPAN_MOVES_TO_TIGHTEN_CHIP-EXPORT_CURBS.txt   |  26 +
+ ...N_PLANS_MORE_FLEXIBLE_CORPORATE_BOND_ISSUES.txt |  43 +
+ ..._SALES_TAX_MAY_FORCE_NAKASONE_OUT_OF_OFFICE.txt |  38 +
+ ...PAN_TO_PROMOTE_INTEREST_RATE_LIBERALISATION.txt |  18 +
+ ...PAN_TO_TRY_TO_OPEN_MARKET_TO_U.S._CAR_PARTS.txt |  16 +
+ ...AN_UNEMPLOYMNENT_RISES_TO_RECORD_IN_JANUARY.txt |  18 +
+ .../JIM_WALTER_CORP_lt_JWC_REGULAR_DIVIDEND.txt    |   3 +
+ .../data/JIM_WALTER_CORP_lt_JWC_SETS_PAYOUT.txt    |   3 +
+ ...OHN_WILEY_AND_SONS_INC_lt_WILLB_3RD_QTR_NET.txt |   6 +
+ ...UDGE_RULES_IN_FAVOR_OF_DOW_CHEM_lt_DOW_UNIT.txt |   8 +
+ ...Y_FINDS_FOR_DOW_lt_DOW_IN_BIRTH_DEFECT_CASE.txt |  21 +
+ ...LAND_TELEPHONE_SETS_75_MLN_SWISS_FRANC_BOND.txt |   7 +
+ ..._JWT_NOT_APPROACHED_BY_GROUP_SEEKING_SHARES.txt |   9 +
+ ...-TRON_INTERNATIONAL_INC_lt_KTII_4TH_QTR_NET.txt |   9 +
+ .../data/KAPOK_CORP_lt_KPK_1ST_QTR_DEC_31_LOSS.txt |   3 +
+ .../KAPOK_CORP_lt_KPK_IN_TECHNICAL_DEFAULT.txt     |   6 +
+ .../data/KAPOK_CORP_lt_KPK_YEAR_SEPT_30_LOSS.txt   |   4 +
+ .../KENTUCKY_CENTRAL_LIFE_lt_KENCA_SETS_PAYOUT.txt |   4 +
+ .../data/KEVEX_CORP_lt_KEVX_2ND_QTR_JAN_31_NET.txt |   4 +
+ ...KEYCORP_lt_KEY_REGISTERS_SUBORDINATED_NOTES.txt |   7 +
+ .../KEY_U.S._TAX_WRITERS_SEEK_ESTATE_TAX_CURBS.txt |  23 +
+ .../KIDDER_UNIT_SELLS_CMOS,_INCLUDING_FLOATERS.txt |  23 +
+ .../data/KLM_TO_TAKE_15_PCT_STAKE_IN_AIR_UK.txt    |   9 +
+ ...N_AIR_ORDERS_MCDONNELL_DOUGLAS_lt_MD_MD-11S.txt |  10 +
+ ...T_MINISTER_SAYS_NO_EMERGENCY_OPEC_TALKS_SET.txt |   9 +
+ ...WAIT_SAYS_NO_PLANS_FOR_EMERGENCY_OPEC_TALKS.txt |  37 +
+ ...MARK_BANCSHARES_lt_LBC_TO_BE_LISTED_ON_NYSE.txt |   5 +
+ .../LAROCHE_STARTS_BID_FOR_NECO_lt_NPT_SHARES.txt  |   7 +
+ .../LASER_PRECISION_CORP_lt_LASR_4TH_QTR_NET.txt   |   4 +
+ .../LEBANESE_PRESIDENT_AGREES_NEW_PEACE_MOVES.txt  |   8 +
+ ...ADIA_lt_LUK_HAS_7.2_PCT_OF_MINSTAR_lt_MNST_.txt |  16 +
+ .../LIBERTY_ALL-STAR_EQUITY_FUND_INITIAL_DIV.txt   |   5 +
+ ...LIBERTY_ALL-STAR_lt_USA_SETS_INITIAL_PAYOUT.txt |   7 +
+ .../data/LIEBERT_CORP_lt_LIEB_APPROVES_MERGER.txt  |   5 +
+ .../LIQUID_AIR_CORP_lt_LANA_QUARTERLY_DIVIDEND.txt |   2 +
+ ...PRINCE_PRODUCTIONS_LTD_lt_LTLP_1ST_QTR_LOSS.txt |   3 +
+ ...L_E_ROYALTY_lt_LRT_REVENUES_MAY_BE_ESCROWED.txt |  25 +
+ .../LNG_IMPORTS_FROM_ALGERIA_UNLIKELY_IN_1987.txt  |  26 +
+ ...LODGISTIX_lt_LDGX_TO_BUYBACK_100,000_SHARES.txt |   4 +
+ ...ONDON_STOCK_EXCHANGE_TO_CLOSE_TRADING_FLOOR.txt |   9 +
+ .../data/LOTUS_lt_LOTS_INTRODUCES_NEW_SOFTWARE.txt |   9 +
+ .../MAGMA_LOWERS_COPPER_0.75_CENT_TO_66_CTS.txt    |   4 +
+ .../MAIL_BOXES_ETC_lt_MAIL_3RD_QTR_JAN_31_NET.txt  |   4 +
+ .../MALAYSIA_RAISES_DUTY_ON_PROCESSED_PALM_OIL.txt |   8 +
+ ...MALAYSIA_RE-IMPOSES_EXPORT_DUTIES_ON_RUBBER.txt |   7 +
+ .../MANILA_OFFICIALS_SPLIT_OVER_DEBT_STRATEGY.txt  |  40 +
+ .../MANILA_SAID_TO_OFFER_DEBT_BONDS_TO_BANKS.txt   |  29 +
+ .../MARATHON_PETROLEUM_REDUCES_CRUDE_POSTINGS.txt  |   7 +
+ .../data/MARRIOTT_lt_MHS_TO_SELL_HOTEL.txt         |   6 +
+ .../MARSHALL_STEEL_DETAILS_GAIN_FROM_UNIT_SALE.txt |   5 +
+ ...CHUSETTS_INVESTORS_GROWTH_STOCK_FUND_PAYOUT.txt |   3 +
+ .../MAYFAIR_INDUSTRIES_INC_lt_MAYF_4TH_QTR_NET.txt |   6 +
+ .../MCI_lt_MCIC_GETS_PENNEY_lt_JCP_CONTRACT.txt    |   9 +
+ ...EAN'S_lt_MII_U.S._LINES_SETS_ASSET_TRANSFER.txt |   8 +
+ ...DCO_CONTAINMENT_lt_MCCS_SETS_INITIAL_PAYOUT.txt |   4 +
+ ...CURY_ENTERTAINMENT_CORP_lt_MCRY_YEAR_NOV_30.txt |   3 +
+ ...Y_ENTERTAINMENT_lt_MCRY_SEES_BETTER_RESULTS.txt |   5 +
+ ...IAN_BANCORP_INC_lt_MRDN_SETS_REGULAR_PAYOUT.txt |   3 +
+ .../MERRILL_LYNCH_ISSUES_100_MLN_ECU_EUROBOND.txt  |   8 +
+ .../data/MERRILL_MANDATED_FOR_IEL_U.S._NOTE..txt   |  14 +
+ ...MFS_MANAGED_MUNCIPAL_BOND_TRUST_SETS_PAYOUT.txt |   5 +
+ ...FS_MANAGED_SECTORS_TRUST_DIVIDEND_INCREASED.txt |   3 +
+ ...S_MUNICIPAL_INCOME_TRUST_lt_MFM_SETS_PAYOUT.txt |   5 +
+ ...ICROBIO_lt_MRC_PLANS_ACQUISITION,_FINANCING.txt |  14 +
+ ...MICROSOFT_CORP_lt_MSFT_HALTS_MS-DOS_IMPORTS.txt |   8 +
+ .../data/MIDWAY_lt_MDWY_TO_EXPAND_SERVICE.txt      |   5 +
+ ..._TABAK_HAS_91.8_PCT_OF_PENN_TRAFFIC_lt_PNF_.txt |  12 +
+ .../data/MOBIL_PLANS_TO_OPEN_OFFICE_IN_PEKING.txt  |   8 +
+ ...LAN_TO_OPEN_PEKING_OFFICE,_CHINA_DAILY_SAYS.txt |   8 +
+ ...MOBIL_lt_MOB_UNIT_TO_PRODUCE_FOOD_PACKAGING.txt |  14 +
+ ...ULAR_BIOSYSTEMS_lt_MOBI_OFFERS_NEW_PRODUCTS.txt |   6 +
+ ...ONTEDISON_CONCLUDES_TALKS_WITH_ANTIBIOTICOS.txt |   8 +
+ ...ISON_UNIT_ISSUES_50_MLN_AUSTRALIAN_DLR_BOND.txt |   8 +
+ .../data/MONTREAL_EXCHANGE_NAMES_NEW_PRESIDENT.txt |   7 +
+ ...RISON_KNUDSEN_lt_MRN_GETS_NAVAL_STATION_JOB.txt |   7 +
+ .../data/MORSE_SHOE_INC_lt_MRS_4TH_QTR_NET.txt     |   4 +
+ ...LTI-STEP_TO_SELL_LADDER_UNIT,_CANCEL_SHARES.txt |  15 +
+ .../MUNSINGWEAR_INC_lt_MUN_4TH_QTR_JAN_3_LOSS.txt  |   6 +
+ .../MURGOLD_RESOURCES_HAS_PARTIAL_GOLD_ASSAYS.txt  |   9 +
+ ...RGOLD_RESOURCES_lt_MGDVF_HAS_PARTIAL_ASSAYS.txt |   9 +
+ ...AL_OF_OMAHA_INTEREST_SHARES_lt_MUO_QTLY_DIV.txt |   3 +
+ .../N.Y._BANK_DISCOUNT_BORROWINGS_64_MLN_DLRS.txt  |   9 +
+ ...NTRAL_BANK_SEES_SLOWER_MONEY,_CREDIT_GROWTH.txt |  16 +
+ ...N.Z._MONEY_SUPPLY_RISES_3.6_PCT_IN_DECEMBER.txt |  15 +
+ ...._OFFICIAL_FOREIGN_RESERVES_FALL_IN_JANUARY.txt |   5 +
+ ...._QUARTERLY_CURRENT_ACCOUNT_DEFICIT_NARROWS.txt |  22 +
+ ..._TRADING_BANK_DEPOSIT_GROWTH_RISES_SLIGHTLY.txt |   8 +
+ .../NACCO_INDUSTRIES_lt_NC_UNIT_TO_BE_SOLD.txt     |  10 +
+ ...ONAL_AMUSEMENTS_AGAIN_UPS_VIACOM_lt_VIA_BID.txt |  11 +
+ ...NAL_AVERAGE_PRICES_FOR_FARMER-OWNED_RESERVE.txt |  16 +
+ ...ONAL_BANK_ISSUES_MORTGAGE-BACKED_SECURITIES.txt |  12 +
+ ...TIONAL_EARLY_WARNING_SEEKS_OMEGA_BALLISTICS.txt |   6 +
+ ...ONAL_HEALTH_ENHANCEMENT_lt_NHES_NEW_PROGRAM.txt |   7 +
+ ...AL_INTERGROUP_lt_NII_TO_OFFER_PERMIAN_UNITS.txt |  10 +
+ .../data/NAVISTAR_lt_NAV_DEBT_UPGRADED_BY_S_P.txt  |  10 +
+ ...CR_CORP_lt_NCR_UNIT_SIGNS_DISTRIBUTION_PACT.txt |  11 +
+ .../data/NCR_lt_NCR_SIGNS_LICENSE_AGREEMENT.txt    |   3 +
+ ...RLANDSE_GASUNIE_ISSUES_100_MLN_DLR_EUROBOND.txt |   7 +
+ ...ER_SIDE_OPTIMISTIC_ON_ROTTERDAM_PORT_ISSUES.txt |  23 +
+ ...ETHERLANDS_GRANTS_47_MLN_DLRS_TO_BANGLADESH.txt |   6 +
+ .../data/NEUTRAL_BUDGET_EXPECTED_IN_SINGAPORE.txt  |  47 ++
+ .../NEWPORT_CORP_lt_NESP_2ND_QTR_JAN_31_NET.txt    |   4 +
+ ...W_DUTCH_ADVANCES_TOTAL_4.8_BILLION_GUILDERS.txt |   8 +
+ .../NEW_YORK_BUSINESS_LOANS_FALL_195_MLN_DLRS.txt  |   7 +
+ .../NEW_ZEALAND_CANCELS_WEEKLY_T-BILL_TENDER.txt   |   8 +
+ ...N_KOKAN_STEEL_AFFILIATES_CONSIDERING_MERGER.txt |  13 +
+ ..._LIGHT_METAL_CONTINUES_ALUMINIUM_OUTPUT_CUT.txt |  10 +
+ ...L_FINANCIERE_ROBUR_ISSUE_FRENCH_FRANC_BONDS.txt |  20 +
+ .../NOLAND_lt_NOLD_FEBRUARY_SALES_OFF_TWO_PCT.txt  |   5 +
+ ...HERN_TELECOM_LTD_lt_NT_DECLARES_STOCK_SPLIT.txt |   4 +
+ ...TH_AMERICAN_GROUP_lt_NAMG_BUYS_GEORGIA_FIRM.txt |   7 +
+ ...TH_ATLANTIC_INDUSTRIES_INC_lt_NATL_YEAR_NET.txt |   4 +
+ ...BUNDESBANK_POLICY_CHANGES_EXPECTED_THURSDAY.txt |  24 +
+ ...UCLEAR_DATA_lt_NDI_GETS_EXTENSIONS_ON_LOANS.txt |  18 +
+ .../data/NUEUTROGENA_lt_NGNA_TO_BUY_BACK_STOCK.txt |   7 +
+ ...YMEX_RULE_CHANGE_SEEN_BOOSTING_ENERGY_TRADE.txt |  10 +
+ .../NYMEX_TO_SUBMIT_PROPANE_PROPOSAL_TO_CFTC.txt   |  23 +
+ ...YMEX_WILL_EXPAND_OFF-HOUR_TRADING_APRIL_ONE.txt |  25 +
+ ...SE_TO_STUDY_REGULATION_OF_SECURITY_INDUSTRY.txt |  16 +
+ ...OCCIDENTAL_lt_OXY_UNIT_TO_REDEEM_DEBENTURES.txt |  13 +
+ ...ECD_SAYS_JAPAN_RESOLVED_TO_STIMULATE_DEMAND.txt |   8 +
+ .../OERLIKON_UNIT_REJECTS_DUTCH_PATENT_CHARGES.txt |  10 +
+ ...L_INQUIRY_SET_FOR_AUSTRALIAN_WHEAT_INDUSTRY.txt |  24 +
+ ..._MATTRESS_lt_OMT_MAY_HAVE_LOWER_1ST_QTR_NET.txt |  12 +
+ .../OLIN_CORP_lt_OLM_TO_ELECT_NEW_CEO_IN_APRIL.txt |   6 +
+ ..._lt_OLN_NAMES_SUCCESSOR_FOR_CHIEF_EXECUTIVE.txt |   5 +
+ .../OLIVER'S_STORES_lt_OLVR_FILES_CHAPTER_11.txt   |   7 +
+ ..._MAY_HAVE_TO_MEET_TO_FIRM_PRICES_-_ANALYSTS.txt |  36 +
+ ...PRESIDENT_SAYS_OIL_MARKET_BEING_MANIPULATED.txt |  19 +
+ .../OPEC_WITHIN_OUTPUT_CEILING,_SUBROTO_SAYS.txt   |  20 +
+ .../ORACLE_SYSTEMS_CORP_lt_ORCL_TO_OFFER_STOCK.txt |   7 +
+ .../data/OSR_lt_OSRC_TO_MAKE_ACQUISITION.txt       |  12 +
+ ..._AND_MINOR_INC_lt_OBOD_RAISES_QTLY_DIVIDEND.txt |   3 +
+ ...CAR_lt_PCAR_AND_UNIT_DEBT_DOWNGRADED_BY_S_P.txt |   9 +
+ ...ACIFIC_WESTERN_FUSES_MANAGEMENT_WITH_CP_AIR.txt |  17 +
+ .../PACKAGING_SYSTEMS_CORP_lt_PAKS_4TH_QTR_NET.txt |   8 +
+ ...INEWEBBER_GROUP_lt_PWJ_TO_REDEEM_DEBENTURES.txt |   6 +
+ ...BER_lt_PWJ_UNIT_UPS_SHAER_SHOE_lt_SHS_STAKE.txt |  10 +
+ ...AKISTAN_COTTON_OUTPUT_REACHES_7.7_MLN_BALES.txt |  13 +
+ ...ISTAN_TO_RETENDER_FOR_RBD_PALM_OIL_TOMORROW.txt |   4 +
+ .../data/PAKISTAN_TO_TENDER_FOR_RBD_PALM_OIL.txt   |   4 +
+ .../PALL_CORP_lt_PLL_2ND_QTR_SALES_RISE_17_PCT.txt |   6 +
+ ...CORP_lt_PLL_SECOND_QUARTER_SALES,_ORDERS_UP.txt |   6 +
+ ...HANDLE'S_lt_PEL_TRUNKLINE_REDUCES_GAS_RATES.txt |   9 +
+ .../data/PAN_AM_lt_PN_FEBRUARY_LOAD_FACTOR_UP.txt  |   8 +
+ ...ARLUX_FRAGRANCES_COMPLETES_INITIAL_OFFERING.txt |   8 +
+ ...X_SIGNS_500_MLN_DLR_JAPAN_LOAN_FOR_PIPELINE.txt |  18 +
+ .../data/PENRIL_lt_PNL_SEEKS_TO_SELL_TWO_UNITS.txt |  10 +
+ ...S_BANCORPORATION_lt_PEOP_QUARTERLY_DIVIDEND.txt |   2 +
+ ..._SEES_SHAREHOLDER_SUPPORT_IN_AMI_lt_AMI_BID.txt |  61 ++
+ .../data/PETROLITE_CORP_lt_PLIT_SETS_PAYOUT.txt    |   2 +
+ .../PHILADELPHIA_PORT_CLOSED_BY_TANKER_CRASH.txt   |  10 +
+ ...ILIPPINES_HEADS_CONFIDENTLY_INTO_DEBT_TALKS.txt |  24 +
+ .../PHILIPPINE_LONG_DISTANCE_lt_PHI_YEAR_NET.txt   |   7 +
+ ...PPINE_PLANNING_CHIEF_URGES_PESO_DEVALUATION.txt |  24 +
+ ...TTSTON_lt_PCO_AGREES_TO_ACQUIRE_WTC_lt_WAF_.txt |  15 +
+ .../data/PITTWAY_CORP_lt_PRY_4TH_QTR_NET.txt       |   4 +
+ .../POGO_lt_PPP_CONSOLIDATES_TWO_DIVISIONS.txt     |   5 +
+ ...H_BANKER_PLEASED_WITH_WORLD_BANK,_IMF_TALKS.txt |  17 +
+ ...LL_MAJORITY_DISAPPROVE_OF_REAGAN_PRESIDENCY.txt |  10 +
+ ...MERIC_RESOURCES_CORP_lt_POLR_2ND_QTR_DEC_31.txt |   4 +
+ ..._TECHNOLOGIES_lt_PORX_SETS_INITIAL_DIVIDEND.txt |   4 +
+ ...OTOMAC_ELECTRIC_POWER_CO_lt_POM_JANUARY_NET.txt |   6 +
+ .../POTOMAC_ELECTRIC_POWER_CO_lt_POM_JAN_NET.txt   |   7 +
+ ...D_LEGAL_lt_PPD_GETS_I.C.H._lt_ICH_FINANCING.txt |  18 +
+ ...REFERRED_HEALTHCARE_LTD_lt_PHCC_4TH_QTR_NET.txt |   4 +
+ ...RED_HEALTH_CARE_LTD_lt_PHCC_YEAR_DEC_31_NET.txt |   3 +
+ .../PRESIDENTIAL_AIRWAYS_lt_PAIR_PACT_APPROVED.txt |   6 +
+ ...ESIDENTIAL_AIR_lt_PAIR_TO_START_NEW_SERVICE.txt |  10 +
+ .../PRESIDENTIAL_REALTY_CORP_lt_PDO_ANNUAL_NET.txt |   4 +
+ .../PRIME_COMPUTER_lt_PRM_UNVEILS_PC_SOFTWARE.txt  |  13 +
+ .../PRODUCER_SPLIT_HEATS_UP_COFFEE_QUOTA_TALKS.txt |  38 +
+ ...POSED_OFFERINGS_RECENTLY_FILED_WITH_THE_SEC.txt |  15 +
+ ...OLATOR_lt_PCC_IN_BUYOUT_WITH_HUTTON_lt_EFH_.txt |  41 +
+ ..._TO_BUY_FOUR_747-400'S_FOR_ONE_BILLION_DLRS.txt |  22 +
+ .../QATAR_UNVEILS_BUDGET_FOR_FISCAL_1987_88.txt    |  29 +
+ ..._EXPLORATION_INC_lt_QEDX_2ND_QTR_JAN_31_NET.txt |   4 +
+ ...QUAKER_OATS_lt_OAT_FILES_SHELF_REGISTRATION.txt |   8 +
+ ...EC'S_CAISSE_DES_JARDINS_ISSUES_YEN_EUROBOND.txt |   9 +
+ ...EBECOR_lt_PQB_HEAD_SEES_NEW_VENTURES_LIKELY.txt |  57 ++
+ ....R._NABISCO_UNIT_FORMS_OVERSEEING_COMMITTEE.txt |   8 +
+ ..._SCHERER_lt_SCHC_SETS_PREFERRED_STOCK_OFFER.txt |   9 +
+ ...S_CIA_MAN_WITHDRAWS,_VICTIM_OF_IRAN_SCANDAL.txt |   9 +
+ .../REAGAN_AND_BAKER_BEGIN_TASK_OF_REBUILDING.txt  |  52 ++
+ ...AGAN_APPROVAL_RATING_FALLS_TO_FOUR-YEAR_LOW.txt |   9 +
+ .../REAGAN_TO_ADDRESS_NATION_WEDNESDAY_NIGHT.txt   |   9 +
+ .../data/REALMERICA_CO_lt_RACO_YEAR_NOV_30_NET.txt |   3 +
+ ...ORD_N.Z._FUTURES_VOLUMES_TRADED_IN_FEBRUARY.txt |   9 +
+ ...STONE_DETAILS_SWEETENED_VIACOM_lt_VIA_OFFER.txt |  40 +
+ .../data/RED_LION_INNS_FILES_PLANS_OFFERING.txt    |   7 +
+ ...GAN_DEPARTURE_MAKES_3RD_VOLCKER_TERM_LIKELY.txt |  65 ++
+ ...NCY_CRUISES_INC_lt_SHIP_ELECTS_NEW_CHAIRMAN.txt |   8 +
+ ...ELIEF_TO_U.S._CORN_OATS_GROWERS_SAID_LIKELY.txt |  12 +
+ .../data/REPORT_COULD_BE_FINAL_BLOW_FOR_REGAN.txt  |  37 +
+ ...LICANS_EYE_BIGGER_U.S._CONSERVATION_RESERVE.txt |   9 +
+ ...UBLIC_AUTOMOTIVE_PARTS_lt_RAUT_4TH_QTR_LOSS.txt |   5 +
+ .../REUTERS_TO_CARRY_JIJI_FINANCIAL_SERVICES.txt   |   9 +
+ ...TERS_lt_RTRSY_IN_REAL_ESTATE_MARKET_VENTURE.txt |   9 +
+ .../REUTER_DEALING_SERVICE_INTRODUCED_IN_CHINA.txt |   7 +
+ .../REX-NORECO_INC_lt_RNX_1ST_HALF_JAN_31_NET.txt  |   3 +
+ .../data/REXNORD_lt_REX_TO_REDEEM_RIGHTS.txt       |   6 +
+ ...E-POULENC_TO_LAUNCH_INVESTMENT_CERTIFICATES.txt |  17 +
+ ...KWELL_lt_ROK_GETS_28.3_MLN_DLR_B-1_CONTRACT.txt |   3 +
+ .../data/ROHR_INDUSTRIES_lt_RHR_SETTLES_STRIKE.txt |   8 +
+ ...OPAK_lt_ROPK_HAS_34_PCT_OF_BUCKHORN_lt_BKN_.txt |  13 +
+ ...PATCH_lt_RPCH_REJECTS_DIAGNOSTIC_lt_DRS_BID.txt |  11 +
+ ...CH_lt_RPCH_TO_RESPOND_TO_DIAGNOSTIC_lt_DRS_.txt |  12 +
+ .../ROTTERDAM_PORT_UNION_AND_EMPLOYERS_TO_MEET.txt |  13 +
+ .../data/S-K-I_LTD_lt_SKII_2ND_QTR_JAN_25_NET.txt  |   4 +
+ .../SAAB-SCANIA_ISSUES_150_MLN_DLR_EUROBOND.txt    |   7 +
+ ...SAATCHI_AND_SAATCHI_lt_SACHY_COMBINES_UNITS.txt |   7 +
+ ..._TILNEY_BUYS_STAKE_IN_U.S._INSURANCE_BROKER.txt |   7 +
+ ...ANTA_ANITA_REALTY_lt_SAR_QUARTERLY_DIVIDEND.txt |   3 +
+ ...N_MIGUEL_BOARD_APPOINTMENT_MAY_MEAN_CHANGES.txt |  39 +
+ ...ARABIA_REITERATES_COMMITMENT_TO_OPEC_ACCORD.txt |  10 +
+ ...I_ARABIA_REITERATES_COMMITMENT_TO_OPEC_PACT.txt |  28 +
+ ...DI_FEBRUARY_CRUDE_OUTPUT_PUT_AT_3.5_MLN_BPD.txt |  30 +
+ .../data/SAUDI_RIYAL_DEPOSIT_RATES_EASE.txt        |  13 +
+ .../data/SAUDI_RIYAL_DEPOSIT_RATES_REMAIN_FIRM.txt |  14 +
+ ...ULT_HOMES_OFFERING_PRICED_AT_FIVE_DLRS_UNIT.txt |  11 +
+ ...IFIC_MICRO_SYSTEMS_lt_SMSI_ACUIRES_SUPERMAC.txt |   9 +
+ .../SCOTT'S_HOSPITALITY_ACQUIRES_CAPITAL_FOOD.txt  |   5 +
+ ...OTTY'S_lt_SHB_SALES_UP_FIVE_PCT_IN_FEBRUARY.txt |   7 +
+ ...C_SYDNEY_COST_REVIEW_MAY_ELIMINATE_PRODUCTS.txt |   8 +
+ ...lt_S_DEAN_WITTER_UNIT_AGREES_TO_SEC_CENSURE.txt |  22 +
+ .../SEARS_lt_S_TO_RESTRUCTURE_DISTRIBUTION.txt     |  21 +
+ .../SECURITY_PACIFIC_lt_SPC_COMPLETES_MERGER.txt   |   7 +
+ ...SEC_PROBES_1986_TRE_lt_TRE_TAKEOVER_ATTEMPT.txt |  30 +
+ ...C_STAFF_ADVISES_FRAUD_CHARGES_AGAINST_WPPSS.txt |  24 +
+ ...TORS_INTRODUCE_EXPORT_LICENSING_REFORM_BILL.txt |  17 +
+ .../SENIOR_DELEGATES_PESSIMISTIC_ON_ICO_TALKS.txt  |   9 +
+ ..._ENGINEERING_MAKES_12.5_MLN_DLR_US_PURCHASE.txt |  10 +
+ ...RVICE_CORP_INTERNATIONAL_lt_SRV_3RD_QTR_NET.txt |   8 +
+ ...HARE_TRADING_IN_CHEUNG_KONG_GROUP_SUSPENDED.txt |   9 +
+ ...SHEARSON_LEHMAN_NAMES_NEW_MANAGING_DIRECTOR.txt |   6 +
+ .../data/SHULTZ_LIKELY_TO_VISIT_MOSCOW_SOON.txt    |   7 +
+ ...SHULTZ_SAYS_NO_RESIGNATION_OVER_IRAN_REPORT.txt |   9 +
+ ...HULTZ_VISIT_TO_MOSCOW_POSSIBLE,_SAY_SOVIETS.txt |   9 +
+ .../SHV_SAYS_IT_MAKING_TENDER_OFFER_FOR_IC_GAS.txt |  15 +
+ ...IMEX_TRADING_VOLUME_HITS_RECORD_IN_FEBRUARY.txt |   8 +
+ ...NGAPORE_EXCHANGE_SEEKING_NASDAQ_LONDON_LINK.txt |  35 +
+ ....S._VENTURE_IN_CHINA_TO_MAKE_RINSING_AGENTS.txt |   7 +
+ ...F_ISSUING_THREE_BILLION_FRANC_DOMESTIC_BOND.txt |   7 +
+ ...lt_SNG_COMPLETES_PRATT_WHITNEY_lt_UTC_ORDER.txt |   6 +
+ ...WARE_COS_SUPPORT_NEW_APPLE_lt_AAPL_PRODUCTS.txt |  11 +
+ .../data/SONY_TO_EXPAND_U.K._TELEVISION_OUTPUT.txt |  10 +
+ .../data/SORG_lt_SRG_STOCKHOLDERS_FORM_GROUP.txt   |   7 +
+ ...KOREA'S_LEADING_INDICATORS_FALL_IN_DECEMBER.txt |   7 +
+ ...TH_KOREAN_TRADE_SURPLUS_NARROWS_IN_FEBRUARY.txt |   7 +
+ ..._KOREA_TO_HOLD_CURRENT_ACCOUNT_SURPLUS_DOWN.txt |   9 +
+ ...SPANISH_FARMERS_BATTLE_POLICE_IN_N.E._SPAIN.txt |   9 +
+ .../SPANISH_FARMERS_PROTEST,_THEN_CALL_TRUCE.txt   |   9 +
+ .../data/SPRINGBOARD_lt_SPBD_IN_DEAL.txt           |   6 +
+ ...I_LANKAN_BANK_OFFERS_250_MLN_RUPEES_T-BILLS.txt |   4 +
+ ...DARD_MOTORS_PRODUCTS_INC_lt_SMP_4TH_QTR_NET.txt |   4 +
+ .../STANDARD_OIL_lt_SRD_TO_FORM_FINANCIAL_UNIT.txt |   7 +
+ ...ANDARD_OIL_lt_SRD_TO_ISSUE_SWISS_FRANC_NOTE.txt |   8 +
+ .../data/STANDARD_TRUSTCO_SEES_BETTER_YEAR.txt     |   9 +
+ ...NSBURY_MINING_lt_STBY_GETS_FUNDING_FOR_MINE.txt |  12 +
+ .../data/STAR_TECHNOLOGIES_TO_TRADE_ON_NASDAQ.txt  |   7 +
+ ...TATUS_GAME_lt_STGM_TO_INTRODUCE_VIDEO_BINGO.txt |   4 +
+ .../data/STC_PLC_lt_STCL.L_YEAR_TO_END-1986.txt    |  10 +
+ ...TERLING_SOFTWARE_lt_SSW_NOTE_HOLDERS_OK_BUY.txt |   5 +
+ .../STONE_lt_STO_SPLITS_STOCK,_RAISES_PAYOUT.txt   |   6 +
+ ..._AND_SHOP_COS_INC_lt_SHP_4TH_QTR_JAN_31_NET.txt |  11 +
+ ...TROBER_ORGANIZATION_INC_lt_STRB_4TH_QTR_NET.txt |   5 +
+ .../data/STRONG_EARTHQUAKE_HITS_NEW_ZEALAND.txt    |  19 +
+ ...UDY_GROUP_URGES_INCREASED_U.S._OIL_RESERVES.txt |  17 +
+ ...SUFFIELD_FINANCIAL_CORP_lt_SFCP_SELLS_STOCK.txt |   5 +
+ ...UFFIELD_FINANCIAL_lt_SSBK_GETS_FED_APPROVAL.txt |   5 +
+ .../data/SUGAR_QUOTA_IMPORTS_DETAILED_--_USDA.txt  |  29 +
+ ...UPPLIES_OF_U.K._INDEX-LINKED_BOND_EXHAUSTED.txt |  10 +
+ ...SWEDEN_HAS_CURRENT_PAYMENTS_SURPLUS_IN_1986.txt |   8 +
+ ...TO_GO_AHEAD_WITH_S._AFRICAN_TRADE_SANCTIONS.txt |   8 +
+ .../data/SWISS_CAPITAL_EXPORTS_RISE_IN_JANUARY.txt |   8 +
+ ...S_ECONOMY_IN_EXCELLENT_CONDITION,_OECD_SAYS.txt |  41 +
+ ...S_HAVE_NET_GAIN_IN_1985_GOVERNMENT_FINANCES.txt |  25 +
+ ...ISS_SIGHT_DEPOSITS_RISE_3.10_BILLION_FRANCS.txt |  10 +
+ ...TECH_INTERENATIONAL_INC_lt_SYNE_4TH_QTR_NET.txt |   5 +
+ .../SYSTEMATICS_INC_lt_SYST_REGULAR_PAYOUT.txt     |   3 +
+ .../S_P_MAY_DOWNGRADE_MACK_TRUCKS_lt_MACK_DEBT.txt |  10 +
+ ..._BANKS_ASKED_TO_TAKE_PART_IN_INDONESIA_LOAN.txt |  15 +
+ ...CENTRAL_BANK_ISSUES_CERTIFICATES_OF_DEPOSIT.txt |   7 +
+ ...WAN_OFFSHORE_BANKING_ASSETS_RISE_IN_JANUARY.txt |   9 +
+ .../data/TAIWAN_PLANS_NEW_TARIFF_CUTS.txt          |  22 +
+ ...WAN_POWER_FIRM_PLANS_MORE_FOREIGN_DEBT_CUTS.txt |  10 +
+ ...REJECTS_TEXTILE_MAKER_PLEA_ON_EXCHANGE_RATE.txt |   9 +
+ ...IWAN_TO_SEEK_HIGHER_TEXTILE_EXPORTS_TO_U.S..txt |  11 +
+ ...LKING_POINT_BANKAMERICA_lt_BAC_EQUITY_OFFER.txt |  39 +
+ .../TALKING_POINT_VIACOM_INTERNATIONAL_lt_VIA_.txt |  57 ++
+ ...KS_SHOW_NEW_CANADIAN_CONFIDENCE,_GROUP_SAYS.txt |  28 +
+ .../data/TANDEM_lt_TNDM_HAS_HOME_SHOPPING_DEAL.txt |   8 +
+ ...ANIA_SAYS_NO_NEED_FOR_NEW_ECONOMIC_MEASURES.txt |  11 +
+ .../TECHAMERICA_GROUP_INC_lt_TCH_4TH_QTR_LOSS.txt  |   5 +
+ ...CHNOLOGY_CHIP_INDUSTRY_SEEKS_CUSTOM_DESIGNS.txt |  58 ++
+ ...NOLOGY_DEVELOPMENT_CORP_lt_TDCK_4TH_QTR_NET.txt |   5 +
+ .../TELECREDIT_INC_lt_TCRD_3RD_QTR_JAN_31_NET.txt  |   4 +
+ ...PLE_INLAND_INT'L_PAPER_UP_ON_RAISED_OPINION.txt |  13 +
+ .../TESCO_ISSUES_100_MLN_STG_CONVERTIBLE_BOND.txt  |  13 +
+ .../TEXACO_CANADA_lt_TXC_LOWERS_CRUDE_POSTINGS.txt |   6 +
+ .../TEXAS_AIR_lt_TEX_UNIT_TO_BEGIN_NEW_SERVICE.txt |  10 +
+ ...TEXAS_COMMERCE_BANCSHARES_lt_TCB_FILES_PLAN.txt |   6 +
+ .../TEXAS_INSTRUMENTS_lt_TXN_DEVELOPS_NEW_CHIP.txt |   8 +
+ ..._TELESERVICES_CORP_lt_TFCS_YEAR_NOV_30_LOSS.txt |   4 +
+ ...AILAND_ANNOUNCES_THIRD_TAPIOCA_QUOTA_FOR_EC.txt |   8 +
+ ...IRWAYS_INTERNATIONAL_TO_ALMOST_DOUBLE_FLEET.txt |  16 +
+ ...RICE_EXPORTS_RISE_IN_WEEK_ENDED_FEBRUARY_24.txt |   9 +
+ .../THE_JAPAN_FUND_lt_JPN_GETS_BUYOUT_OFFER.txt    |   8 +
+ ...THOMSON_MCKINNON_UNIT'S_CMO_OFFERING_PRICED.txt |  17 +
+ .../data/THREE_CONVICTED_IN_HOME_STATE_FAILURE.txt |  27 +
+ .../data/THUNANDER_CORP_lt_THDR_YEAR_NET.txt       |   4 +
+ ...GRAIN_EXCHANGE_TO_RAISE_MARGIN_REQUIREMENTS.txt |  17 +
+ .../data/TONKA_CORP_lt_TKA_RAISES_DIVIDEND.txt     |   2 +
+ .../TONKA_lt_TKA_EXPANDS_AUSTRALIAN_OPERATIONS.txt |   7 +
+ ...ORCHMARK_lt_TMK_AUTHORIZES_STOCK_REPURCHASE.txt |   8 +
+ ...CHMARK_lt_TMK_SELLS_SINKING_FUND_DEBENTURES.txt |   9 +
+ ...REPORT_DIMINISHES_REAGAN'S_HOPES_OF_REBOUND.txt |  60 ++
+ ...RADERS_DETAIL_FRENCH_CEREAL_EXPORT_REQUESTS.txt |  19 +
+ ...DING_DELAYED_ON_SINGAPORE'S_NEW_BILL_MARKET.txt |  29 +
+ ...RANSAMERICA_SELLS_OCCIDENTAL_LIFE_AUSTRALIA.txt |  17 +
+ ...SAMERICA_lt_TA_TO_HAVE_AUSTRALIAN_SALE_GAIN.txt |   7 +
+ .../data/TRANZONIC_COS_lt_TNZ_SETS_QUARTERLY.txt   |   3 +
+ .../TREASURY_BALANCES_AT_FED_ROSE_ON_FEB_25.txt    |   7 +
+ ...TRIANGLE_INDUSTRIES_INC_lt_TRI_4TH_QTR_LOSS.txt |  18 +
+ .../TUESDAY_MORNING_INC_lt_TUES_4TH_QTR_NET.txt    |   5 +
+ .../TULTEX_CORP_lt_TTX_SETS_QUARTERLY_DIVIDEND.txt |   3 +
+ ...KISH_RETAIL_PRICES_RISE_2.7_PCT_IN_FEBRUARY.txt |   7 +
+ ...R_CORP_lt_TUR_UNIT_BUILDS_HOSPITAL_ADDITION.txt |   7 +
+ ...TWO_S_L_FAILURES_RAISE_U.S._1987_TOLL_TO_10.txt |   9 +
+ .../data/TYLAN_lt_TYLN_RENEWS_CREDIT_LINE.txt      |   8 +
+ .../data/U.K._CLEARS_CONS_GOLD_U.S._PURCHASE.txt   |   6 +
+ .../U.K._CONFIRMS_JANUARY_STERLING_M3_RISE.txt     |  20 +
+ ...ONEY_MARKET_DEFICIT_FORECAST_AT_350_MLN_STG.txt |   8 +
+ ...ONEY_MARKET_DEFICIT_FORECAST_AT_800_MLN_STG.txt |   8 +
+ ...K._MONEY_MARKET_GIVEN_24_MLN_STG_ASSISTANCE.txt |   6 +
+ ...K._MONEY_MARKET_OFFERED_BORROWING_FACILTIES.txt |  13 +
+ ...MONEY_MARKET_RECEIVES_37_MLN_STG_ASSISTANCE.txt |   6 +
+ ...MONEY_MARKET_SHORTAGE_FORECAST_REVISED_DOWN.txt |   5 +
+ ...._MONEY_MARKET_SHORTAGE_FORECAST_REVISED_UP.txt |   4 +
+ ...._RESERVES_SHOW_UNDERLYING_RISE_IN_FEBRUARY.txt |  22 +
+ ...SAYS_HAS_NO_ROLE_IN_BRAZIL_MORATORIUM_TALKS.txt |  33 +
+ .../U.S._ACTS_TO_PROTECT_KAISER_STEEL_RETIREES.txt |   7 +
+ ...APPROVES_BUYOUT_OF_COASTAL_BANCORP_lt_CSBK_.txt |   5 +
+ ..._ASKS_JAPAN_END_AGRICULTURE_IMPORT_CONTROLS.txt |  17 +
+ ...KS_JAPAN_TO_END_AGRICULTURE_IMPORT_CONTROLS.txt |  17 +
+ .../U.S._BANK_DISCOUNT_BORROWINGS_310_MLN_DLRS.txt |  35 +
+ ...._BRASS_MILL_COPPER_STOCKS_LOWER_IN_JANUARY.txt |  10 +
+ ...._CONSTRUCTION_SPENDING_ROSE_1.0_PCT_IN_JAN.txt |  19 +
+ ...CORPORATE_FINANCE_-_ASSET-BACK_MARKET_GROWS.txt |  49 ++
+ ....S._DATA_POINT_TO_CAPITAL_SPENDING_SLOWDOWN.txt |  42 +
+ ...DELEGATION_PLANS_TO_LEAVE_ICO_TALKS_TUESDAY.txt |  10 +
+ .../data/U.S._ELECTRONIC_SALES_FLAT_IN_1986.txt    |  14 +
+ ..._FARM_CREDIT_RESCUE_BILL_SEEN_BEFORE_EASTER.txt |  41 +
+ .../data/U.S._FINANCIAL_ANALYSTS_-_March_3.txt     |   3 +
+ .../data/U.S._GRAIN_CARLOADINGS_FALL_IN_WEEK.txt   |   7 +
+ .../data/U.S._INTEC_INC_lt_INTK_4TH_QTR_NET.txt    |   9 +
+ .../data/U.S._LAUNCHES_WEATHER_SATELLITE.txt       |  16 +
+ .../U.S._LEADING_INDEX_FELL_1.0_PCT_IN_JANUARY.txt |  21 +
+ ...U.S._M-1_MONEY_SUPPLY_ROSE_2.1_BILLION_DLRS.txt |   8 +
+ ...._NON-FARM_PRODUCTIVITY_FELL_2.2_PCT_IN_QTR.txt |  27 +
+ ...U.S._REFINERY_COPPER_STOCKS_FALL_IN_JANUARY.txt |  11 +
+ ..._REGULATOR_CLOSES_BANKS_IN_TEXAS,_LOUISIANA.txt |  14 +
+ ...._SAYS_TIN_DISPOSALS_WILL_NOT_AFFECT_ACCORD.txt |  11 +
+ .../U.S._SIGNS_TAX_TREATY_WITH_VIRGIN_ISLANDS.txt  |  11 +
+ .../U.S._SUGAR_IMPORTS_DOWN_IN_WEEK_-_USDA.txt     |  10 +
+ ...U.S._TREASURY_PART_OF_ARGENTINE_BRIDGE_LOAN.txt |  28 +
+ .../U.S._TROOPS_GET_COST-OF-LIVING_INCREASE.txt    |  11 +
+ ....S._WEEKLY_SOYBEAN_CRUSH_21,782,929_BUSHELS.txt |   9 +
+ .../U.S._WHEAT_BONUS_TO_SOVIET_CALLED_DORMANT.txt  |  35 +
+ .../U.S._WHEAT_GROUPS_CALL_FOR_GLOBAL_ACTION.txt   |  26 +
+ ...UAL_lt_UAL_UNIT_ATTACKED_ON_MINORITY_HIRING.txt |  13 +
+ ...ANTS_TO_REVIVE_AMERICAN_MOTORS_lt_AMO_TALKS.txt |   9 +
+ ...R_SELLS_U.K._MARKETING_UNITS_FOR_50_MLN_STG.txt |  10 +
+ ...ILEVER_IMPROVES_IN_MOST_SECTORS_DURING_1986.txt |  16 +
+ ...NION_NATIONAL_lt_UNBC_SIGNS_DEFINITIVE_PACT.txt |   6 +
+ .../data/UNISYS_CORP_lt_UIS_SETS_QUARTERLY.txt     |   3 +
+ ...NITED_MERCHANTS_lt_UMM_TO_BUY_ITS_OWN_STOCK.txt |   8 +
+ ...NITED_PRESIDENTIAL_CORP_lt_UPCO_4TH_QTR_NET.txt |   6 +
+ ...RSAL_HEALTH_REALTY_lt_UHT_IN_INITIAL_PAYOUT.txt |   4 +
+ ...CAL_lt_UCL_PLANS_LUBE_CENTERS_AT_TRUCKSTOPS.txt |   9 +
+ ...AL_lt_UCL_UNIT_CUTS_CRUDE_OIL_POSTED_PRICES.txt |   7 +
+ .../data/UP-RIGHT_INC_lt_UPRI_4TH_QTR_OPER_NET.txt |   8 +
+ ...A_SAID_UNLIKELY_TO_BROADEN_CORN_BONUS_OFFER.txt |  11 +
+ ..._WHEAT_BONUS_RUMORS_PERSIST_DESPITE_DENIALS.txt |  21 +
+ .../data/USX_lt_X_DEBT_DOWGRADED_BY_MOODY'S.txt    |   9 +
+ ...RP_lt_UCU_ACQUIRES_DOMINION_lt_D_SUBSIDIARY.txt |   4 +
+ .../UTILICORP_lt_UCU_COMPLETES_ACQUISITION.txt     |   6 +
+ .../VALLEY_FEDERAL_lt_VFED_NAMES_NEW_OFFICERS.txt  |   6 +
+ .../VANGUARD_TECHNOLOGIES_lt_VTI_WINS_CONTRACT.txt |   7 +
+ .../VARIAN_lt_VAR_,_SIEMENS_FORM_JOINT_VENTURE.txt |   8 +
+ .../VDO_UNIT_AND_THOMSON-CSF_IN_JOINT_VENTURE.txt  |   9 +
+ .../data/VERSATILE_TO_BUILD_POLAR_ICE_BREAKER.txt  |  20 +
+ .../data/VERSATILE_TO_SELL_UNIT_TO_VICON.txt       |   5 +
+ .../VIACOM_lt_VIA_RECEIVES_TWO_REVISED_OFFERS.txt  |  21 +
+ .../data/VIDEOTRON_BUYS_INTO_EXHIBIT_COMPANY.txt   |   4 +
+ .../VIDEO_SHOPPING_MALL_ADDS_FLORIDA_STATION.txt   |   5 +
+ ...uela_seeks_'flexibility'_from_banks-azpurua.txt |  32 +
+ ...LLENBERGS_FIGHT_BID_FOR_SWEDISH_MATCH_STAKE.txt |  34 +
+ ...COMMUNICATIONS_lt_WCI_IN_CONTRACT_WITH_ROSS.txt |   9 +
+ ...WICK_INSURANCE_MANAGERS_INC_lt_WIMI_4TH_QTR.txt |   8 +
+ ...E_MANAGEMENT_lt_WMX_VOTES_SPLIT,_UPS_PAYOUT.txt |   5 +
+ .../WAVEHILL_INTERNATIONAL_TO_MAKE_ACQUISITION.txt |  10 +
+ .../WESTERN_DIGITAL_lt_WDC_ADDS_E-MAIL_PACKAGE.txt |   9 +
+ ...WESTERN_DIGITAL_lt_WDC_ADDS_ELECTRONIC_MAIL.txt |   6 +
+ ...RN_TELE-COMMUNICATIONS_lt_WTLCA_JOINS_GROUP.txt |   9 +
+ .../WESTERN_UNION_lt_WU_NAMES_NEW_PRESIDENT.txt    |   7 +
+ ...GHOUSE_lt_WX_,_MATSUSHITA_lt_MC_SET_VENTURE.txt |   8 +
+ .../data/WHITEHALL_CORP_lt_WHT_4TH_QTR_NET.txt     |   4 +
+ ...USE_WITHDRAWS_GATES_NOMINATION_AS_CIA_CHIEF.txt |   9 +
+ .../WHITTAKER_CORP_lt_WKR_1ST_QTR_JAN_31_NET.txt   |   7 +
+ .../WHITTAKER_lt_WKR_TO_HAVE_GAINS_FROM_SALES.txt  |  17 +
+ ...RED_AMERICAN_EDUCATIONAL_lt_WAE_REGULAR_DIV.txt |   3 +
+ .../WOOLWORTH,_UNDERWOODS_FAIL_TO_AGREE_ON_BID.txt |   9 +
+ ...WORLD_MARKET_PRICE_FOR_UPLAND_COTTON_-_USDA.txt |  13 +
+ ...ITERS_GUILD_OF_AMERICA_STRIKES_TWO_NETWORKS.txt |  16 +
+ .../XEROX_CORP_lt_XRX_ADDS_CAPACITY_TO_SYSTEM.txt  |   8 +
+ ...EUTTER_BLASTS_PROPOSED_EC_OILS_AND_FATS_TAX.txt |  21 +
+ .../ZAIRE_ACCEPTS_TIN-EXPORT_QUOTA,_ATPC_SAYS.txt  |  15 +
+ ...BIA_TO_RETAIN_CURRENCY_AUCTION,_SAYS_KAUNDA.txt |  18 +
+ ...ATA_lt_ZOS_WON'T_PAY_INTEREST_ON_DEBENTURES.txt |  10 +
+ ...BWE'S_MAIZE_MOUNTAIN_POSES_ECONOMIC_PROBLEM.txt |  32 +
+ .../data/_lt_CINRAM_LTD_4TH_QTR_NET.txt            |   5 +
+ ...OFAB_INC_BUYS_GULFEX_FOR_UNDISCLOSED_AMOUNT.txt |   6 +
+ .../data/_lt_DAEWOO_CORP_CALENDAR_1986.txt         |   4 +
+ ...DAIWA_SECURITIES_CO_TO_SUPPLY_MARKET_UPDATE.txt |   8 +
+ .../_lt_DALE_BURDETT_INC_FACES_DAMAGE_CLAIM.txt    |  10 +
+ ...t_FRANKLIN_AGE_HIGH_INCOME_FUND_SETS_PAYOUT.txt |   3 +
+ ...KLIN_CALIFORNIA_TAX-FREE_INCOME_FUND_PAYOUT.txt |   3 +
+ ...RANKLIN_FEDERAL_TAX-FREE_INCOME_FUND_PAYOUT.txt |   3 +
+ .../data/_lt_FRANKLIN_GOLD_FUND_CUTS_DIVIDEND.txt  |   3 +
+ ...ANKLIN_NEW_YORK_TAX-FREE_INCOME_FUND_PAYOUT.txt |   3 +
+ ...KLIN_U.S._GOVERNMENT_SECURITIES_FUND_PAYOUT.txt |   3 +
+ .../_lt_FRANKLIN_UTILITIES_FUND_SETS_PAYOUT.txt    |   3 +
+ ...NZYME_,_PFIZER_lt_PFE_UNIT_IN_JOINT_VENTURE.txt |   8 +
+ .../data/_lt_GEORGE_WESTON_LTD_YEAR_NET.txt        |   3 +
+ .../inverted_index/data/_lt_GSW_INC_YEAR_NET.txt   |   5 +
+ ..._lt_HIGH_POINT_FINANCIAL_CORP_SETS_OFFERING.txt |   7 +
+ ...HST_AG_COMPLETES_CELANESE_lt_CZ_ACQUISITION.txt |   4 +
+ .../inverted_index/data/_lt_IVACO_INC_YEAR_NET.txt |   5 +
+ .../data/_lt_MEMOTEC_DATA_INC_YEAR_NET.txt         |   4 +
+ ...ULTI-STEP_PRODUCTS_INC_SIX_MTHS_DEC_31_LOSS.txt |   3 +
+ .../_lt_NATIONAL_SEA_PRODUCTS_LTD_4TH_QTR_NET.txt  |   9 +
+ ..._WINS_GOVERNMENT_OKAY_FOR_HUSKY_lt_HYO_DEAL.txt |  13 +
+ .../data/_lt_PAGE_PETROLEUM_LTD_YEAR_LOSS.txt      |   5 +
+ .../_lt_PANTRY_INC_INB_TALKS_ON_BEING_ACQUIRED.txt |   6 +
+ .../data/_lt_PORSCHE_AG_RAISING_U.S._PRICES.txt    |  13 +
+ .../data/_lt_PREMDOR_INC_4TH_QTR_NET.txt           |   4 +
+ ...UF_CORP_TO_PROCEED_WITH_BENEQUITY_lt_BH_BID.txt |   6 +
+ .../data/_lt_SAMSUNG_CO_CALENDAR_1986.txt          |   4 +
+ ...SCHULT_HOMES_CORP_MAKES_INITIAL_STOCK_OFFER.txt |   8 +
+ ..._SDC_SYDNEY_DEVELOPMENT_CORP_NINE_MTHS_LOSS.txt |   5 +
+ ...SIEMENS_AG_U.S_UNIT_TO_BEGIN_MAKING_SYSTEMS.txt |   9 +
+ ps5/release/apps/inverted_index/invertedIndex.ml   |  70 ++
+ ps5/release/apps/inverted_index/invertedIndex.mli  |   4 +
+ ps5/release/apps/inverted_index/reuters.txt        | 896 ++++++++++++++++++++
+ ps5/release/apps/word_count/data/reuters.txt       | 925 +++++++++++++++++++++
+ ps5/release/apps/word_count/data/test1.txt         |  10 +
+ ps5/release/apps/word_count/data/test2.txt         |   2 +
+ ps5/release/apps/word_count/wordCount.ml           |  74 ++
+ ps5/release/apps/word_count/wordCount.mli          |   4 +
+ ps5/release/async/aQueue.ml                        |  13 +
+ ps5/release/async/aQueue.mli                       |   9 +
+ ps5/release/async/examples.ml                      |  51 ++
+ ps5/release/async/warmup.ml                        |   8 +
+ ps5/release/async/warmup.mli                       |  15 +
+ ps5/release/controllerMain.ml                      |  49 ++
+ ps5/release/map_reduce/combiner.ml                 |  21 +
+ ps5/release/map_reduce/combiner.mli                |   6 +
+ ps5/release/map_reduce/localController.ml          |  21 +
+ ps5/release/map_reduce/localController.mli         |   4 +
+ ps5/release/map_reduce/mapReduce.ml                |  66 ++
+ ps5/release/map_reduce/mapReduce.mli               |  82 ++
+ ps5/release/map_reduce/protocol.ml                 |  40 +
+ ps5/release/map_reduce/protocol.mli                |  53 ++
+ ps5/release/map_reduce/remoteController.ml         |  11 +
+ ps5/release/map_reduce/remoteController.mli        |   7 +
+ ps5/release/map_reduce/worker.ml                   |  33 +
+ ps5/release/map_reduce/worker.mli                  |  14 +
+ ps5/release/workerMain.ml                          |  12 +
+ ps5/test.ml                                        |   5 +
+ ps5/writeup.pdf                                    | Bin 0 -> 111831 bytes
+ ps5/writeup/ps5b.pdf                               | Bin 0 -> 111831 bytes
+ ps5/writeup/ps5b.tex                               | 664 +++++++++++++++
+ 1019 files changed, 17873 insertions(+)
+
+commit 48b32680747828ab1608db88ddaccd07272ff1fe
+Author: Humam Alwassel <haa54@cornell.edu>
+Date:   Sun Mar 30 20:40:35 2014 +0000
+
+    intial version
+
+ .gitignore                                         |   2 +
+ README.txt                                         |   3 +
+ ps5/doc/AQueue.html                                |  38 +
+ ps5/doc/Async.Std.Deferred.List.html               |  34 +
+ ps5/doc/Async.Std.Deferred.html                    |  47 ++
+ ps5/doc/Async.Std.Ivar.html                        |  64 ++
+ ps5/doc/Async.Std.Pipe.Reader.html                 |  32 +
+ ps5/doc/Async.Std.Pipe.Writer.html                 |  32 +
+ ps5/doc/Async.Std.Pipe.html                        |  51 ++
+ ps5/doc/Async.Std.Reader.html                      |  56 ++
+ ps5/doc/Async.Std.Socket.Address.html              |  30 +
+ ps5/doc/Async.Std.Socket.html                      |  40 +
+ ps5/doc/Async.Std.Tcp.html                         |  48 ++
+ ps5/doc/Async.Std.Writer.html                      |  45 +
+ ps5/doc/Async.Std.html                             | 234 ++++++
+ ps5/doc/Async.html                                 |  39 +
+ ps5/doc/Combiner.Make.html                         |  42 +
+ ps5/doc/Combiner.html                              |  35 +
+ ps5/doc/LocalController.Make.html                  |  41 +
+ ps5/doc/LocalController.html                       |  35 +
+ ps5/doc/MapReduce.App.Make.html                    |  45 +
+ ps5/doc/MapReduce.App.html                         |  34 +
+ ps5/doc/MapReduce.Controller.html                  |  59 ++
+ ps5/doc/MapReduce.EntryPoint.html                  |  35 +
+ ps5/doc/MapReduce.Job.html                         |  56 ++
+ ps5/doc/MapReduce.html                             |  70 ++
+ ps5/doc/Protocol.Marshalable.html                  |  35 +
+ ps5/doc/Protocol.WorkerRequest.html                |  66 ++
+ ps5/doc/Protocol.WorkerResponse.html               |  73 ++
+ ps5/doc/Protocol.html                              |  58 ++
+ ps5/doc/RemoteController.Make.html                 |  41 +
+ ps5/doc/RemoteController.html                      |  39 +
+ ps5/doc/Worker.Make.html                           |  47 ++
+ ps5/doc/Worker.html                                |  39 +
+ ps5/doc/html.stamp                                 |   1 +
+ ps5/doc/index.html                                 |  65 ++
+ ps5/doc/index_attributes.html                      |  26 +
+ ps5/doc/index_class_types.html                     |  26 +
+ ps5/doc/index_classes.html                         |  26 +
+ ps5/doc/index_exceptions.html                      |  26 +
+ ps5/doc/index_methods.html                         |  26 +
+ ps5/doc/index_module_types.html                    |  47 ++
+ ps5/doc/index_modules.html                         | 147 ++++
+ ps5/doc/index_types.html                           |  76 ++
+ ps5/doc/index_values.html                          | 271 ++++++
+ ps5/doc/style.css                                  |  41 +
+ ps5/doc/type_AQueue.html                           |  24 +
+ ps5/doc/type_Async.Std.Deferred.List.html          |  34 +
+ ps5/doc/type_Async.Std.Deferred.html               |  45 +
+ ps5/doc/type_Async.Std.Ivar.html                   |  27 +
+ ps5/doc/type_Async.Std.Pipe.Reader.html            |  19 +
+ ps5/doc/type_Async.Std.Pipe.Writer.html            |  19 +
+ ps5/doc/type_Async.Std.Pipe.html                   |  27 +
+ ps5/doc/type_Async.Std.Reader.html                 |  25 +
+ ps5/doc/type_Async.Std.Socket.Address.html         |  19 +
+ ps5/doc/type_Async.Std.Socket.html                 |  19 +
+ ps5/doc/type_Async.Std.Tcp.html                    |  28 +
+ ps5/doc/type_Async.Std.Writer.html                 |  19 +
+ ps5/doc/type_Async.Std.html                        | 114 +++
+ ps5/doc/type_Async.html                            | 123 +++
+ ps5/doc/type_Combiner.Make.html                    |  23 +
+ ps5/doc/type_Combiner.html                         |  26 +
+ ps5/doc/type_LocalController.Make.html             |  19 +
+ ps5/doc/type_LocalController.html                  |  19 +
+ ps5/doc/type_MapReduce.App.Make.html               |  19 +
+ ps5/doc/type_MapReduce.App.html                    |  22 +
+ ps5/doc/type_MapReduce.Controller.html             |  24 +
+ ps5/doc/type_MapReduce.EntryPoint.html             |  19 +
+ ps5/doc/type_MapReduce.Job.html                    |  31 +
+ ps5/doc/type_MapReduce.html                        |  56 ++
+ ps5/doc/type_Protocol.Marshalable.html             |  25 +
+ ps5/doc/type_Protocol.WorkerRequest.html           |  27 +
+ ps5/doc/type_Protocol.WorkerResponse.html          |  28 +
+ ps5/doc/type_Protocol.html                         |  49 ++
+ ps5/doc/type_RemoteController.Make.html            |  19 +
+ ps5/doc/type_RemoteController.html                 |  22 +
+ ps5/doc/type_Worker.Make.html                      |  23 +
+ ps5/doc/type_Worker.html                           |  28 +
+ ps5/release.zip                                    | Bin 0 -> 1205201 bytes
+ ps5/release/.depend                                |   8 +
+ ps5/release/.libs                                  |   1 +
+ ps5/release/.opam_packages                         |   2 +
+ ps5/release/addresses.txt                          |   2 +
+ ps5/release/apps/appList.ml                        |   9 +
+ ps5/release/apps/appUtils.ml                       |   6 +
+ ps5/release/apps/appUtils.mli                      |   6 +
+ .../apps/dna_sequencing/data/test_dna_medium.txt   |   9 +
+ .../apps/dna_sequencing/data/test_dna_small.txt    |   9 +
+ .../dna_sequencing/data/test_dna_tiny_match.txt    |   2 +
+ .../dna_sequencing/data/test_dna_tiny_no_match.txt |   2 +
+ ps5/release/apps/dna_sequencing/dnaSequencing.ml   | 118 +++
+ ps5/release/apps/dna_sequencing/dnaSequencing.mli  |   4 +
+ ...(CORRECTED)_-_BANPONCE_lt_BDEP_PLACES_NOTES.txt |   7 +
+ ...TED)_-_lt_TRANSALTA_UTILITIES_CORP_YEAR_NET.txt |   5 +
+ .../data/(MARSHALL_STEEL_LTD)_YEAR_NET.txt         |   6 +
+ ...._SAYS_TIN_DISPOSALS_WILL_NOT_AFFECT_ACCORD.txt |  11 +
+ ...VANCED_SYSTEMS_lt_ASY_TO_DISTRIBUTE_COURSES.txt |   6 +
+ ...DVANCE_CIRCUITS_lt_ADVC_GETS_LOAN_AGREEMENT.txt |  11 +
+ ...FG_INDUSTRIES_INC_lt_AFG_QUARTERLY_DIVIDEND.txt |   2 +
+ ...CY_REPORTS_39_SHIPS_WAITING_AT_PANAMA_CANAL.txt |   8 +
+ ...GENCY_VOTES_TO_END_LOCAL_NUCLEAR_PLANT_VETO.txt |  18 +
+ ...CEDEL,_EUROCLEAR_JOIN_IN_TRADE_MATCH_SYSTEM.txt |  18 +
+ ...BUS_SIGNS_ONE_BILLION_DLR_JAPANESE_CONTRACT.txt |  18 +
+ ...S_lt_AGA_DECLINES_TO_COMMENT_ON_STOCK_MOVES.txt |   4 +
+ ...FORCE_EXERCISES_OPTION_FOR_AAR_lt_AIR_ORDER.txt |   4 +
+ .../AIR_WIS_SERVICES_INC_lt_ARWS_4TH_QTR_NET.txt   |   6 +
+ ...SKA_HOUSING_HAS_150_MLN_DLR_SYNDICATED_LOAN.txt |  12 +
+ .../ALATENN_RESOURCES_INC_lt_ATNG_4TH_QTR_NET.txt  |   4 +
+ .../ALBERTSON'S_INC_lt_ABS_4TH_QTR_JAN_29_NET.txt  |   4 +
+ ...ALBERTSON'S_INC_lt_ABS_RAISES_QTLY_DIVIDEND.txt |   2 +
+ ...SON'S_lt_ABS_ADOPTS_STOCKHOLDER_RIGHTS_PLAN.txt |   9 +
+ ...SON'S_lt_ABS_TO_INCREASE_NEW_STORE_OPENINGS.txt |   5 +
+ .../ALCAN_ALUMINIUM_LTD_lt_AL_SETS_STOCK_SPLIT.txt |   6 +
+ ...LCAN_TO_CLOSE_WEST_GERMAN_ALUMINIUM_SMELTER.txt |  10 +
+ .../data/AMAX_lt_AMX_IN_GOLD,_SILVER_FIND.txt      |   9 +
+ ..._lt_AIL_TO_SELL_SOME_DOMINION_BRIDGE_ASSETS.txt |   9 +
+ .../data/AMC_lt_AMO_EXTENDS_INCENTIVE_PROGRAM.txt  |  14 +
+ ...t_AMO_SAYS_STEPS_TAKEN_AFTER_UAW_TALKS_FAIL.txt |  31 +
+ ...N_AIRLINES_TO_ANNOUNCE_BUYS,_NEWSPAPER_SAYS.txt |   9 +
+ ...ERICAN_ELECTRIC_lt_AEP_UNIT_REDEEMING_BONDS.txt |   6 +
+ ...ERICAN_EXPRESS_STUDIES_OPTIONS_FOR_SHEARSON.txt |  16 +
+ ...AN_EXPRESS_lt_AXP_SEEN_IN_POSSIBLE_SPINNOFF.txt |  49 ++
+ ...CAN_EXPRESS_lt_AXP_VIEWING_SHEARSON_OPTIONS.txt |  48 ++
+ ...CAN_MOTORS_lt_AMO_BREAKS_OFF_TALKS_ON_PLANT.txt |   9 +
+ ...ERICAN_NURSERY_lt_ANSY_BUYS_FLORIDA_NURSERY.txt |   5 +
+ .../AMERICAN_NURSERY_lt_ANSY_MAKES_ACQUISITION.txt |   5 +
+ .../AMERICAN_PORK_CONGRESS_KICKS_OFF_TOMORROW.txt  |  11 +
+ ...RICAN_TRAVELLERS_lt_ATVC_EXPANDS_OPERATIONS.txt |   4 +
+ .../AMERICA_FIRST_MORTGAGE_SETS_SPECIAL_PAYOUT.txt |   4 +
+ .../AMERICUS_TRUST_lt_HPU_EXTENDS_DEADLINE.txt     |   7 +
+ .../data/AMGEN_lt_AMGN_TO_FORM_PARTNERSHIP.txt     |   7 +
+ ...t_AMR_TO_ACQUIRE_40_LONG-RANGE_JET_AIRCRAFT.txt |  18 +
+ ...t_AMR_TO_HOLD_PRESS_CONFERENCE_THIS_MORNING.txt |  11 +
+ .../AM_INTERNATIONAL_INC_lt_AM_2ND_QTR_JAN_31.txt  |   9 +
+ ..._INTERNATIONAL_lt_AM_CITES_STRONG_PROSPECTS.txt |  15 +
+ ...S_SEE_NO_OTHER_BIDDER_FOR_PUROLATOR_lt_PCC_.txt |  24 +
+ ...OR_GLASS_lt_AGLS_CLEARED_FOR_LISTED_ON_NYSE.txt |   9 +
+ ...NNUAL_MAILING_TO_DELINQUENT_FARMERS_--_USDA.txt |   9 +
+ ...TITRUST_LAWYER_NOMINATED_CLAIMS_COURT_JUDGE.txt |   7 +
+ .../data/AOI_COAL_CO_lt_AOI_4TH_QTR_NET.txt        |   7 +
+ ...E_COMPUTER_lt_AAPL_HAS_NEW_MACINTOSH_MODELS.txt |  11 +
+ ...LE_COMPUTER_lt_AAPL_UPGRADES_MACINTOSH_LINE.txt |  42 +
+ ...lt_AAPL_,_AST_lt_ASTA_OFFER_MS-DOS_PRODUCTS.txt |  14 +
+ .../data/AQUINO_ANNOUNCES_LAND_REFORM_PLANS.txt    |  26 +
+ .../ARBOR_DRUGS_INC_lt_ARBR_2ND_QTR_JAN_31_NET.txt |   4 +
+ ...VE_CORP_lt_ACHV_SIGNS_DISTRIBUTOR_AGREEMENT.txt |   6 +
+ ...ENTINA_COULD_SUSPEND_DEBT_PAYMENTS_-_DEPUTY.txt |  16 +
+ ...GENTINE_1986_87_GRAIN_OILSEED_REGISTRATIONS.txt |  18 +
+ ...GENTINE_DEBT_NEGOTIATOR_CONFIDENT_OF_ACCORD.txt |  17 +
+ ...GENTINE_OIL_PRODUCTION_DOWN_IN_JANUARY_1987.txt |   6 +
+ ...ARMCO_lt_AS_CHANGES_EUROPEAN_MARKETING_UNIT.txt |   6 +
+ ...MOR_ALL_PRODUCTS_CORP_lt_ARMR_QUARTERLY_DIV.txt |   2 +
+ .../ARMTEK_lt_ARM_TO_SELL_INDUSTRIAL_TIRE_UNIT.txt |   8 +
+ ...MY_TO_RENEGOTIATE_ITT_lt_ITT_RADIO_CONTRACT.txt |   8 +
+ ...VIN_INDS_lt_ARV_PROMOTES_EVANS_TO_PRESIDENT.txt |   4 +
+ .../ASCS_TERMINAL_MARKET_VALUES_FOR_PIK_GRAIN.txt  |  31 +
+ .../data/ASHTON-TATE_lt_TATE_4TH_QTR_NET.txt       |   6 +
+ .../ASHTON-TATE_lt_TATE_TO_OFFER_COMMON_SHARES.txt |   6 +
+ .../ASSETS_OF_U.S._MONEY_FUNDS_ROSE_IN_WEEK.txt    |   6 +
+ .../ATICO_FINANCIAL_CORP_lt_ATFC_4TH_QTR_NET.txt   |   9 +
+ .../ATPC_MEMBERS_FIND_WAYS_TO_CURB_TIN_EXPORTS.txt |  60 ++
+ .../data/ATT_lt_ATT_GETS_57.3_MLN_DLR_CONTRACT.txt |   4 +
+ ...TRALIA'S_KEATING_CHANGES_ECONOMIC_FORECASTS.txt |  35 +
+ ...LIAN_JANUARY_ANNUAL_BROAD_MONEY_UP_10.3_PCT.txt |  13 +
+ ...STRALIAN_POLICE_ARREST_FORMER_WESTPAC_CLERK.txt |   9 +
+ .../AVERAGE_YEN_CD_RATES_FALL_IN_LATEST_WEEK.txt   |  15 +
+ .../AVERY_lt_AVY_SETS_TWO_FOR_ONE_STOCK_SPLIT.txt  |  10 +
+ .../data/AVX_CORP_lt_AVX_DEBT_AFFIRMED_BY_S_P.txt  |   7 +
+ .../AW_COMPUTER_lt_AWCSA_IN_SUPPLY_AGREEMENT.txt   |   9 +
+ .../inverted_index/data/BAHIA_COCOA_REVIEW.txt     |  38 +
+ ...BAKER_SAYS_REAGAN_TO_MEET_PRESS__VERY_SOON_.txt |   9 +
+ ...UR_EXPECTS_IMPROVED_FEBRUARY_INFLATION_DATA.txt |  13 +
+ ..._lt_BLY_COMPLETES_PURCHASE_OF_GOLDEN_NUGGET.txt |   6 +
+ .../BANC_ONE_lt_ONE_HAS_MICHIGAN_AFFILIATE.txt     |   3 +
+ .../BANGLADESH_MOVES_AGAINST_LOAN_DEFAULTERS.txt   |  10 +
+ ...BANKEAST_CORP_lt_BENH_COMPLETES_ACQUISITION.txt |   4 +
+ ...KERS_REPORT_BREAKTHROUGH_ON_VENEZUELAN_DEBT.txt |  24 +
+ ...ERS_SEE_SHARP_RISE_IN_THAI_FOREIGN_RESERVES.txt |  18 +
+ ...S_EXPRESS_GRAVE_CONCERN_ON_BRAZIL_DEBT_MOVE.txt |  25 +
+ ..._EXPRESS_GRAVE_CONCERN_ON_BRAZIL_DEBT_MOVES.txt |  25 +
+ ...NK_OF_ENGLAND_ANNOUNCES_ONE_BILLION_STG_TAP.txt |   7 +
+ ...K_OF_NEW_ENGLAND_CORP_lt_BKNE_QTLY_DIVIDEND.txt |   3 +
+ ...OF_NEW_YORK_lt_BK_TO_HAVE_GAIN_ON_UNIT_SALE.txt |  12 +
+ ...lt_BNR_COMPLETES_TENDER_FOR_REXNORD_lt_REX_.txt |   8 +
+ ...NNER_lt_BNR_TO_ACCEPT_REXNORD_lt_REX_SHARES.txt |  14 +
+ ...RNETT_BANKS_OF_FLORIDA_lt_BBF_REDEEMS_STOCK.txt |   9 +
+ .../data/BASIX_CORP_lt_BAS_4TH_QTR_LOSS.txt        |  10 +
+ .../data/BAYER_lt_BAYRY_MAKES_U.S._ACQUISITION.txt |   6 +
+ ...AG_BROWN_BOVERI_UND_CIE_lt_BBCZ.Z_1986_YEAR.txt |   5 +
+ ...M_INTERNATIONAL_lt_BDM_INCREASES_QTRLY_DIVS.txt |   4 +
+ .../data/BEECHAM_UNIT_LAUNCHES_ARTHRITIS_DRUG.txt  |   8 +
+ ...ENETTON_IN_FINANCIAL_SERVICES_JOINT_VENTURE.txt |   8 +
+ .../data/BENGUET_CORP_lt_BE_CALENDAR_1986.txt      |   5 +
+ ...CK_MINERS_SUPPORT_S._AFRICAN_MINES_TAKEOVER.txt |  17 +
+ .../BLACK_SOUTH_AFRICAN_MINERS_SEEK_WAGE_RISE.txt  |  13 +
+ ...KBUSTER_lt_BBEC_UNIT_GETS_TWO_MORE_LICENSES.txt |   7 +
+ .../BONUS_WHEAT_FLOUR_FOR_NORTH_YEMEN_--_USDA.txt  |   8 +
+ .../data/BP_OIL_RAISES_OPERATING_PROFIT.txt        |  13 +
+ ...FF_lt_BAIR_FEBRUARY_LOAD_FACTOR_UP_SLIGHTLY.txt |  10 +
+ ...IL_ANTI-INFLATION_PLAN_LIMPS_TO_ANNIVERSARY.txt |  16 +
+ ...ZIL_CRITICISES_ADVISORY_COMMITTEE_STRUCTURE.txt |  27 +
+ ...ZIL_FINANCE_MINISTER_MEETS_FRENCH_OFFICIALS.txt |   9 +
+ .../BRENCO_INC_lt_BREN_DECLARES_QTLY_DIVIDEND.txt  |   3 +
+ ...TAIN'S_ALLIANCE_OPPOSITION_WINS_BY-ELECTION.txt |  10 +
+ ..._CONSERVATIVES_AHEAD_OF_LABOUR_IN_NEW_POLLS.txt |  17 +
+ .../data/BROWN-FORMAN_INC_lt_BFD_4TH_QTR_NET.txt   |   4 +
+ ...FORMAN_lt_BFDB_SETS_STOCK_SPLIT,_UPS_PAYOUT.txt |  16 +
+ ...N_BOVERI_OMITS_DIVIDEND,_PLANS_WARRANT_BOND.txt |   9 +
+ ...REALTY_TRUST_lt_BRT_RAISES_QUARTERLY_PAYOUT.txt |   8 +
+ ...ON_PAYS_5.4_MLN_DLRS_FOR_CENERGY_CORP_STAKE.txt |   9 +
+ .../data/BUFFETS_INC_lt_BOCB_4TH_QTR_NET.txt       |   5 +
+ ...GTON'S_EL_PASO_UNIT_lt_BNI_FILES_GAS_PRICES.txt |   9 +
+ ...GTON_COAT_FACTORY_WAREHOUSE_CORP_lt_BCF_NET.txt |   3 +
+ ...URLINGTON_lt_BUR_GETS_30.5_MLN_DLR_CONTRACT.txt |   4 +
+ .../data/CAECL_ISSUES_12_BILLION_YEN_EUROBOND.txt  |   7 +
+ .../CALNY_INC_lt_CLNY_SUES_PEPSICO_INC_lt_PEP_.txt |  11 +
+ ...BRIDGE_MEDICAL_lt_CMTC_IN_DEAL_ON_AIDS_TEST.txt |   7 +
+ .../CANADA'S_WILSON_SEEKS_TEMPORARY_BORROWING.txt  |   9 +
+ ...CANADA-EGYPT_WHEAT_NEGOTIATIONS_TO_CONTINUE.txt |   8 +
+ .../CANADA_GOVERNMENT_SPENDING_TO_RISE_3.8_PCT.txt |   9 +
+ ...ANADA_INDUSTRIAL_PRICES_UP_0.2_PCT_IN_MONTH.txt |   7 +
+ .../CANADA_LAUNCHES_1.2_BILLION_DLR_BOND_ISSUE.txt |   8 +
+ .../CANADA_PRICES_1.2_BILLION_DLR_BOND_ISSUE.txt   |  11 +
+ ...DA_RULING_ON_U.S._CORN_INJURY_DUE_THIS_WEEK.txt |  12 +
+ .../data/CANADIAN_SEAFARERS_THREATEN_STRIKE.txt    |  11 +
+ .../CANTREX_UNIT_TO_MERGE_WITH_ONTARIO_GROUP.txt   |   8 +
+ ...BIDE_lt_UK_LOOKS_TO_ACQUISITIONS_FOR_GROWTH.txt |  15 +
+ .../CAREMARK_lt_CMRK_CHANGES_FISCAL_YEAR-END.txt   |   3 +
+ .../data/CARGILL_U.K._STRIKE_TALKS_POSTPONED.txt   |   6 +
+ .../CARLTON_COMMUNICATIONS_OPTIMISTIC_FOR_1987.txt |   9 +
+ ...A_DI_RISPARMIO_DI_ROMA_LAUNCHING_CD_PROGRAM.txt |   7 +
+ ...T_FEBRUARY_VOLUME_DOWN_14_PCT_FROM_YEAR_AGO.txt |  12 +
+ ...CREDITS_FOR_HONDURAS_SWITCHED_TO_WHITE_CORN.txt |   8 +
+ ..._UNIT_ACQUIRES_NESTLE_CANADA_CAN_OPERATIONS.txt |   8 +
+ .../CCR_VIDEO_CORP_lt_CCCR_1ST_QTR_NOV_30_NET.txt  |   3 +
+ ...VIDEO_lt_CCCR_NOW_MEETS_NASDAQ_REQUIREMENTS.txt |  10 +
+ ...NETWORK_lt_CCXN_SECONDARY_OFFERING_UNDERWAY.txt |   6 +
+ .../CENERGY_lt_CRG_REPORTS_4TH_QTR_NET_PROFIT.txt  |  14 +
+ ...HAMPION_PRODUCTS_lt_CH_APPROVES_STOCK_SPLIT.txt |   6 +
+ ...MICAL_NEW_YORK_lt_CHL_TO_CLOSE_DUBAI_OFFICE.txt |   9 +
+ ...LAWN_lt_CHEM_RISES_ON_HOPES_FOR_HIGHER_BIDS.txt |  32 +
+ ...NG_KONG_(HOLDINGS)_LTD_lt_CKGH.HK_YEAR_1986.txt |   6 +
+ ...G_KONG_CHAIRMAN_SEES_STRONG_RESULTS_IN_1987.txt |  21 +
+ ...'S_HEILONGJIANG_PROVINCE_BOOSTS_GOLD_OUTPUT.txt |   9 +
+ ...CHINA_CALLS_FOR_BETTER_TRADE_DEAL_WITH_U.S..txt |  62 ++
+ ...HINA_SIGNS_WORLD_BANK_LOAN_FOR_TIANJIN_PORT.txt |  10 +
+ .../data/CHINA_TO_BORROW_390_MLN_DLRS.txt          |   8 +
+ ...SE_BANKS_TO_ISSUE_MORE_BONDS,_OFFICIAL_SAYS.txt |  12 +
+ .../CHINESE_PORK_OUTPUT_SEEN_LOWER_--_USDA.txt     |  10 +
+ ...ESE_WHEAT_CROP_THREATENED_BY_PESTS,_DISEASE.txt |   8 +
+ ...SLER_TO_SELL_CARS_IN_EUROPE_BEFORE_YEAR_END.txt |  24 +
+ ...CHRYSLER_lt_C_UNIT_SELLS_NOTES_AT_7-5_8_PCT.txt |   9 +
+ ...HILL_TO_MARKET_WESTERN_UNION_lt_WU_SERVICES.txt |   7 +
+ ...CINCINNATI_BELL_INC_lt_CSN_RAISES_QUARTERLY.txt |   3 +
+ .../CINCINNATI_BELL_lt_CSN_SETS_STOCK_SPLIT.txt    |   5 +
+ .../CIRCUIT_SYSTEMS_lt_CSYI_BUYS_BOARD_MAKER.txt   |   8 +
+ ...CITIZENS_FINANCIAL_CORP_lt_CTZN_4TH_QTR_NET.txt |   4 +
+ .../CITY_NATIONAL_CORP_lt_CTYN_RAISES_DIVIDEND.txt |   2 +
+ ...E_PLANS_RULE_CHANGES_TIGHTENING_S_P_TRADING.txt |  46 +
+ .../CME_SETS_FEBRUARY_TRADING_VOLUME_RECORD.txt    |  18 +
+ .../data/COBANCO_INC_lt_CBCO_YEAR_NET.txt          |   5 +
+ ...A_COLA_lt_KO_UNIT_AND_WORLD_FILM_IN_VENTURE.txt |   5 +
+ ...EUR_D'ALENE_MINES_CORP_lt_COUR_4TH_QTR_LOSS.txt |   6 +
+ ...FFEE_PRICE_FALL_SHORT_TERM_-_DUTCH_ROASTERS.txt |  24 +
+ ...QUOTA_TALKS_CONTINUE,_NO_ACCORD_SEEN_LIKELY.txt |  14 +
+ ...E_QUOTA_TALKS_CONTINUE_BUT_NO_AGREEMENT_YET.txt |  10 +
+ ...TRADERS_EXPECT_SELLOFF_AFTER_ICO_TALKS_FAIL.txt |  43 +
+ ...IVE_SYSTEMS_INC_lt_CSAI_4TH_QTR_NOV_30_LOSS.txt |   5 +
+ .../data/COLECO_INDUSTRIES_INC_lt_CLO_4TH_QTR.txt  |   5 +
+ ...OLECO_INDUSTRIES_lt_CLC_SEES_PROFIT_IN_1987.txt |  13 +
+ ...LL_AGREES_TO_BUY_U.S._WALLCOVERINGS_COMPANY.txt |   9 +
+ ...BIA_GAS_SYSTEM_INC_lt_CG_REDEEMS_DEBENTURES.txt |   8 +
+ ...BIA_GAS_lt_CG_FORMS_ERIE_PIPELINE_SUBIDIARY.txt |   9 +
+ .../data/COMALCO_LTD_lt_CMAC.S_1986_NET.txt        |  12 +
+ ...O_SAYS_LOWER_COSTS_HELPED_RETURN_TO_PROFITS.txt |  24 +
+ ...LCO_SAYS_LOWER_COSTS_HELP_RETURN_TO_PROFITS.txt |  16 +
+ ...MBUSTION_ENGINEERING_INC_lt_CSP_REGULAR_DIV.txt |   3 +
+ ...MBUSTION_ENGINEERING_lt_CSP_SETS_CHINA_PACT.txt |   6 +
+ ...OMMERCIAL_CREDIT_lt_CCC_SELLS_10-YEAR_NOTES.txt |   7 +
+ ...MMERCIAL_CREDIT_lt_CCC_TO_HAVE_GAIN_ON_SALE.txt |   8 +
+ .../COMMERZBANK_UNIT_ISSUES_STERLING_EUROBOND.txt  |   8 +
+ ...NIES_SET_BID_FOR_CANADA_HELICOPTER_CONTRACT.txt |   8 +
+ ...MPUTER_LANGUAGE_RESEARCH_IN_lt_CLRI_4TH_QTR.txt |   6 +
+ ...ER_LANGUAGE_lt_CLRI_UNIT_OFFERS_TAX_PRODUCT.txt |   6 +
+ ...TER_TERMINAL_SYSTEMS_lt_CPML_COMPLETES_SALE.txt |  19 +
+ ...CONDOR_COMPUTER_INTRODUCES_DATABASE_PRODUCT.txt |   5 +
+ ...ONGRESS_VIDEO_GROUP_INC_lt_CVGI_3RD_QTR_NET.txt |   8 +
+ ...IDATED_GAS_lt_CNG_UNIT_SAYS_NO_RULES_BROKEN.txt |   6 +
+ ...OLIDATED_TVX_TO_BUY_BRAZIL_GOLD_MINE_STAKES.txt |  22 +
+ ...STRUCTION_CONTRACTING_DOWN_THREE_PCT_IN_JAN.txt |  22 +
+ ...NTINENTAL_ILL_lt_CIL_TO_RECHARACTERIZE_LOSS.txt |  29 +
+ ...VERGENT_TECHNOLOGIES_lt_CVGT_TO_BUY_OAKLEAF.txt |   7 +
+ ...ER_STOCKS_OUTSIDE_U.S._INCREASE_IN_DECEMBER.txt |  12 +
+ .../data/CORADIAN_CORP_lt_CDIN_4TH_QTR_NET.txt     |   5 +
+ ...lt_GLW_,_HAZLETON_lt_HLC_SET_EXCAHNGE_RATIO.txt |   7 +
+ ...TED_-_BANKAMERICA_NEGOTIATING_SALE_OF_UNITS.txt |  10 +
+ ...RECTED_-_BANKAMERICA_NEGOTIATING_UNITS_SALE.txt |  11 +
+ ...NCIL_OF_EUROPE_ISSUES_LUXEMBOURG_FRANC_BOND.txt |   8 +
+ .../data/COUPON_ON_MITSUBISHI_WARRANT_BOND_CUT.txt |   8 +
+ .../COUPON_REDUCED_ON_BEST_DENKI_WARRANT_BOND.txt  |   7 +
+ ...NS_HOME_FURNISHINGS_lt_CUZZ_GET_CREDIT_LINE.txt |   8 +
+ .../data/CPL_REIT_lt_CNTRS_4TH_QTR_NET.txt         |   4 +
+ ...A_EXPECTS_TO_PAY_FINAL_DIVIDEND_OF_10_CENTS.txt |  42 +
+ .../data/CRA_LTD_lt_CRAA.S_1986_NET.txt            |   8 +
+ ...EDITORS_ALLOW_TECK_HOCK_TO_FULFIL_CONTRACTS.txt |  17 +
+ .../CREDIT_CARD_DISCLOSURE_BILLS_INTRODUCED.txt    |  10 +
+ .../CRONUS_INDUSTRIES_INC_lt_CRNS_4TH_QTR_LOSS.txt |   7 +
+ .../CRONUS_INDUSTRIES_INC_lt_CRNS_SELLS_UNIT.txt   |   7 +
+ ..._TELLS_TRADERS_SUGAR_EXPORTS_MAY_BE_DELAYED.txt |  16 +
+ ...NCIES_COULD_INFLUENCE_BULLION_AGAIN-MONTAGU.txt |  10 +
+ ..._SECTORS_CONTINUE_TO_FEATURE_EUROBOND_TRADE.txt |  37 +
+ .../data/CYBERTEK_lt_CKCP_FORMING_NEW_DIVISION.txt |   4 +
+ ...DAEWOO_MOTOR_TO_BOOST_IMPORTS_OF_U.S._GOODS.txt |   9 +
+ .../data/DAHLBERG_INC_lt_DAHL_4TH_QTR_NET.txt      |   5 +
+ ...DAIMLER_OUTPUT_COULD_BE_AFFECTED_BY_DISPUTE.txt |  19 +
+ ...ISY_SYSTEMS_lt_DAZY_INTRODUCES_WORKSTATIONS.txt |   9 +
+ .../data/DALLAS_CORP_lt_DLS_4TH_QTR_LOSS.txt       |   7 +
+ ...DAVIS_WATER_lt_DWWS_DECLARES_STOCK_DIVIDEND.txt |   3 +
+ ...AN_FOODS_lt_DF_SEES_STRONG_4TH_QTR_EARNINGS.txt |  20 +
+ .../DEGUSSA_COMBINES_PHARMACEUTICAL_INTERESTS.txt  |  10 +
+ ...LTA_AIR_lt_DAL_BEGINS_ATLANTA-TOKYO_SERVICE.txt |   4 +
+ ...DELTA_ROCKET_BLASTS_OFF_FROM_CAPE_CANAVERAL.txt |  10 +
+ .../data/DENG_SAYS_CHINA'S_TROUBLES_OVER.txt       |   8 +
+ ...DH_TECHNOLOGY_lt_DHTK_CHAIRMAN_SELLS_SHARES.txt |   9 +
+ ...OSTIC_PRODUCTS_lt_DPCZ_SEES_EARNINGS_GROWTH.txt |  17 +
+ ...IC_lt_DRS_MAKES_A_BID_FOR_ROSPATCH_lt_RPCH_.txt |   9 +
+ .../DIAMOND_SHAMROCK_(DIA)_CUTS_CRUDE_PRICES.txt   |   8 +
+ ...ND_SHAMROCK_lt_DIA_SETS_MEETING_RECORD_DATE.txt |   3 +
+ ...ITAL_AUDIO_TAPE_PLAYERS_GO_ON_SALE_IN_JAPAN.txt |  29 +
+ ...RD_DEPARTMENT_STORES_INC_lt_DDS_4TH_QTR_NET.txt |   6 +
+ ...DOT_REJECTS_SMOKING_BAN_ON_DOMESTIC_FLIGHTS.txt |  19 +
+ ..._CHEMICAL_LAUNCHES_200_MLN_SWISS_FRANC_BOND.txt |   6 +
+ ...lt_DOW_TO_OFFER_130_MLN_DLRS_IN_SWISS_NOTES.txt |   8 +
+ ...OFFICIAL_HAS_STAKE_IN_EPSILON_DATA_lt_EPSI_.txt |   9 +
+ ...NKIN'_DONUTS_INC_lt_DUNK_1ST_QTR_JAN_24_NET.txt |   3 +
+ .../DURO-TEST_CORP_lt_DUR_2ND_QTR_JAN_31_NET.txt   |   4 +
+ ...ANIMAL_FEED_USAGE_DOWN_IN_FIRST_HALF_SEASON.txt |  22 +
+ .../DUTCH_OILSEEDS_FATS_IMPORTS_ROSE_IN_1986.txt   |  22 +
+ ...NT_CO_lt_DD_LAUNCHES_IMPROVED_ARAMID_FIBERS.txt |   9 +
+ ...PONT_lt_DD_WINS_SUIT_AGAINST_PHILLIPS_lt_P_.txt |   8 +
+ ...E_ENTERTAINMENT_lt_EEGL_TO_MANAGE_AFFILIATE.txt |   7 +
+ .../EAGLE_TELEPHONICS_lt_EGLA_SELLS_TELEPHONES.txt |   5 +
+ ...ARTHQUAKES_CONTINUE_IN_NORTHERN_NEW_ZEALAND.txt |  12 +
+ ...AKES_CONTINUE_TO_SHAKE_NORTHERN_NEW_ZEALAND.txt |  25 +
+ ...EC,_EURATOM_FRENCH_FRANC_EUROBONDS_EXPECTED.txt |   7 +
+ ...C_SPOTLIGHT_-_AUSTERITY_MEASURES_IN_HUNGARY.txt |  65 ++
+ .../ECONOMIC_SPOTLIGHT_-_BANKAMERICA_lt_BAC_.txt   |  39 +
+ .../data/ECONOMIC_SPOTLIGHT_-_ITALIAN_BOOM.txt     |  69 ++
+ ...MIC_SPOTLIGHT_-_JAPAN_EYEING_FOREIGN_STOCKS.txt |  60 ++
+ ...OMMISSION_GIVEN_PLAN_TO_SAVE_STEEL_INDUSTRY.txt |  26 +
+ .../EC_ISSUES_600_MLN_FRENCH_FRANC_EUROBOND.txt    |   6 +
+ .../data/EC_MINISTERS_BID_TO_SAVE_DAIRY_ACCORD.txt |  37 +
+ ...NISTERS_CONSIDER_BIG_AGRICULTURE_PRICE_CUTS.txt |  33 +
+ ...NISTERS_POSTPONE_TALKS_ON_SAVING_DAIRY_PACT.txt |   9 +
+ ...C_MINISTERS_STRUGGLE_TO_AGREE_ON_DAIRY_CUTS.txt |  20 +
+ ...NS_ANTI-DUMPING_ENQUIRY_INTO_SOVIET_MERCURY.txt |  17 +
+ ..._CORP_lt_EDO_UNIT_WILL_BUILD_AIRCRAFT_PARTS.txt |   7 +
+ .../data/EGYPT_ALLOWS_FUGITIVE_LIBYANS_STAY.txt    |   9 +
+ ...O_HOST_NINE-NATION_AFRICAN_TALKS_THIS_MONTH.txt |   9 +
+ ...RONIC_CONTROL_lt_ECSIU_INITIAL_OFFER_STARTS.txt |   4 +
+ ...TRONIC_MAIL_lt_EMCA_FINANCING_ATTEMPT_FAILS.txt |   7 +
+ .../data/EMHART_CORP_lt_EMH_QTLY_DIVIDEND.txt      |   3 +
+ ...TOPE_lt_EPTO_SETS_THREE_FOR_ONE_STOCK_SPLIT.txt |   7 +
+ ...ORIAL_COMMUNICATIONS_lt_EQUA_TO_HAVE_LOSSES.txt |  33 +
+ .../data/ESI_INDUSTRIES_INC_lt_ESI_4TH_QTR_NET.txt |   7 +
+ ...IRE_RADIO_AND_ELECTRONICS_INC_lt_EE_4TH_QTR.txt |   6 +
+ ...LTE_BUSINESS_lt_ESB_UNIT_BUYS_ANTONSON_UNIT.txt |   8 +
+ ...TED_DROP_IN_JAPAN_CORPORATE_PROFITS_TRIMMED.txt |  17 +
+ .../data/EXCELAN_INC_SETS_INITIAL_STOCK_OFFER.txt  |   5 +
+ ...EXCO_BUYS_U.S._GOVERNMENT_SECURITIES_BROKER.txt |  26 +
+ .../EXXON_lt_XON_CUTS_HEATING_OIL_BARGE_PRICE.txt  |   6 +
+ .../F.W._WOOLWORTH_CO_lt_Z_4TH_QTR_JAN_31_NET.txt  |   6 +
+ ...A_FINES_DELTA_lt_DAL_140,400_DLRS_ON_SAFETY.txt |   9 +
+ .../FALLING_SOYBEAN_CRUSH_RATIOS_CUT_OUTPUT.txt    |  37 +
+ ...FAMOUS_RESTAURANTS_INC_lt_FAMS_4TH_QTR_LOSS.txt |   6 +
+ .../data/FARMERS_GROUP_INC_lt_FGRP_4TH_QTR_NET.txt |   5 +
+ ...OKAYS_DRUG_TO_LESSEN_HEMOPHILIACS'_BLEEDING.txt |   9 +
+ ...EBRUARY_U.S._PURCHASING_MANAGER_INDEX_FALLS.txt |  24 +
+ .../FEDERAL_INDUSTRIES_LAUNCHES_EUROBOND_ISSUE.txt |   5 +
+ ...DERAL_INDUSTRIES_PAPER_ISSUE_JUST_IN_CANADA.txt |   6 +
+ ...ERAL_INDUSTRIES_SETS_COMMERCIAL_PAPER_ISSUE.txt |   7 +
+ .../FED_ADDS_RESERVES_VIA_CUSTOMER_REPURCHASES.txt |   5 +
+ ...ED_DATA_SUGGEST_STABLE_U.S._MONETARY_POLICY.txt |  49 ++
+ .../FED_EXPECTED_TO_ADD_TEMPORARY_RESERVES.txt     |   9 +
+ .../data/FERRO_CORP_lt_FOE_SETS_JOINT_VENTURE.txt  |   9 +
+ ...T_UNIT_ISSUES_100_MLN_DLR_BOND_AND_WARRANTS.txt |  12 +
+ ...AL_TRUST_FOR_THRIFT_INSTITUTIONS_PAYOUT_SET.txt |   4 +
+ ...NCIAL_SANTA_BARBARA_lt_FSB_TO_MAKE_PURCHASE.txt |   4 +
+ ...FINNISH_UNEMPLOYMENT_AT_6.7_PCT_IN_DECEMBER.txt |   5 +
+ .../FIRSTCORP_lt_FCR_SEES_GAIN_ON_CONDEMNATION.txt |   6 +
+ ...T_FINANCIAL_MANAGEMENT_lt_FFMC_REVISES_PACT.txt |  10 +
+ .../FIRST_MISSISSIPPI_CORP_lt_FRM_SETS_PAYOUT.txt  |   3 +
+ ...UNION_lt_FUNC_FILES_100_MLN_DLR_NOTES_ISSUE.txt |   5 +
+ .../data/FISONS_PLC_lt_FISN.L_YEAR_TO_END-1986.txt |   9 +
+ ...NS_SEES_STRONG_INTERNATIONAL_GROWTH_IN_1986.txt |  18 +
+ ...GAN'S_ENTERPRISES_INC_lt_BDL_1ST_QTR_DEC_27.txt |   5 +
+ ...LUOR_CORP_lt_FLR_DEBT_DOWNGRADED_BY_MOODY'S.txt |  10 +
+ ...LUOR_lt_FLR_UNIT_GETS_CONSTRUCTION_CONTRACT.txt |   5 +
+ ...MA_lt_FNM_ARRANGES_MORTGAGE_SECURITIES_SWAP.txt |   9 +
+ .../FOOTE_MINERAL_lt_FTE_SELLS_CAMBRIDGE_PLANT.txt |   6 +
+ .../FOOTHILL_lt_GFI_ARRANGES_DEBT_PLACEMENT.txt    |   7 +
+ ...INCREASES_2ND_QTR_OUTPUT_PLANS,_REPORT_SAYS.txt |   8 +
+ ...FORD_MOTOR_CREDIT_lt_F_TO_REDEEM_DEBENTURES.txt |   7 +
+ ...FORD_lt_F_AIR-BAG_PROGRAM_FLAGGING_-_REPORT.txt |  16 +
+ ...RD_lt_F_EUROPE_EARNINGS_UP_71_PCT_LAST_YEAR.txt |   9 +
+ ...lt_F_INCREASES_2ND_QTR_OUTPUT_PLANS_-REPORT.txt |   8 +
+ ...RMER_BROKER,_INVESTOR_SENTENCED_FOR_TRADING.txt |  14 +
+ .../FOUR_SEASONS_BUYING_MARRIOTT_lt_MHS_HOTEL.txt  |   9 +
+ .../FRANCE_FACES_PRESSUE_TO_CHANGE_POLICIES.txt    |  59 ++
+ ...CE_HAS_LITTLE_ROOM_FOR_MANOEUVRE,_OECD_SAYS.txt |  45 +
+ .../FRANKLIN_CALIFORNIA_TAX-FREE_SETS_PAYOUT.txt   |   3 +
+ .../FRANKLIN_HIGH-YIELD_TAX-FREE_SETS_PAYOUT.txt   |   3 +
+ .../data/FRANKLIN_INSURED_TAX-FREE_SETS_PAYOUT.txt |   3 +
+ .../FRANKLIN_MASSACHUSETTS_INSURED_CUTS_PAYOUT.txt |   3 +
+ .../data/FRANKLIN_MICHIGAN_INSURED_SETS_PAYOUT.txt |   3 +
+ .../FRANKLIN_MINNESOTA_INSURED_SETS_PAYOUT.txt     |   3 +
+ .../FRANKLIN_OHIO_INSURED_TAX-FREE_SETS_PAYOUT.txt |   3 +
+ .../FRANKLIN_PUERTO_RICO_TAX-FREE_SETS_PAYOUT.txt  |   3 +
+ ...FRANKLIN_RESOURCES_lt_BEN_FORMS_THREE_FUNDS.txt |   9 +
+ ...FRENCH_BOND_COMMITTEE_APPROVES_THREE_ISSUES.txt |   9 +
+ ...H_ESTIMATE_86_87_WHEAT_DELIVERIES_UNCHANGED.txt |   8 +
+ .../FRENCH_TREASURY_DETAILS_PLANNED_TAP_ISSUE.txt  |   7 +
+ ...UNARO_REJECTS_SUGGESTION_OF_IMF_BRAZIL_PLAN.txt |  10 +
+ ...RO_REJECTS_UK_SUGGESTION_OF_IMF_BRAZIL_PLAN.txt |  38 +
+ ...NARO_SAYS_BRAZIL_NEEDS_MORE,_FASTER_FINANCE.txt |  38 +
+ .../data/G.D._RITZY'S_INC_lt_RITZ_4TH_QTR_LOSS.txt |   5 +
+ ..._LIKELY_TO_SHOW_CERTS_MORE_COSTLY_THAN_CASH.txt |  21 +
+ .../data/GELCO_CORP_lt_GEL_2ND_QTR_JAN_31_NET.txt  |   9 +
+ ..._lt_GEL_SEES_FLAT_1987_PRETAX_OPERATING_NET.txt |  11 +
+ ...ERAL_BINDING_lt_GBND_IN_MARKETING_AGREEMENT.txt |   6 +
+ ...MAN_BANKS_SEEK_GREATER_BRAZIL_LINK_WITH_IMF.txt |  46 +
+ ...MAN_EUROBOND_MARKET_EXPECTS_BREATHING_SPACE.txt |  43 +
+ ...LAMIS_GOLD_LTD_lt_GLGVF_SIX_MTHS_DEC_31_NET.txt |   3 +
+ ..._GM_CUTS_WAGE_BOOSTS_FOR_SALARIED_EMPLOYEES.txt |  15 +
+ .../GM_lt_GM_CUTTING_SALARIED_MERIT_RAISES.txt     |   8 +
+ .../data/GM_lt_GM_OUTPUT_FELL_LAST_MONTH.txt       |   6 +
+ .../GM_lt_GM_UNIT_TO_OFFER_PRE-APPROVED_CREDIT.txt |  12 +
+ ...GOODRICH_lt_GR_TO_PHASE_OUT_SOME_BUSINESSES.txt |  19 +
+ ...VERNMENT_BOND_BROKER_SEES_WIDER_DATA_ACCESS.txt |  29 +
+ .../data/GRAIN_SHIPS_LOADING_AT_PORTLAND.txt       |   3 +
+ ...CE_SAYS_IT_HAS_RIGHT_ON_AEGEAN_OIL_DRILLING.txt |  16 +
+ ...NWOOD_RESOURCES_lt_GRRL_SELLS_COMPANY_STAKE.txt |   9 +
+ ...EN_TREE_ACCEPTANCE_INC_lt_GNT_SETS_DIVIDEND.txt |   3 +
+ ...GREY_ADVERTISING_lt_GREY_FORMS_NEW_DIVISION.txt |   3 +
+ .../data/GTI_CORP_lt_GTI_4TH_QTR_OPER_NET.txt      |   8 +
+ ...LF_APPLIED_TECHNOLOGIES_lt_GATS_SELLS_UNITS.txt |   5 +
+ ...GULF_APPLIED_lt_GATS_SELLS_UNITS,_SEES_GAIN.txt |   5 +
+ ...RAB_DEPUTY_OIL_MINISTERS_TO_MEET_IN_BAHRAIN.txt |   9 +
+ .../data/GULF_ARAB_OIL_MEETING_ENDS.txt            |  19 +
+ ...GULF_BARGE_FREIGHT_RATES_UP_FURTHER_ON_CALL.txt |  17 +
+ ...LF_BOND,_STOCK_MARKETS_LAG_BEHIND,_GIB_SAYS.txt |  42 +
+ .../GULF_OF_MEXICO_RIG_COUNT_FALLS_THIS_WEEK.txt   |   9 +
+ .../data/HANDY_AND_HARMAN_lt_HNH_4TH_QTR_LOSS.txt  |   7 +
+ .../HARLEY-DAVIDSON_INC_lt_HDI_4TH_QTR_NET.txt     |   8 +
+ ...ISCHFEGER_INDUSTRIES_INC_lt_HPH_1ST_QTR_NET.txt |   6 +
+ .../data/HEALTH-MOR_INC_lt_HMI_4TH_QTR_NET.txt     |   4 +
+ ...ALTH_EXPERTS_URGE_ERADICATION_OF_RINDERPEST.txt |  10 +
+ ...HECK'S_lt_HEX_SAYS_CREDIT_AGREEMENT_EXPIRED.txt |   7 +
+ ...HEINZ_INTERESTED_IN_BUYING_GUINNESS_BREWING.txt |  17 +
+ .../HK_HOTELS_SOARS_ON_TAKEOVER_SPECULATION.txt    |  36 +
+ ...ST_TO_RESEARCH_DISCS_WITH_U.S.,_JAPAN_FIRMS.txt |   8 +
+ ...LIDAY_CORP_lt_HIA_TO_REDEEM_TWO_BOND_ISSUES.txt |   8 +
+ ...ONG_FIRM_UPS_WRATHER_lt_WCO_STAKE_TO_11_PCT.txt |   9 +
+ .../data/HONG_KONG_M3_RISES_2.2_PCT_IN_JANUARY.txt |  16 +
+ .../HOUSTON_OIL_lt_HO_RESERVES_STUDY_COMPLETED.txt |   9 +
+ ...WNERS_FEDERAL_lt_HFSL_HOLDERS_OK_MORE_STOCK.txt |   5 +
+ ...GHES'_U.S._RIG_COUNT_SLIPS_TO_801_THIS_WEEK.txt |  10 +
+ ...S_CAPITAL_UNIT_SIGNS_PACT_WITH_BEAR_STEARNS.txt |   7 +
+ ...ON_SEES_HIGHER_PAYOUT,_SATISFACTORY_PROFITS.txt |  37 +
+ ...S._INTERNATIONAL_INC_lt_IMSI_SETS_QUARTERLY.txt |   3 +
+ ..._lt_ICI_SEEKS_GAINS_IN_SPECIALTY_BUSINESSES.txt |  39 +
+ ...ICO_COUNCIL_ENDS_IN_FAILURE_TO_AGREE_QUOTAS.txt |  11 +
+ .../data/ICO_EXPORTERS_TO_MODIFY_NEW_PROPOSAL.txt  |   8 +
+ ...CO_PRODUCERS_TO_PRESENT_NEW_COFFEE_PROPOSAL.txt |   9 +
+ ...QUOTA_TALKS_CONTINUE,_OUTCOME_HARD_TO_GAUGE.txt |  15 +
+ ...CO_TALKS_ON_COFFEE_QUOTAS_TO_RESUME_AT_NOON.txt |   9 +
+ ...B_COMMUNICATIONS_GROUP_INC_lt_IDBX_YEAR_NET.txt |   3 +
+ ...ETS_100_MLN_DLR_NOTE_COMMERCIAL_PAPER_ISSUE.txt |  13 +
+ .../ILC_TECHNOLOGY_lt_ILCT_OFFICER_REMOVED.txt     |   9 +
+ .../IMPERIAL_CHEMICAL_lt_IMP_FORMS_NEW_UNIT.txt    |  18 +
+ .../INDIAN_BUDGET_COMES_IN_FOR_WIDE_CRITICISM.txt  |  35 +
+ ...NDIAN_BUDGET_DEFICIT_SEEN_FUELING_INFLATION.txt |  45 +
+ ...IAN_SUGAR_OUTPUT_RISES_IN_FIRST_FOUR_MONTHS.txt |  10 +
+ .../INDIA_BUYS_46,000_TONNES_OF_VEGETABLE_OILS.txt |   9 +
+ .../INDIA_TO_HOLD_WHITE_SUGAR_BUYING_TENDER.txt    |   3 +
+ .../INDONESIA'S_EXPORTS_DROP_IN_CALENDAR_1986.txt  |   8 +
+ ...ONESIAN_AGRICULTURE_GROWTH_EXPECTED_TO_SLOW.txt |  38 +
+ ...INDONESIAN_PALM_OIL_OUTPUT_EXPECTED_TO_RISE.txt |  14 +
+ ...INDONESIAN_SOYBEAN_IMPORTS_FORECAST_TO_RISE.txt |  20 +
+ ...NDONESIAN_SUGAR_OUTPUT_SEEN_SHORT_OF_TARGET.txt |  13 +
+ ...IAN_TEA,_COCOA_EXPORTS_SEEN_UP,_COFFEE_DOWN.txt |  30 +
+ ...SIAN_WHEAT_IMPORTS_EXPECTED_TO_FALL_IN_1987.txt |   9 +
+ ...SIA_SEEN_AT_CROSSROADS_OVER_ECONOMIC_CHANGE.txt |  37 +
+ ...ONESIA_UNLIKELY_TO_IMPORT_PHILIPPINES_COPRA.txt |   8 +
+ .../data/INSPEECH_lt_INSP_MAKES_ACQUISITIONS.txt   |   6 +
+ .../INT'L_HYDRON_CORP_lt_HYD_4TH_QTR_OPER_NET.txt  |   7 +
+ ...L_MINERALS_lt_IGL_BUYS_ANIMAL_PRODUCTS_UNIT.txt |   7 +
+ ...INTEGRATED_GENERICS_lt_IGN_WILL_NOT_COMMENT.txt |   6 +
+ ...NTERNATIONAL_HYDRON_CORP_lt_HYD_4TH_QTR_NET.txt |   8 +
+ ...NATIONAL_LEISURE_NEGOIATING_ON_BOEING_LEASE.txt |   7 +
+ ...CHANGE_FINANCIAL_SERVICES_lt_ISBJ_PAYOUT_UP.txt |   3 +
+ ...ERFACE_FLOORING_lt_IFSIA_FILES_FOR_OFFERING.txt |   8 +
+ .../INVESTMENT_FIRMS_CUT_CYCLOPS_lt_CYL_STAKE.txt  |   6 +
+ ...ESTMENT_FIRM_BOOSTS_LDBRINKMAN_lt_DBC_STAKE.txt |  10 +
+ ...VESTMENT_GROUP_RAISES_ROBESON_lt_RBSN_STAKE.txt |  10 +
+ ...R_GROUP_HAS_TALKS_WITH_PESCH_ON_AMI_lt_AMI_.txt |  21 +
+ ...NNOUNCES_END_OF_MAJOR_OFFENSIVE_IN_GULF_WAR.txt |  22 +
+ .../data/IRAN_CLAIMS_NEW_VICTORIES_NEAR_BASRA.txt  |   9 +
+ ...RAQ_DEFERS_PAYMENTS_ON_500_MLN_DLR_EUROLOAN.txt |  33 +
+ .../data/IRAQ_SAYS_IT_REPELS_IRANIAN_ATTACK.txt    |  10 +
+ ..._OIL_CONCERN_HAS_8.5_PCT_OF_CYNERGY_lt_CRG_.txt |  17 +
+ ..._COALITION_MEETS_AS_GOVERNMENT_CRISIS_LOOMS.txt |  18 +
+ ...LIAN_TREASURY_CUTS_INTEREST_ON_CERTIFICATES.txt |  11 +
+ ...LY_CONSUMER_PRICES_RISE_0.4_PCT_IN_FEBRUARY.txt |   8 +
+ ...T'S_lt_ITT_HARTFORD_UNIT_POSTS_4TH_QTR_GAIN.txt |  11 +
+ .../IVACO_SEES_MINIMAL_FIRST_QUARTER_EARNINGS.txt  |  11 +
+ ...NDUSTRIES_lt_JPI_FORMS_TWO_OPERATING_GROUPS.txt |  10 +
+ ...OBSON_lt_JCBS_VOTES_SPLIT,_INCREASES_PAYOUT.txt |   6 +
+ ...NUARY_HOUSING_SALES_DROP,_REALTY_GROUP_SAYS.txt |   9 +
+ ...PAN'S_NTT_FORECASTS_PROFITS_FALL_IN_1987_88.txt |   9 +
+ ...'S_UNEMPLOYMENT_RATE_SEEN_RISING_TO_3.5_PCT.txt |  25 +
+ ...N,_U.S._SET_TO_BEGIN_HIGH-LEVEL_TRADE_TALKS.txt |  50 ++
+ .../JAPANESE_BANKS_COOL_ON_NIGERIAN_DEBT_TALKS.txt |  30 +
+ ...SE_BANKS_PLAN_JOINT_FIRM_TO_AVOID_DEBT_RISK.txt |   7 +
+ .../JAPANESE_DEMAND_FOR_U.K._GILTS_SEEN_RISING.txt |  24 +
+ ...NESE_ECONOMIST_SEES_STABLE_YEN_DOLLAR_RATES.txt |  10 +
+ .../JAPANESE_FINANCIAL_FUTURES_PLAN_REVEALED.txt   |  24 +
+ ...BUYS_SOME_95,000_TONNES_SOYBEANS_FROM_CHINA.txt |  15 +
+ ...PAN_CONSUMER_PRICES_FALL_0.4_PCT_IN_JANUARY.txt |  14 +
+ ...DISTRIBUTOR_MAY_IMPORT_MAZDA_U.S.-MADE_CARS.txt |   8 +
+ ..._EXPECTED_TO_CUT_BASE_RATE_FOR_STATE_BODIES.txt |  24 +
+ .../JAPAN_FEBRUARY_INTERIM_TRADE_SURPLUS_JUMPS.txt |   9 +
+ ...FEBRUARY_RESERVES_RECORD_51.73_BILLION_DLRS.txt |   8 +
+ ...APAN_HOUSE_BUDGET_TALKS_TO_REOPEN_NEXT_WEEK.txt |   8 +
+ ...AN_LIKELY_TO_LET_U.S._BANKS_DEAL_SECURITIES.txt |  38 +
+ ...ARCH_BOND_COUPON_SEEN_UNCHANGED_AT_FIVE_PCT.txt |   9 +
+ .../JAPAN_MOVES_TO_TIGHTEN_CHIP-EXPORT_CURBS.txt   |  26 +
+ ...N_PLANS_MORE_FLEXIBLE_CORPORATE_BOND_ISSUES.txt |  43 +
+ ..._SALES_TAX_MAY_FORCE_NAKASONE_OUT_OF_OFFICE.txt |  38 +
+ ...PAN_TO_PROMOTE_INTEREST_RATE_LIBERALISATION.txt |  18 +
+ ...PAN_TO_TRY_TO_OPEN_MARKET_TO_U.S._CAR_PARTS.txt |  16 +
+ ...AN_UNEMPLOYMNENT_RISES_TO_RECORD_IN_JANUARY.txt |  18 +
+ .../JIM_WALTER_CORP_lt_JWC_REGULAR_DIVIDEND.txt    |   3 +
+ .../data/JIM_WALTER_CORP_lt_JWC_SETS_PAYOUT.txt    |   3 +
+ ...OHN_WILEY_AND_SONS_INC_lt_WILLB_3RD_QTR_NET.txt |   6 +
+ ...UDGE_RULES_IN_FAVOR_OF_DOW_CHEM_lt_DOW_UNIT.txt |   8 +
+ ...Y_FINDS_FOR_DOW_lt_DOW_IN_BIRTH_DEFECT_CASE.txt |  21 +
+ ...LAND_TELEPHONE_SETS_75_MLN_SWISS_FRANC_BOND.txt |   7 +
+ ..._JWT_NOT_APPROACHED_BY_GROUP_SEEKING_SHARES.txt |   9 +
+ ...-TRON_INTERNATIONAL_INC_lt_KTII_4TH_QTR_NET.txt |   9 +
+ .../data/KAPOK_CORP_lt_KPK_1ST_QTR_DEC_31_LOSS.txt |   3 +
+ .../KAPOK_CORP_lt_KPK_IN_TECHNICAL_DEFAULT.txt     |   6 +
+ .../data/KAPOK_CORP_lt_KPK_YEAR_SEPT_30_LOSS.txt   |   4 +
+ .../KENTUCKY_CENTRAL_LIFE_lt_KENCA_SETS_PAYOUT.txt |   4 +
+ .../data/KEVEX_CORP_lt_KEVX_2ND_QTR_JAN_31_NET.txt |   4 +
+ ...KEYCORP_lt_KEY_REGISTERS_SUBORDINATED_NOTES.txt |   7 +
+ .../KEY_U.S._TAX_WRITERS_SEEK_ESTATE_TAX_CURBS.txt |  23 +
+ .../KIDDER_UNIT_SELLS_CMOS,_INCLUDING_FLOATERS.txt |  23 +
+ .../data/KLM_TO_TAKE_15_PCT_STAKE_IN_AIR_UK.txt    |   9 +
+ ...N_AIR_ORDERS_MCDONNELL_DOUGLAS_lt_MD_MD-11S.txt |  10 +
+ ...T_MINISTER_SAYS_NO_EMERGENCY_OPEC_TALKS_SET.txt |   9 +
+ ...WAIT_SAYS_NO_PLANS_FOR_EMERGENCY_OPEC_TALKS.txt |  37 +
+ ...MARK_BANCSHARES_lt_LBC_TO_BE_LISTED_ON_NYSE.txt |   5 +
+ .../LAROCHE_STARTS_BID_FOR_NECO_lt_NPT_SHARES.txt  |   7 +
+ .../LASER_PRECISION_CORP_lt_LASR_4TH_QTR_NET.txt   |   4 +
+ .../LEBANESE_PRESIDENT_AGREES_NEW_PEACE_MOVES.txt  |   8 +
+ ...ADIA_lt_LUK_HAS_7.2_PCT_OF_MINSTAR_lt_MNST_.txt |  16 +
+ .../LIBERTY_ALL-STAR_EQUITY_FUND_INITIAL_DIV.txt   |   5 +
+ ...LIBERTY_ALL-STAR_lt_USA_SETS_INITIAL_PAYOUT.txt |   7 +
+ .../data/LIEBERT_CORP_lt_LIEB_APPROVES_MERGER.txt  |   5 +
+ .../LIQUID_AIR_CORP_lt_LANA_QUARTERLY_DIVIDEND.txt |   2 +
+ ...PRINCE_PRODUCTIONS_LTD_lt_LTLP_1ST_QTR_LOSS.txt |   3 +
+ ...L_E_ROYALTY_lt_LRT_REVENUES_MAY_BE_ESCROWED.txt |  25 +
+ .../LNG_IMPORTS_FROM_ALGERIA_UNLIKELY_IN_1987.txt  |  26 +
+ ...LODGISTIX_lt_LDGX_TO_BUYBACK_100,000_SHARES.txt |   4 +
+ ...ONDON_STOCK_EXCHANGE_TO_CLOSE_TRADING_FLOOR.txt |   9 +
+ .../data/LOTUS_lt_LOTS_INTRODUCES_NEW_SOFTWARE.txt |   9 +
+ .../MAGMA_LOWERS_COPPER_0.75_CENT_TO_66_CTS.txt    |   4 +
+ .../MAIL_BOXES_ETC_lt_MAIL_3RD_QTR_JAN_31_NET.txt  |   4 +
+ .../MALAYSIA_RAISES_DUTY_ON_PROCESSED_PALM_OIL.txt |   8 +
+ ...MALAYSIA_RE-IMPOSES_EXPORT_DUTIES_ON_RUBBER.txt |   7 +
+ .../MANILA_OFFICIALS_SPLIT_OVER_DEBT_STRATEGY.txt  |  40 +
+ .../MANILA_SAID_TO_OFFER_DEBT_BONDS_TO_BANKS.txt   |  29 +
+ .../MARATHON_PETROLEUM_REDUCES_CRUDE_POSTINGS.txt  |   7 +
+ .../data/MARRIOTT_lt_MHS_TO_SELL_HOTEL.txt         |   6 +
+ .../MARSHALL_STEEL_DETAILS_GAIN_FROM_UNIT_SALE.txt |   5 +
+ ...CHUSETTS_INVESTORS_GROWTH_STOCK_FUND_PAYOUT.txt |   3 +
+ .../MAYFAIR_INDUSTRIES_INC_lt_MAYF_4TH_QTR_NET.txt |   6 +
+ .../MCI_lt_MCIC_GETS_PENNEY_lt_JCP_CONTRACT.txt    |   9 +
+ ...EAN'S_lt_MII_U.S._LINES_SETS_ASSET_TRANSFER.txt |   8 +
+ ...DCO_CONTAINMENT_lt_MCCS_SETS_INITIAL_PAYOUT.txt |   4 +
+ ...CURY_ENTERTAINMENT_CORP_lt_MCRY_YEAR_NOV_30.txt |   3 +
+ ...Y_ENTERTAINMENT_lt_MCRY_SEES_BETTER_RESULTS.txt |   5 +
+ ...IAN_BANCORP_INC_lt_MRDN_SETS_REGULAR_PAYOUT.txt |   3 +
+ .../MERRILL_LYNCH_ISSUES_100_MLN_ECU_EUROBOND.txt  |   8 +
+ .../data/MERRILL_MANDATED_FOR_IEL_U.S._NOTE..txt   |  14 +
+ ...MFS_MANAGED_MUNCIPAL_BOND_TRUST_SETS_PAYOUT.txt |   5 +
+ ...FS_MANAGED_SECTORS_TRUST_DIVIDEND_INCREASED.txt |   3 +
+ ...S_MUNICIPAL_INCOME_TRUST_lt_MFM_SETS_PAYOUT.txt |   5 +
+ ...ICROBIO_lt_MRC_PLANS_ACQUISITION,_FINANCING.txt |  14 +
+ ...MICROSOFT_CORP_lt_MSFT_HALTS_MS-DOS_IMPORTS.txt |   8 +
+ .../data/MIDWAY_lt_MDWY_TO_EXPAND_SERVICE.txt      |   5 +
+ ..._TABAK_HAS_91.8_PCT_OF_PENN_TRAFFIC_lt_PNF_.txt |  12 +
+ .../data/MOBIL_PLANS_TO_OPEN_OFFICE_IN_PEKING.txt  |   8 +
+ ...LAN_TO_OPEN_PEKING_OFFICE,_CHINA_DAILY_SAYS.txt |   8 +
+ ...MOBIL_lt_MOB_UNIT_TO_PRODUCE_FOOD_PACKAGING.txt |  14 +
+ ...ULAR_BIOSYSTEMS_lt_MOBI_OFFERS_NEW_PRODUCTS.txt |   6 +
+ ...ONTEDISON_CONCLUDES_TALKS_WITH_ANTIBIOTICOS.txt |   8 +
+ ...ISON_UNIT_ISSUES_50_MLN_AUSTRALIAN_DLR_BOND.txt |   8 +
+ .../data/MONTREAL_EXCHANGE_NAMES_NEW_PRESIDENT.txt |   7 +
+ ...RISON_KNUDSEN_lt_MRN_GETS_NAVAL_STATION_JOB.txt |   7 +
+ .../data/MORSE_SHOE_INC_lt_MRS_4TH_QTR_NET.txt     |   4 +
+ ...LTI-STEP_TO_SELL_LADDER_UNIT,_CANCEL_SHARES.txt |  15 +
+ .../MUNSINGWEAR_INC_lt_MUN_4TH_QTR_JAN_3_LOSS.txt  |   6 +
+ .../MURGOLD_RESOURCES_HAS_PARTIAL_GOLD_ASSAYS.txt  |   9 +
+ ...RGOLD_RESOURCES_lt_MGDVF_HAS_PARTIAL_ASSAYS.txt |   9 +
+ ...AL_OF_OMAHA_INTEREST_SHARES_lt_MUO_QTLY_DIV.txt |   3 +
+ .../N.Y._BANK_DISCOUNT_BORROWINGS_64_MLN_DLRS.txt  |   9 +
+ ...NTRAL_BANK_SEES_SLOWER_MONEY,_CREDIT_GROWTH.txt |  16 +
+ ...N.Z._MONEY_SUPPLY_RISES_3.6_PCT_IN_DECEMBER.txt |  15 +
+ ...._OFFICIAL_FOREIGN_RESERVES_FALL_IN_JANUARY.txt |   5 +
+ ...._QUARTERLY_CURRENT_ACCOUNT_DEFICIT_NARROWS.txt |  22 +
+ ..._TRADING_BANK_DEPOSIT_GROWTH_RISES_SLIGHTLY.txt |   8 +
+ .../NACCO_INDUSTRIES_lt_NC_UNIT_TO_BE_SOLD.txt     |  10 +
+ ...ONAL_AMUSEMENTS_AGAIN_UPS_VIACOM_lt_VIA_BID.txt |  11 +
+ ...NAL_AVERAGE_PRICES_FOR_FARMER-OWNED_RESERVE.txt |  16 +
+ ...ONAL_BANK_ISSUES_MORTGAGE-BACKED_SECURITIES.txt |  12 +
+ ...TIONAL_EARLY_WARNING_SEEKS_OMEGA_BALLISTICS.txt |   6 +
+ ...ONAL_HEALTH_ENHANCEMENT_lt_NHES_NEW_PROGRAM.txt |   7 +
+ ...AL_INTERGROUP_lt_NII_TO_OFFER_PERMIAN_UNITS.txt |  10 +
+ .../data/NAVISTAR_lt_NAV_DEBT_UPGRADED_BY_S_P.txt  |  10 +
+ ...CR_CORP_lt_NCR_UNIT_SIGNS_DISTRIBUTION_PACT.txt |  11 +
+ .../data/NCR_lt_NCR_SIGNS_LICENSE_AGREEMENT.txt    |   3 +
+ ...RLANDSE_GASUNIE_ISSUES_100_MLN_DLR_EUROBOND.txt |   7 +
+ ...ER_SIDE_OPTIMISTIC_ON_ROTTERDAM_PORT_ISSUES.txt |  23 +
+ ...ETHERLANDS_GRANTS_47_MLN_DLRS_TO_BANGLADESH.txt |   6 +
+ .../data/NEUTRAL_BUDGET_EXPECTED_IN_SINGAPORE.txt  |  47 ++
+ .../NEWPORT_CORP_lt_NESP_2ND_QTR_JAN_31_NET.txt    |   4 +
+ ...W_DUTCH_ADVANCES_TOTAL_4.8_BILLION_GUILDERS.txt |   8 +
+ .../NEW_YORK_BUSINESS_LOANS_FALL_195_MLN_DLRS.txt  |   7 +
+ .../NEW_ZEALAND_CANCELS_WEEKLY_T-BILL_TENDER.txt   |   8 +
+ ...N_KOKAN_STEEL_AFFILIATES_CONSIDERING_MERGER.txt |  13 +
+ ..._LIGHT_METAL_CONTINUES_ALUMINIUM_OUTPUT_CUT.txt |  10 +
+ ...L_FINANCIERE_ROBUR_ISSUE_FRENCH_FRANC_BONDS.txt |  20 +
+ .../NOLAND_lt_NOLD_FEBRUARY_SALES_OFF_TWO_PCT.txt  |   5 +
+ ...HERN_TELECOM_LTD_lt_NT_DECLARES_STOCK_SPLIT.txt |   4 +
+ ...TH_AMERICAN_GROUP_lt_NAMG_BUYS_GEORGIA_FIRM.txt |   7 +
+ ...TH_ATLANTIC_INDUSTRIES_INC_lt_NATL_YEAR_NET.txt |   4 +
+ ...BUNDESBANK_POLICY_CHANGES_EXPECTED_THURSDAY.txt |  24 +
+ ...UCLEAR_DATA_lt_NDI_GETS_EXTENSIONS_ON_LOANS.txt |  18 +
+ .../data/NUEUTROGENA_lt_NGNA_TO_BUY_BACK_STOCK.txt |   7 +
+ ...YMEX_RULE_CHANGE_SEEN_BOOSTING_ENERGY_TRADE.txt |  10 +
+ .../NYMEX_TO_SUBMIT_PROPANE_PROPOSAL_TO_CFTC.txt   |  23 +
+ ...YMEX_WILL_EXPAND_OFF-HOUR_TRADING_APRIL_ONE.txt |  25 +
+ ...SE_TO_STUDY_REGULATION_OF_SECURITY_INDUSTRY.txt |  16 +
+ ...OCCIDENTAL_lt_OXY_UNIT_TO_REDEEM_DEBENTURES.txt |  13 +
+ ...ECD_SAYS_JAPAN_RESOLVED_TO_STIMULATE_DEMAND.txt |   8 +
+ .../OERLIKON_UNIT_REJECTS_DUTCH_PATENT_CHARGES.txt |  10 +
+ ...L_INQUIRY_SET_FOR_AUSTRALIAN_WHEAT_INDUSTRY.txt |  24 +
+ ..._MATTRESS_lt_OMT_MAY_HAVE_LOWER_1ST_QTR_NET.txt |  12 +
+ .../OLIN_CORP_lt_OLM_TO_ELECT_NEW_CEO_IN_APRIL.txt |   6 +
+ ..._lt_OLN_NAMES_SUCCESSOR_FOR_CHIEF_EXECUTIVE.txt |   5 +
+ .../OLIVER'S_STORES_lt_OLVR_FILES_CHAPTER_11.txt   |   7 +
+ ..._MAY_HAVE_TO_MEET_TO_FIRM_PRICES_-_ANALYSTS.txt |  36 +
+ ...PRESIDENT_SAYS_OIL_MARKET_BEING_MANIPULATED.txt |  19 +
+ .../OPEC_WITHIN_OUTPUT_CEILING,_SUBROTO_SAYS.txt   |  20 +
+ .../ORACLE_SYSTEMS_CORP_lt_ORCL_TO_OFFER_STOCK.txt |   7 +
+ .../data/OSR_lt_OSRC_TO_MAKE_ACQUISITION.txt       |  12 +
+ ..._AND_MINOR_INC_lt_OBOD_RAISES_QTLY_DIVIDEND.txt |   3 +
+ ...CAR_lt_PCAR_AND_UNIT_DEBT_DOWNGRADED_BY_S_P.txt |   9 +
+ ...ACIFIC_WESTERN_FUSES_MANAGEMENT_WITH_CP_AIR.txt |  17 +
+ .../PACKAGING_SYSTEMS_CORP_lt_PAKS_4TH_QTR_NET.txt |   8 +
+ ...INEWEBBER_GROUP_lt_PWJ_TO_REDEEM_DEBENTURES.txt |   6 +
+ ...BER_lt_PWJ_UNIT_UPS_SHAER_SHOE_lt_SHS_STAKE.txt |  10 +
+ ...AKISTAN_COTTON_OUTPUT_REACHES_7.7_MLN_BALES.txt |  13 +
+ ...ISTAN_TO_RETENDER_FOR_RBD_PALM_OIL_TOMORROW.txt |   4 +
+ .../data/PAKISTAN_TO_TENDER_FOR_RBD_PALM_OIL.txt   |   4 +
+ .../PALL_CORP_lt_PLL_2ND_QTR_SALES_RISE_17_PCT.txt |   6 +
+ ...CORP_lt_PLL_SECOND_QUARTER_SALES,_ORDERS_UP.txt |   6 +
+ ...HANDLE'S_lt_PEL_TRUNKLINE_REDUCES_GAS_RATES.txt |   9 +
+ .../data/PAN_AM_lt_PN_FEBRUARY_LOAD_FACTOR_UP.txt  |   8 +
+ ...ARLUX_FRAGRANCES_COMPLETES_INITIAL_OFFERING.txt |   8 +
+ ...X_SIGNS_500_MLN_DLR_JAPAN_LOAN_FOR_PIPELINE.txt |  18 +
+ .../data/PENRIL_lt_PNL_SEEKS_TO_SELL_TWO_UNITS.txt |  10 +
+ ...S_BANCORPORATION_lt_PEOP_QUARTERLY_DIVIDEND.txt |   2 +
+ ..._SEES_SHAREHOLDER_SUPPORT_IN_AMI_lt_AMI_BID.txt |  61 ++
+ .../data/PETROLITE_CORP_lt_PLIT_SETS_PAYOUT.txt    |   2 +
+ .../PHILADELPHIA_PORT_CLOSED_BY_TANKER_CRASH.txt   |  10 +
+ ...ILIPPINES_HEADS_CONFIDENTLY_INTO_DEBT_TALKS.txt |  24 +
+ .../PHILIPPINE_LONG_DISTANCE_lt_PHI_YEAR_NET.txt   |   7 +
+ ...PPINE_PLANNING_CHIEF_URGES_PESO_DEVALUATION.txt |  24 +
+ ...TTSTON_lt_PCO_AGREES_TO_ACQUIRE_WTC_lt_WAF_.txt |  15 +
+ .../data/PITTWAY_CORP_lt_PRY_4TH_QTR_NET.txt       |   4 +
+ .../POGO_lt_PPP_CONSOLIDATES_TWO_DIVISIONS.txt     |   5 +
+ ...H_BANKER_PLEASED_WITH_WORLD_BANK,_IMF_TALKS.txt |  17 +
+ ...LL_MAJORITY_DISAPPROVE_OF_REAGAN_PRESIDENCY.txt |  10 +
+ ...MERIC_RESOURCES_CORP_lt_POLR_2ND_QTR_DEC_31.txt |   4 +
+ ..._TECHNOLOGIES_lt_PORX_SETS_INITIAL_DIVIDEND.txt |   4 +
+ ...OTOMAC_ELECTRIC_POWER_CO_lt_POM_JANUARY_NET.txt |   6 +
+ .../POTOMAC_ELECTRIC_POWER_CO_lt_POM_JAN_NET.txt   |   7 +
+ ...D_LEGAL_lt_PPD_GETS_I.C.H._lt_ICH_FINANCING.txt |  18 +
+ ...REFERRED_HEALTHCARE_LTD_lt_PHCC_4TH_QTR_NET.txt |   4 +
+ ...RED_HEALTH_CARE_LTD_lt_PHCC_YEAR_DEC_31_NET.txt |   3 +
+ .../PRESIDENTIAL_AIRWAYS_lt_PAIR_PACT_APPROVED.txt |   6 +
+ ...ESIDENTIAL_AIR_lt_PAIR_TO_START_NEW_SERVICE.txt |  10 +
+ .../PRESIDENTIAL_REALTY_CORP_lt_PDO_ANNUAL_NET.txt |   4 +
+ .../PRIME_COMPUTER_lt_PRM_UNVEILS_PC_SOFTWARE.txt  |  13 +
+ .../PRODUCER_SPLIT_HEATS_UP_COFFEE_QUOTA_TALKS.txt |  38 +
+ ...POSED_OFFERINGS_RECENTLY_FILED_WITH_THE_SEC.txt |  15 +
+ ...OLATOR_lt_PCC_IN_BUYOUT_WITH_HUTTON_lt_EFH_.txt |  41 +
+ ..._TO_BUY_FOUR_747-400'S_FOR_ONE_BILLION_DLRS.txt |  22 +
+ .../QATAR_UNVEILS_BUDGET_FOR_FISCAL_1987_88.txt    |  29 +
+ ..._EXPLORATION_INC_lt_QEDX_2ND_QTR_JAN_31_NET.txt |   4 +
+ ...QUAKER_OATS_lt_OAT_FILES_SHELF_REGISTRATION.txt |   8 +
+ ...EC'S_CAISSE_DES_JARDINS_ISSUES_YEN_EUROBOND.txt |   9 +
+ ...EBECOR_lt_PQB_HEAD_SEES_NEW_VENTURES_LIKELY.txt |  57 ++
+ ....R._NABISCO_UNIT_FORMS_OVERSEEING_COMMITTEE.txt |   8 +
+ ..._SCHERER_lt_SCHC_SETS_PREFERRED_STOCK_OFFER.txt |   9 +
+ ...S_CIA_MAN_WITHDRAWS,_VICTIM_OF_IRAN_SCANDAL.txt |   9 +
+ .../REAGAN_AND_BAKER_BEGIN_TASK_OF_REBUILDING.txt  |  52 ++
+ ...AGAN_APPROVAL_RATING_FALLS_TO_FOUR-YEAR_LOW.txt |   9 +
+ .../REAGAN_TO_ADDRESS_NATION_WEDNESDAY_NIGHT.txt   |   9 +
+ .../data/REALMERICA_CO_lt_RACO_YEAR_NOV_30_NET.txt |   3 +
+ ...ORD_N.Z._FUTURES_VOLUMES_TRADED_IN_FEBRUARY.txt |   9 +
+ ...STONE_DETAILS_SWEETENED_VIACOM_lt_VIA_OFFER.txt |  40 +
+ .../data/RED_LION_INNS_FILES_PLANS_OFFERING.txt    |   7 +
+ ...GAN_DEPARTURE_MAKES_3RD_VOLCKER_TERM_LIKELY.txt |  65 ++
+ ...NCY_CRUISES_INC_lt_SHIP_ELECTS_NEW_CHAIRMAN.txt |   8 +
+ ...ELIEF_TO_U.S._CORN_OATS_GROWERS_SAID_LIKELY.txt |  12 +
+ .../data/REPORT_COULD_BE_FINAL_BLOW_FOR_REGAN.txt  |  37 +
+ ...LICANS_EYE_BIGGER_U.S._CONSERVATION_RESERVE.txt |   9 +
+ ...UBLIC_AUTOMOTIVE_PARTS_lt_RAUT_4TH_QTR_LOSS.txt |   5 +
+ .../REUTERS_TO_CARRY_JIJI_FINANCIAL_SERVICES.txt   |   9 +
+ ...TERS_lt_RTRSY_IN_REAL_ESTATE_MARKET_VENTURE.txt |   9 +
+ .../REUTER_DEALING_SERVICE_INTRODUCED_IN_CHINA.txt |   7 +
+ .../REX-NORECO_INC_lt_RNX_1ST_HALF_JAN_31_NET.txt  |   3 +
+ .../data/REXNORD_lt_REX_TO_REDEEM_RIGHTS.txt       |   6 +
+ ...E-POULENC_TO_LAUNCH_INVESTMENT_CERTIFICATES.txt |  17 +
+ ...KWELL_lt_ROK_GETS_28.3_MLN_DLR_B-1_CONTRACT.txt |   3 +
+ .../data/ROHR_INDUSTRIES_lt_RHR_SETTLES_STRIKE.txt |   8 +
+ ...OPAK_lt_ROPK_HAS_34_PCT_OF_BUCKHORN_lt_BKN_.txt |  13 +
+ ...PATCH_lt_RPCH_REJECTS_DIAGNOSTIC_lt_DRS_BID.txt |  11 +
+ ...CH_lt_RPCH_TO_RESPOND_TO_DIAGNOSTIC_lt_DRS_.txt |  12 +
+ .../ROTTERDAM_PORT_UNION_AND_EMPLOYERS_TO_MEET.txt |  13 +
+ .../data/S-K-I_LTD_lt_SKII_2ND_QTR_JAN_25_NET.txt  |   4 +
+ .../SAAB-SCANIA_ISSUES_150_MLN_DLR_EUROBOND.txt    |   7 +
+ ...SAATCHI_AND_SAATCHI_lt_SACHY_COMBINES_UNITS.txt |   7 +
+ ..._TILNEY_BUYS_STAKE_IN_U.S._INSURANCE_BROKER.txt |   7 +
+ ...ANTA_ANITA_REALTY_lt_SAR_QUARTERLY_DIVIDEND.txt |   3 +
+ ...N_MIGUEL_BOARD_APPOINTMENT_MAY_MEAN_CHANGES.txt |  39 +
+ ...ARABIA_REITERATES_COMMITMENT_TO_OPEC_ACCORD.txt |  10 +
+ ...I_ARABIA_REITERATES_COMMITMENT_TO_OPEC_PACT.txt |  28 +
+ ...DI_FEBRUARY_CRUDE_OUTPUT_PUT_AT_3.5_MLN_BPD.txt |  30 +
+ .../data/SAUDI_RIYAL_DEPOSIT_RATES_EASE.txt        |  13 +
+ .../data/SAUDI_RIYAL_DEPOSIT_RATES_REMAIN_FIRM.txt |  14 +
+ ...ULT_HOMES_OFFERING_PRICED_AT_FIVE_DLRS_UNIT.txt |  11 +
+ ...IFIC_MICRO_SYSTEMS_lt_SMSI_ACUIRES_SUPERMAC.txt |   9 +
+ .../SCOTT'S_HOSPITALITY_ACQUIRES_CAPITAL_FOOD.txt  |   5 +
+ ...OTTY'S_lt_SHB_SALES_UP_FIVE_PCT_IN_FEBRUARY.txt |   7 +
+ ...C_SYDNEY_COST_REVIEW_MAY_ELIMINATE_PRODUCTS.txt |   8 +
+ ...lt_S_DEAN_WITTER_UNIT_AGREES_TO_SEC_CENSURE.txt |  22 +
+ .../SEARS_lt_S_TO_RESTRUCTURE_DISTRIBUTION.txt     |  21 +
+ .../SECURITY_PACIFIC_lt_SPC_COMPLETES_MERGER.txt   |   7 +
+ ...SEC_PROBES_1986_TRE_lt_TRE_TAKEOVER_ATTEMPT.txt |  30 +
+ ...C_STAFF_ADVISES_FRAUD_CHARGES_AGAINST_WPPSS.txt |  24 +
+ ...TORS_INTRODUCE_EXPORT_LICENSING_REFORM_BILL.txt |  17 +
+ .../SENIOR_DELEGATES_PESSIMISTIC_ON_ICO_TALKS.txt  |   9 +
+ ..._ENGINEERING_MAKES_12.5_MLN_DLR_US_PURCHASE.txt |  10 +
+ ...RVICE_CORP_INTERNATIONAL_lt_SRV_3RD_QTR_NET.txt |   8 +
+ ...HARE_TRADING_IN_CHEUNG_KONG_GROUP_SUSPENDED.txt |   9 +
+ ...SHEARSON_LEHMAN_NAMES_NEW_MANAGING_DIRECTOR.txt |   6 +
+ .../data/SHULTZ_LIKELY_TO_VISIT_MOSCOW_SOON.txt    |   7 +
+ ...SHULTZ_SAYS_NO_RESIGNATION_OVER_IRAN_REPORT.txt |   9 +
+ ...HULTZ_VISIT_TO_MOSCOW_POSSIBLE,_SAY_SOVIETS.txt |   9 +
+ .../SHV_SAYS_IT_MAKING_TENDER_OFFER_FOR_IC_GAS.txt |  15 +
+ ...IMEX_TRADING_VOLUME_HITS_RECORD_IN_FEBRUARY.txt |   8 +
+ ...NGAPORE_EXCHANGE_SEEKING_NASDAQ_LONDON_LINK.txt |  35 +
+ ....S._VENTURE_IN_CHINA_TO_MAKE_RINSING_AGENTS.txt |   7 +
+ ...F_ISSUING_THREE_BILLION_FRANC_DOMESTIC_BOND.txt |   7 +
+ ...lt_SNG_COMPLETES_PRATT_WHITNEY_lt_UTC_ORDER.txt |   6 +
+ ...WARE_COS_SUPPORT_NEW_APPLE_lt_AAPL_PRODUCTS.txt |  11 +
+ .../data/SONY_TO_EXPAND_U.K._TELEVISION_OUTPUT.txt |  10 +
+ .../data/SORG_lt_SRG_STOCKHOLDERS_FORM_GROUP.txt   |   7 +
+ ...KOREA'S_LEADING_INDICATORS_FALL_IN_DECEMBER.txt |   7 +
+ ...TH_KOREAN_TRADE_SURPLUS_NARROWS_IN_FEBRUARY.txt |   7 +
+ ..._KOREA_TO_HOLD_CURRENT_ACCOUNT_SURPLUS_DOWN.txt |   9 +
+ ...SPANISH_FARMERS_BATTLE_POLICE_IN_N.E._SPAIN.txt |   9 +
+ .../SPANISH_FARMERS_PROTEST,_THEN_CALL_TRUCE.txt   |   9 +
+ .../data/SPRINGBOARD_lt_SPBD_IN_DEAL.txt           |   6 +
+ ...I_LANKAN_BANK_OFFERS_250_MLN_RUPEES_T-BILLS.txt |   4 +
+ ...DARD_MOTORS_PRODUCTS_INC_lt_SMP_4TH_QTR_NET.txt |   4 +
+ .../STANDARD_OIL_lt_SRD_TO_FORM_FINANCIAL_UNIT.txt |   7 +
+ ...ANDARD_OIL_lt_SRD_TO_ISSUE_SWISS_FRANC_NOTE.txt |   8 +
+ .../data/STANDARD_TRUSTCO_SEES_BETTER_YEAR.txt     |   9 +
+ ...NSBURY_MINING_lt_STBY_GETS_FUNDING_FOR_MINE.txt |  12 +
+ .../data/STAR_TECHNOLOGIES_TO_TRADE_ON_NASDAQ.txt  |   7 +
+ ...TATUS_GAME_lt_STGM_TO_INTRODUCE_VIDEO_BINGO.txt |   4 +
+ .../data/STC_PLC_lt_STCL.L_YEAR_TO_END-1986.txt    |  10 +
+ ...TERLING_SOFTWARE_lt_SSW_NOTE_HOLDERS_OK_BUY.txt |   5 +
+ .../STONE_lt_STO_SPLITS_STOCK,_RAISES_PAYOUT.txt   |   6 +
+ ..._AND_SHOP_COS_INC_lt_SHP_4TH_QTR_JAN_31_NET.txt |  11 +
+ ...TROBER_ORGANIZATION_INC_lt_STRB_4TH_QTR_NET.txt |   5 +
+ .../data/STRONG_EARTHQUAKE_HITS_NEW_ZEALAND.txt    |  19 +
+ ...UDY_GROUP_URGES_INCREASED_U.S._OIL_RESERVES.txt |  17 +
+ ...SUFFIELD_FINANCIAL_CORP_lt_SFCP_SELLS_STOCK.txt |   5 +
+ ...UFFIELD_FINANCIAL_lt_SSBK_GETS_FED_APPROVAL.txt |   5 +
+ .../data/SUGAR_QUOTA_IMPORTS_DETAILED_--_USDA.txt  |  29 +
+ ...UPPLIES_OF_U.K._INDEX-LINKED_BOND_EXHAUSTED.txt |  10 +
+ ...SWEDEN_HAS_CURRENT_PAYMENTS_SURPLUS_IN_1986.txt |   8 +
+ ...TO_GO_AHEAD_WITH_S._AFRICAN_TRADE_SANCTIONS.txt |   8 +
+ .../data/SWISS_CAPITAL_EXPORTS_RISE_IN_JANUARY.txt |   8 +
+ ...S_ECONOMY_IN_EXCELLENT_CONDITION,_OECD_SAYS.txt |  41 +
+ ...S_HAVE_NET_GAIN_IN_1985_GOVERNMENT_FINANCES.txt |  25 +
+ ...ISS_SIGHT_DEPOSITS_RISE_3.10_BILLION_FRANCS.txt |  10 +
+ ...TECH_INTERENATIONAL_INC_lt_SYNE_4TH_QTR_NET.txt |   5 +
+ .../SYSTEMATICS_INC_lt_SYST_REGULAR_PAYOUT.txt     |   3 +
+ .../S_P_MAY_DOWNGRADE_MACK_TRUCKS_lt_MACK_DEBT.txt |  10 +
+ ..._BANKS_ASKED_TO_TAKE_PART_IN_INDONESIA_LOAN.txt |  15 +
+ ...CENTRAL_BANK_ISSUES_CERTIFICATES_OF_DEPOSIT.txt |   7 +
+ ...WAN_OFFSHORE_BANKING_ASSETS_RISE_IN_JANUARY.txt |   9 +
+ .../data/TAIWAN_PLANS_NEW_TARIFF_CUTS.txt          |  22 +
+ ...WAN_POWER_FIRM_PLANS_MORE_FOREIGN_DEBT_CUTS.txt |  10 +
+ ...REJECTS_TEXTILE_MAKER_PLEA_ON_EXCHANGE_RATE.txt |   9 +
+ ...IWAN_TO_SEEK_HIGHER_TEXTILE_EXPORTS_TO_U.S..txt |  11 +
+ ...LKING_POINT_BANKAMERICA_lt_BAC_EQUITY_OFFER.txt |  39 +
+ .../TALKING_POINT_VIACOM_INTERNATIONAL_lt_VIA_.txt |  57 ++
+ ...KS_SHOW_NEW_CANADIAN_CONFIDENCE,_GROUP_SAYS.txt |  28 +
+ .../data/TANDEM_lt_TNDM_HAS_HOME_SHOPPING_DEAL.txt |   8 +
+ ...ANIA_SAYS_NO_NEED_FOR_NEW_ECONOMIC_MEASURES.txt |  11 +
+ .../TECHAMERICA_GROUP_INC_lt_TCH_4TH_QTR_LOSS.txt  |   5 +
+ ...CHNOLOGY_CHIP_INDUSTRY_SEEKS_CUSTOM_DESIGNS.txt |  58 ++
+ ...NOLOGY_DEVELOPMENT_CORP_lt_TDCK_4TH_QTR_NET.txt |   5 +
+ .../TELECREDIT_INC_lt_TCRD_3RD_QTR_JAN_31_NET.txt  |   4 +
+ ...PLE_INLAND_INT'L_PAPER_UP_ON_RAISED_OPINION.txt |  13 +
+ .../TESCO_ISSUES_100_MLN_STG_CONVERTIBLE_BOND.txt  |  13 +
+ .../TEXACO_CANADA_lt_TXC_LOWERS_CRUDE_POSTINGS.txt |   6 +
+ .../TEXAS_AIR_lt_TEX_UNIT_TO_BEGIN_NEW_SERVICE.txt |  10 +
+ ...TEXAS_COMMERCE_BANCSHARES_lt_TCB_FILES_PLAN.txt |   6 +
+ .../TEXAS_INSTRUMENTS_lt_TXN_DEVELOPS_NEW_CHIP.txt |   8 +
+ ..._TELESERVICES_CORP_lt_TFCS_YEAR_NOV_30_LOSS.txt |   4 +
+ ...AILAND_ANNOUNCES_THIRD_TAPIOCA_QUOTA_FOR_EC.txt |   8 +
+ ...IRWAYS_INTERNATIONAL_TO_ALMOST_DOUBLE_FLEET.txt |  16 +
+ ...RICE_EXPORTS_RISE_IN_WEEK_ENDED_FEBRUARY_24.txt |   9 +
+ .../THE_JAPAN_FUND_lt_JPN_GETS_BUYOUT_OFFER.txt    |   8 +
+ ...THOMSON_MCKINNON_UNIT'S_CMO_OFFERING_PRICED.txt |  17 +
+ .../data/THREE_CONVICTED_IN_HOME_STATE_FAILURE.txt |  27 +
+ .../data/THUNANDER_CORP_lt_THDR_YEAR_NET.txt       |   4 +
+ ...GRAIN_EXCHANGE_TO_RAISE_MARGIN_REQUIREMENTS.txt |  17 +
+ .../data/TONKA_CORP_lt_TKA_RAISES_DIVIDEND.txt     |   2 +
+ .../TONKA_lt_TKA_EXPANDS_AUSTRALIAN_OPERATIONS.txt |   7 +
+ ...ORCHMARK_lt_TMK_AUTHORIZES_STOCK_REPURCHASE.txt |   8 +
+ ...CHMARK_lt_TMK_SELLS_SINKING_FUND_DEBENTURES.txt |   9 +
+ ...REPORT_DIMINISHES_REAGAN'S_HOPES_OF_REBOUND.txt |  60 ++
+ ...RADERS_DETAIL_FRENCH_CEREAL_EXPORT_REQUESTS.txt |  19 +
+ ...DING_DELAYED_ON_SINGAPORE'S_NEW_BILL_MARKET.txt |  29 +
+ ...RANSAMERICA_SELLS_OCCIDENTAL_LIFE_AUSTRALIA.txt |  17 +
+ ...SAMERICA_lt_TA_TO_HAVE_AUSTRALIAN_SALE_GAIN.txt |   7 +
+ .../data/TRANZONIC_COS_lt_TNZ_SETS_QUARTERLY.txt   |   3 +
+ .../TREASURY_BALANCES_AT_FED_ROSE_ON_FEB_25.txt    |   7 +
+ ...TRIANGLE_INDUSTRIES_INC_lt_TRI_4TH_QTR_LOSS.txt |  18 +
+ .../TUESDAY_MORNING_INC_lt_TUES_4TH_QTR_NET.txt    |   5 +
+ .../TULTEX_CORP_lt_TTX_SETS_QUARTERLY_DIVIDEND.txt |   3 +
+ ...KISH_RETAIL_PRICES_RISE_2.7_PCT_IN_FEBRUARY.txt |   7 +
+ ...R_CORP_lt_TUR_UNIT_BUILDS_HOSPITAL_ADDITION.txt |   7 +
+ ...TWO_S_L_FAILURES_RAISE_U.S._1987_TOLL_TO_10.txt |   9 +
+ .../data/TYLAN_lt_TYLN_RENEWS_CREDIT_LINE.txt      |   8 +
+ .../data/U.K._CLEARS_CONS_GOLD_U.S._PURCHASE.txt   |   6 +
+ .../U.K._CONFIRMS_JANUARY_STERLING_M3_RISE.txt     |  20 +
+ ...ONEY_MARKET_DEFICIT_FORECAST_AT_350_MLN_STG.txt |   8 +
+ ...ONEY_MARKET_DEFICIT_FORECAST_AT_800_MLN_STG.txt |   8 +
+ ...K._MONEY_MARKET_GIVEN_24_MLN_STG_ASSISTANCE.txt |   6 +
+ ...K._MONEY_MARKET_OFFERED_BORROWING_FACILTIES.txt |  13 +
+ ...MONEY_MARKET_RECEIVES_37_MLN_STG_ASSISTANCE.txt |   6 +
+ ...MONEY_MARKET_SHORTAGE_FORECAST_REVISED_DOWN.txt |   5 +
+ ...._MONEY_MARKET_SHORTAGE_FORECAST_REVISED_UP.txt |   4 +
+ ...._RESERVES_SHOW_UNDERLYING_RISE_IN_FEBRUARY.txt |  22 +
+ ...SAYS_HAS_NO_ROLE_IN_BRAZIL_MORATORIUM_TALKS.txt |  33 +
+ .../U.S._ACTS_TO_PROTECT_KAISER_STEEL_RETIREES.txt |   7 +
+ ...APPROVES_BUYOUT_OF_COASTAL_BANCORP_lt_CSBK_.txt |   5 +
+ ..._ASKS_JAPAN_END_AGRICULTURE_IMPORT_CONTROLS.txt |  17 +
+ ...KS_JAPAN_TO_END_AGRICULTURE_IMPORT_CONTROLS.txt |  17 +
+ .../U.S._BANK_DISCOUNT_BORROWINGS_310_MLN_DLRS.txt |  35 +
+ ...._BRASS_MILL_COPPER_STOCKS_LOWER_IN_JANUARY.txt |  10 +
+ ...._CONSTRUCTION_SPENDING_ROSE_1.0_PCT_IN_JAN.txt |  19 +
+ ...CORPORATE_FINANCE_-_ASSET-BACK_MARKET_GROWS.txt |  49 ++
+ ....S._DATA_POINT_TO_CAPITAL_SPENDING_SLOWDOWN.txt |  42 +
+ ...DELEGATION_PLANS_TO_LEAVE_ICO_TALKS_TUESDAY.txt |  10 +
+ .../data/U.S._ELECTRONIC_SALES_FLAT_IN_1986.txt    |  14 +
+ ..._FARM_CREDIT_RESCUE_BILL_SEEN_BEFORE_EASTER.txt |  41 +
+ .../data/U.S._FINANCIAL_ANALYSTS_-_March_3.txt     |   3 +
+ .../data/U.S._GRAIN_CARLOADINGS_FALL_IN_WEEK.txt   |   7 +
+ .../data/U.S._INTEC_INC_lt_INTK_4TH_QTR_NET.txt    |   9 +
+ .../data/U.S._LAUNCHES_WEATHER_SATELLITE.txt       |  16 +
+ .../U.S._LEADING_INDEX_FELL_1.0_PCT_IN_JANUARY.txt |  21 +
+ ...U.S._M-1_MONEY_SUPPLY_ROSE_2.1_BILLION_DLRS.txt |   8 +
+ ...._NON-FARM_PRODUCTIVITY_FELL_2.2_PCT_IN_QTR.txt |  27 +
+ ...U.S._REFINERY_COPPER_STOCKS_FALL_IN_JANUARY.txt |  11 +
+ ..._REGULATOR_CLOSES_BANKS_IN_TEXAS,_LOUISIANA.txt |  14 +
+ ...._SAYS_TIN_DISPOSALS_WILL_NOT_AFFECT_ACCORD.txt |  11 +
+ .../U.S._SIGNS_TAX_TREATY_WITH_VIRGIN_ISLANDS.txt  |  11 +
+ .../U.S._SUGAR_IMPORTS_DOWN_IN_WEEK_-_USDA.txt     |  10 +
+ ...U.S._TREASURY_PART_OF_ARGENTINE_BRIDGE_LOAN.txt |  28 +
+ .../U.S._TROOPS_GET_COST-OF-LIVING_INCREASE.txt    |  11 +
+ ....S._WEEKLY_SOYBEAN_CRUSH_21,782,929_BUSHELS.txt |   9 +
+ .../U.S._WHEAT_BONUS_TO_SOVIET_CALLED_DORMANT.txt  |  35 +
+ .../U.S._WHEAT_GROUPS_CALL_FOR_GLOBAL_ACTION.txt   |  26 +
+ ...UAL_lt_UAL_UNIT_ATTACKED_ON_MINORITY_HIRING.txt |  13 +
+ ...ANTS_TO_REVIVE_AMERICAN_MOTORS_lt_AMO_TALKS.txt |   9 +
+ ...R_SELLS_U.K._MARKETING_UNITS_FOR_50_MLN_STG.txt |  10 +
+ ...ILEVER_IMPROVES_IN_MOST_SECTORS_DURING_1986.txt |  16 +
+ ...NION_NATIONAL_lt_UNBC_SIGNS_DEFINITIVE_PACT.txt |   6 +
+ .../data/UNISYS_CORP_lt_UIS_SETS_QUARTERLY.txt     |   3 +
+ ...NITED_MERCHANTS_lt_UMM_TO_BUY_ITS_OWN_STOCK.txt |   8 +
+ ...NITED_PRESIDENTIAL_CORP_lt_UPCO_4TH_QTR_NET.txt |   6 +
+ ...RSAL_HEALTH_REALTY_lt_UHT_IN_INITIAL_PAYOUT.txt |   4 +
+ ...CAL_lt_UCL_PLANS_LUBE_CENTERS_AT_TRUCKSTOPS.txt |   9 +
+ ...AL_lt_UCL_UNIT_CUTS_CRUDE_OIL_POSTED_PRICES.txt |   7 +
+ .../data/UP-RIGHT_INC_lt_UPRI_4TH_QTR_OPER_NET.txt |   8 +
+ ...A_SAID_UNLIKELY_TO_BROADEN_CORN_BONUS_OFFER.txt |  11 +
+ ..._WHEAT_BONUS_RUMORS_PERSIST_DESPITE_DENIALS.txt |  21 +
+ .../data/USX_lt_X_DEBT_DOWGRADED_BY_MOODY'S.txt    |   9 +
+ ...RP_lt_UCU_ACQUIRES_DOMINION_lt_D_SUBSIDIARY.txt |   4 +
+ .../UTILICORP_lt_UCU_COMPLETES_ACQUISITION.txt     |   6 +
+ .../VALLEY_FEDERAL_lt_VFED_NAMES_NEW_OFFICERS.txt  |   6 +
+ .../VANGUARD_TECHNOLOGIES_lt_VTI_WINS_CONTRACT.txt |   7 +
+ .../VARIAN_lt_VAR_,_SIEMENS_FORM_JOINT_VENTURE.txt |   8 +
+ .../VDO_UNIT_AND_THOMSON-CSF_IN_JOINT_VENTURE.txt  |   9 +
+ .../data/VERSATILE_TO_BUILD_POLAR_ICE_BREAKER.txt  |  20 +
+ .../data/VERSATILE_TO_SELL_UNIT_TO_VICON.txt       |   5 +
+ .../VIACOM_lt_VIA_RECEIVES_TWO_REVISED_OFFERS.txt  |  21 +
+ .../data/VIDEOTRON_BUYS_INTO_EXHIBIT_COMPANY.txt   |   4 +
+ .../VIDEO_SHOPPING_MALL_ADDS_FLORIDA_STATION.txt   |   5 +
+ ...uela_seeks_'flexibility'_from_banks-azpurua.txt |  32 +
+ ...LLENBERGS_FIGHT_BID_FOR_SWEDISH_MATCH_STAKE.txt |  34 +
+ ...COMMUNICATIONS_lt_WCI_IN_CONTRACT_WITH_ROSS.txt |   9 +
+ ...WICK_INSURANCE_MANAGERS_INC_lt_WIMI_4TH_QTR.txt |   8 +
+ ...E_MANAGEMENT_lt_WMX_VOTES_SPLIT,_UPS_PAYOUT.txt |   5 +
+ .../WAVEHILL_INTERNATIONAL_TO_MAKE_ACQUISITION.txt |  10 +
+ .../WESTERN_DIGITAL_lt_WDC_ADDS_E-MAIL_PACKAGE.txt |   9 +
+ ...WESTERN_DIGITAL_lt_WDC_ADDS_ELECTRONIC_MAIL.txt |   6 +
+ ...RN_TELE-COMMUNICATIONS_lt_WTLCA_JOINS_GROUP.txt |   9 +
+ .../WESTERN_UNION_lt_WU_NAMES_NEW_PRESIDENT.txt    |   7 +
+ ...GHOUSE_lt_WX_,_MATSUSHITA_lt_MC_SET_VENTURE.txt |   8 +
+ .../data/WHITEHALL_CORP_lt_WHT_4TH_QTR_NET.txt     |   4 +
+ ...USE_WITHDRAWS_GATES_NOMINATION_AS_CIA_CHIEF.txt |   9 +
+ .../WHITTAKER_CORP_lt_WKR_1ST_QTR_JAN_31_NET.txt   |   7 +
+ .../WHITTAKER_lt_WKR_TO_HAVE_GAINS_FROM_SALES.txt  |  17 +
+ ...RED_AMERICAN_EDUCATIONAL_lt_WAE_REGULAR_DIV.txt |   3 +
+ .../WOOLWORTH,_UNDERWOODS_FAIL_TO_AGREE_ON_BID.txt |   9 +
+ ...WORLD_MARKET_PRICE_FOR_UPLAND_COTTON_-_USDA.txt |  13 +
+ ...ITERS_GUILD_OF_AMERICA_STRIKES_TWO_NETWORKS.txt |  16 +
+ .../XEROX_CORP_lt_XRX_ADDS_CAPACITY_TO_SYSTEM.txt  |   8 +
+ ...EUTTER_BLASTS_PROPOSED_EC_OILS_AND_FATS_TAX.txt |  21 +
+ .../ZAIRE_ACCEPTS_TIN-EXPORT_QUOTA,_ATPC_SAYS.txt  |  15 +
+ ...BIA_TO_RETAIN_CURRENCY_AUCTION,_SAYS_KAUNDA.txt |  18 +
+ ...ATA_lt_ZOS_WON'T_PAY_INTEREST_ON_DEBENTURES.txt |  10 +
+ ...BWE'S_MAIZE_MOUNTAIN_POSES_ECONOMIC_PROBLEM.txt |  32 +
+ .../data/_lt_CINRAM_LTD_4TH_QTR_NET.txt            |   5 +
+ ...OFAB_INC_BUYS_GULFEX_FOR_UNDISCLOSED_AMOUNT.txt |   6 +
+ .../data/_lt_DAEWOO_CORP_CALENDAR_1986.txt         |   4 +
+ ...DAIWA_SECURITIES_CO_TO_SUPPLY_MARKET_UPDATE.txt |   8 +
+ .../_lt_DALE_BURDETT_INC_FACES_DAMAGE_CLAIM.txt    |  10 +
+ ...t_FRANKLIN_AGE_HIGH_INCOME_FUND_SETS_PAYOUT.txt |   3 +
+ ...KLIN_CALIFORNIA_TAX-FREE_INCOME_FUND_PAYOUT.txt |   3 +
+ ...RANKLIN_FEDERAL_TAX-FREE_INCOME_FUND_PAYOUT.txt |   3 +
+ .../data/_lt_FRANKLIN_GOLD_FUND_CUTS_DIVIDEND.txt  |   3 +
+ ...ANKLIN_NEW_YORK_TAX-FREE_INCOME_FUND_PAYOUT.txt |   3 +
+ ...KLIN_U.S._GOVERNMENT_SECURITIES_FUND_PAYOUT.txt |   3 +
+ .../_lt_FRANKLIN_UTILITIES_FUND_SETS_PAYOUT.txt    |   3 +
+ ...NZYME_,_PFIZER_lt_PFE_UNIT_IN_JOINT_VENTURE.txt |   8 +
+ .../data/_lt_GEORGE_WESTON_LTD_YEAR_NET.txt        |   3 +
+ .../inverted_index/data/_lt_GSW_INC_YEAR_NET.txt   |   5 +
+ ..._lt_HIGH_POINT_FINANCIAL_CORP_SETS_OFFERING.txt |   7 +
+ ...HST_AG_COMPLETES_CELANESE_lt_CZ_ACQUISITION.txt |   4 +
+ .../inverted_index/data/_lt_IVACO_INC_YEAR_NET.txt |   5 +
+ .../data/_lt_MEMOTEC_DATA_INC_YEAR_NET.txt         |   4 +
+ ...ULTI-STEP_PRODUCTS_INC_SIX_MTHS_DEC_31_LOSS.txt |   3 +
+ .../_lt_NATIONAL_SEA_PRODUCTS_LTD_4TH_QTR_NET.txt  |   9 +
+ ..._WINS_GOVERNMENT_OKAY_FOR_HUSKY_lt_HYO_DEAL.txt |  13 +
+ .../data/_lt_PAGE_PETROLEUM_LTD_YEAR_LOSS.txt      |   5 +
+ .../_lt_PANTRY_INC_INB_TALKS_ON_BEING_ACQUIRED.txt |   6 +
+ .../data/_lt_PORSCHE_AG_RAISING_U.S._PRICES.txt    |  13 +
+ .../data/_lt_PREMDOR_INC_4TH_QTR_NET.txt           |   4 +
+ ...UF_CORP_TO_PROCEED_WITH_BENEQUITY_lt_BH_BID.txt |   6 +
+ .../data/_lt_SAMSUNG_CO_CALENDAR_1986.txt          |   4 +
+ ...SCHULT_HOMES_CORP_MAKES_INITIAL_STOCK_OFFER.txt |   8 +
+ ..._SDC_SYDNEY_DEVELOPMENT_CORP_NINE_MTHS_LOSS.txt |   5 +
+ ...SIEMENS_AG_U.S_UNIT_TO_BEGIN_MAKING_SYSTEMS.txt |   9 +
+ ps5/release/apps/inverted_index/invertedIndex.ml   |  70 ++
+ ps5/release/apps/inverted_index/invertedIndex.mli  |   4 +
+ ps5/release/apps/inverted_index/reuters.txt        | 896 ++++++++++++++++++++
+ ps5/release/apps/word_count/data/reuters.txt       | 925 +++++++++++++++++++++
+ ps5/release/apps/word_count/data/test1.txt         |  10 +
+ ps5/release/apps/word_count/data/test2.txt         |   2 +
+ ps5/release/apps/word_count/wordCount.ml           |  74 ++
+ ps5/release/apps/word_count/wordCount.mli          |   4 +
+ ps5/release/async/aQueue.ml                        |  13 +
+ ps5/release/async/aQueue.mli                       |   9 +
+ ps5/release/async/examples.ml                      |  51 ++
+ ps5/release/async/warmup.ml                        |   8 +
+ ps5/release/async/warmup.mli                       |  15 +
+ ps5/release/controllerMain.ml                      |  49 ++
+ ps5/release/map_reduce/combiner.ml                 |  21 +
+ ps5/release/map_reduce/combiner.mli                |   6 +
+ ps5/release/map_reduce/localController.ml          |  21 +
+ ps5/release/map_reduce/localController.mli         |   4 +
+ ps5/release/map_reduce/mapReduce.ml                |  66 ++
+ ps5/release/map_reduce/mapReduce.mli               |  82 ++
+ ps5/release/map_reduce/protocol.ml                 |  40 +
+ ps5/release/map_reduce/protocol.mli                |  53 ++
+ ps5/release/map_reduce/remoteController.ml         |  11 +
+ ps5/release/map_reduce/remoteController.mli        |   7 +
+ ps5/release/map_reduce/worker.ml                   |  33 +
+ ps5/release/map_reduce/worker.mli                  |  14 +
+ ps5/release/workerMain.ml                          |  12 +
+ ps5/test.ml                                        |   5 +
+ ps5/writeup.pdf                                    | Bin 0 -> 111831 bytes
+ ps5/writeup/ps5b.pdf                               | Bin 0 -> 111831 bytes
+ ps5/writeup/ps5b.tex                               | 664 +++++++++++++++
+ 1019 files changed, 17873 insertions(+)
