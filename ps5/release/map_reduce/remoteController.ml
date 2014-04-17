@@ -99,7 +99,7 @@ module Make (Job : MapReduce.Job) = struct
              | `Ok (WResponse.MapResult r) -> return ((r :: inters), deg)
              | funny_message -> return (inters, (input :: deg)))
         in
-          (try_with f) >>=
+          (try_with ~extract_exn:true f) >>=
             (function
              | Core.Std.Ok (ins, degs) -> get_map ins degs ((r, w), xs)
              | Core.Std.Error exn ->
@@ -165,7 +165,7 @@ module Make (Job : MapReduce.Job) = struct
                  return (((k, o) :: gs), ds)
              | funny_message -> return (gs, ((k, l) :: ds)))
         in
-          (try_with f) >>=
+          (try_with ~extract_exn:true f) >>=
             (function
              | Core.Std.Ok (os, degs) -> get_reduce os degs ((r, w), xs)
              | Core.Std.Error exn ->
