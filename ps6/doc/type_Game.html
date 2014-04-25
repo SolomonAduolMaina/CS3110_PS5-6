@@ -1,0 +1,24 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
+<link title="Constant" rel="Chapter" href="Constant.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Util" rel="Chapter" href="Util.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Bots" rel="Chapter" href="Bots.html"><title>Game</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;game<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;state_of_game&nbsp;:&nbsp;<span class="constructor">Game</span>.game&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Definition</span>.state<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;game_of_state&nbsp;:&nbsp;<span class="constructor">Definition</span>.state&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Game</span>.game<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;init_game&nbsp;:&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Game</span>.game<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;handle_move&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Game</span>.game&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Definition</span>.move&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Game</span>.game&nbsp;<span class="constructor">Definition</span>.outcome<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;presentation&nbsp;:&nbsp;<span class="constructor">Game</span>.game&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Game</span>.game<br>
+<span class="keyword">end</span></code></body></html>

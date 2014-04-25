@@ -1,0 +1,237 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
+<link title="Constant" rel="Chapter" href="Constant.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Util" rel="Chapter" href="Util.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Bots" rel="Chapter" href="Bots.html"><title>Index of types</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Index of types</h1>
+<table>
+<tr><td align="left"><br>A</td></tr>
+<tr><td><a href="Definition.html#TYPEaction">action</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The types of actions a player can perform in response to an ActionRequest
+</div>
+</td></tr>
+<tr><td align="left"><br>B</td></tr>
+<tr><td><a href="Definition.html#TYPEboard">board</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Keeps track of everything on the physical gameboard.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEbuild">build</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Can only build on your turn
+</div>
+</td></tr>
+<tr><td align="left"><br>C</td></tr>
+<tr><td><a href="Definition.html#TYPEcard">card</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The types of development cards available in the game.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEcards">cards</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+All card lists in the game are encoded in this type so that 
+    players cannot look at cards they shouldn't be able to access
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEcolor">color</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+This is the forward cyclic order of player turns
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEcost">cost</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+In resource enumerated order (B,W,O,G,L)
+</div>
+</td></tr>
+<tr><td align="left"><br>D</td></tr>
+<tr><td><a href="Definition.html#TYPEdeck">deck</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Discard pile of cards played in discarded order.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEdiscard">discard</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The hex currently occupied by the robber.
+</div>
+</td></tr>
+<tr><td align="left"><br>G</td></tr>
+<tr><td><a href="Game.html#TYPEgame">game</a> [<a href="Game.html">Game</a>]</td>
+<td><div class="info">
+This is your custom state representation.
+</div>
+</td></tr>
+<tr><td align="left"><br>H</td></tr>
+<tr><td><a href="Definition.html#TYPEhand">hand</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td><a href="Definition.html#TYPEhex">hex</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>I</td></tr>
+<tr><td><a href="Definition.html#TYPEintersection">intersection</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+<code class="code">Some (c,s)</code> if the settlement <code class="code">s</code> of color <code class="code">c</code> exists on the board.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEinventory">inventory</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>K</td></tr>
+<tr><td><a href="Definition.html#TYPEknights">knights</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Number of knights the player has played thus far
+</div>
+</td></tr>
+<tr><td align="left"><br>L</td></tr>
+<tr><td><a href="Definition.html#TYPElargestarmy">largestarmy</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The three trophies the player can own (property of an individ.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEline">line</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Valid for two adjacent points.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPElongestroad">longestroad</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+True if the player currently has the largest army (most knights played)
+</div>
+</td></tr>
+<tr><td align="left"><br>M</td></tr>
+<tr><td><a href="Definition.html#TYPEmap">map</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The static map: 19 tiles, 9 ports standard.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEmaritimetrade">maritimetrade</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Resource type sold * resource type bought
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEmove">move</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The move types a player can make, in response to InitialRequest,
+    RobberRequest, DiscardRequest, TradeRequest, and ActionRequest, respectively
+</div>
+</td></tr>
+<tr><td align="left"><br>N</td></tr>
+<tr><td><a href="Definition.html#TYPEnext">next</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Color of the next player to be prompted * type of move requested
+    this is updated after every move, for the following move.
+</div>
+</td></tr>
+<tr><td align="left"><br>O</td></tr>
+<tr><td><a href="Definition.html#TYPEoutcome">outcome</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+<code class="code">Some c</code> if player <code class="code">c</code> has won; None if game is still in progress
+</div>
+</td></tr>
+<tr><td align="left"><br>P</td></tr>
+<tr><td><a href="Definition.html#TYPEpiece">piece</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Point list index.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEplaycard">playcard</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+RoadBuilding, YearOfPlenty is also valid with only one road, resource
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEplayer">player</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Player's color, cards they own, and trophies they have.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEpoint">point</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Maritime trade ratio.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEport">port</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td><a href="Definition.html#TYPEportresource">portresource</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Ports can either offer a trade ratio for a specific resource,
+    or can offer a generic ratio for any resource
+</div>
+</td></tr>
+<tr><td align="left"><br>R</td></tr>
+<tr><td><a href="Definition.html#TYPEratio">ratio</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td><a href="Definition.html#TYPErequest">request</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Five different move types that the game can request a player to make
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEresource">resource</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The resource types produced by the above terrains, respectively.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEroad">road</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td><a href="Definition.html#TYPErobber">robber</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td><a href="Definition.html#TYPErobbermove">robbermove</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The hex the robber will move to, and color of an adjacent player to rob,
+    if one is available
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEroll">roll</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Dice roll values.
+</div>
+</td></tr>
+<tr><td align="left"><br>S</td></tr>
+<tr><td><a href="Definition.html#TYPEsettlement">settlement</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Settlement type.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEstate">state</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+ALL the information needed to represent the current game state *
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEstructures">structures</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Deck of cards not yet drawn.
+</div>
+</td></tr>
+<tr><td align="left"><br>T</td></tr>
+<tr><td><a href="Definition.html#TYPEterrain">terrain</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+The six terrain types on the board hexes.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEtrade">trade</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+<code class="code">(id * cost1 * cost2)</code> is a (proposed) exchange of <code class="code">cost1</code> from active
+    for <code class="code">cost2</code> with <code class="code">id</code>.
+</div>
+</td></tr>
+<tr><td><a href="Definition.html#TYPEtrophies">trophies</a> [<a href="Definition.html">Definition</a>]</td>
+<td></td></tr>
+<tr><td><a href="Definition.html#TYPEturn">turn</a> [<a href="Definition.html">Definition</a>]</td>
+<td><div class="info">
+Current turn state keeps track of what has happened during the turn
+    and is renewed when a new turn begins
+</div>
+</td></tr>
+</table>
+</body>
+</html>

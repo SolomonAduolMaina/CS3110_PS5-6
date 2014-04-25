@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Util.html">
+<link rel="next" href="Bots.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
+<link title="Constant" rel="Chapter" href="Constant.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Util" rel="Chapter" href="Util.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Bots" rel="Chapter" href="Bots.html"><title>Game</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Util.html" title="Util">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Bots.html" title="Bots">Next</a>
+</div>
+<h1>Module <a href="type_Game.html">Game</a></h1>
+
+<pre><span class="keyword">module</span> Game: <code class="code">sig</code> <a href="Game.html">..</a> <code class="code">end</code></pre><div class="info module top">
+This is your custom state representation.
+    Make sure you have encoded *at least* all of the information in state 
+    such that all of the information in game is derivable
+    from information in state and vice versa.
+    Any information not derivable from state will likely
+    be wiped out from conversions.<br>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEgame"><span class="keyword">type</span> <code class="type"></code>game</span> </pre>
+<div class="info ">
+This is your custom state representation.
+    Make sure you have encoded *at least* all of the information in state 
+    such that all of the information in game is derivable
+    from information in state and vice versa.
+    Any information not derivable from state will likely
+    be wiped out from conversions.<br>
+</div>
+
+
+<pre><span id="VALstate_of_game"><span class="keyword">val</span> state_of_game</span> : <code class="type"><a href="Game.html#TYPEgame">game</a> -> <a href="Definition.html#TYPEstate">Definition.state</a></code></pre><div class="info ">
+Convert from your state representation.
+<p>
+Convert to your state representation.<br>
+</div>
+
+<pre><span id="VALgame_of_state"><span class="keyword">val</span> game_of_state</span> : <code class="type"><a href="Definition.html#TYPEstate">Definition.state</a> -> <a href="Game.html#TYPEgame">game</a></code></pre>
+<pre><span id="VALinit_game"><span class="keyword">val</span> init_game</span> : <code class="type">unit -> <a href="Game.html#TYPEgame">game</a></code></pre><div class="info ">
+Create a brand new initial game state. This is non-deterministic.
+    You may change this to experiment with alternate generators, such as 
+    gen_random_initial_state, to test your bot's decision making
+    in varied circumstances.<br>
+</div>
+
+<pre><span id="VALhandle_move"><span class="keyword">val</span> handle_move</span> : <code class="type"><a href="Game.html#TYPEgame">game</a> -> <a href="Definition.html#TYPEmove">Definition.move</a> -> <a href="Game.html#TYPEgame">game</a> <a href="Definition.html#TYPEoutcome">Definition.outcome</a></code></pre><div class="info ">
+handle_move g m applies the next-anticipated move, m, to the game, g.
+    If m is an invalid move in context, a random minimum viable move 
+    is chosen instead. This will produce the outcome, which indicates whether
+    someone has won, and the updated game after the move has taken place.<br>
+</div>
+
+<pre><span id="VALpresentation"><span class="keyword">val</span> presentation</span> : <code class="type"><a href="Game.html#TYPEgame">game</a> -> <a href="Game.html#TYPEgame">game</a></code></pre><div class="info ">
+presentation g modifies a game instance g such that passing it
+    to the next-expected player will not reveal any information that
+    should not be accessable to that player.<br>
+</div>
+</body></html>

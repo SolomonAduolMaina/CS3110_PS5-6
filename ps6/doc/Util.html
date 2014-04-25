@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Print.html">
+<link rel="next" href="Game.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Definition" rel="Chapter" href="Definition.html">
+<link title="Constant" rel="Chapter" href="Constant.html">
+<link title="Print" rel="Chapter" href="Print.html">
+<link title="Util" rel="Chapter" href="Util.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Bots" rel="Chapter" href="Bots.html"><link title="Option utils" rel="Section" href="#2_Optionutils">
+<link title="Random" rel="Section" href="#2_Random">
+<link title="List utils" rel="Section" href="#2_Listutils">
+<link title="Hidden Utils" rel="Section" href="#2_HiddenUtils">
+<link title="Cost Utils" rel="Section" href="#2_CostUtils">
+<link title="Match utils" rel="Section" href="#2_Matchutils">
+<link title="Longest road" rel="Section" href="#2_Longestroad">
+<link title="State generation" rel="Section" href="#2_Stategeneration">
+<title>Util</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Print.html" title="Print">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Game.html" title="Game">Next</a>
+</div>
+<h1>Module <a href="type_Util.html">Util</a></h1>
+
+<pre><span class="keyword">module</span> Util: <code class="code">sig</code> <a href="Util.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Helpful functions<br>
+</div>
+<hr width="100%">
+<br>
+<h2 id="2_Optionutils">Option utils</h2><br>
+
+<pre><span id="VALis_none"><span class="keyword">val</span> is_none</span> : <code class="type">'a option -> bool</code></pre><div class="info ">
+true if None, else false<br>
+</div>
+
+<pre><span id="VALget_some"><span class="keyword">val</span> get_some</span> : <code class="type">'a option -> 'a</code></pre><div class="info ">
+Unwraps Some(x) -&gt; x, fails on None<br>
+</div>
+<br>
+<h2 id="2_Random">Random</h2><br>
+
+<pre><span id="VALrandom_roll"><span class="keyword">val</span> random_roll</span> : <code class="type">unit -> <a href="Definition.html#TYPEroll">Definition.roll</a></code></pre><div class="info ">
+Simulate sum of rolling two dice<br>
+</div>
+
+<pre><span id="VALrandom_color"><span class="keyword">val</span> random_color</span> : <code class="type">unit -> <a href="Definition.html#TYPEcolor">Definition.color</a></code></pre><div class="info ">
+Choose a random color<br>
+</div>
+
+<pre><span id="VALweighted_random"><span class="keyword">val</span> weighted_random</span> : <code class="type">'a list -> int list -> 'a</code></pre><div class="info ">
+weighted_random items weights  returns an element from items at random
+ * based on the corresponding unnormalized probabilities in weights.
+ * The lists must be the same length, and the sum of weights must be nonzero.<br>
+</div>
+<br>
+<h2 id="2_Listutils">List utils</h2><br>
+
+<pre><span id="VALlist_count"><span class="keyword">val</span> list_count</span> : <code class="type">('a -> bool) -> 'a list -> int</code></pre><div class="info ">
+Returns the number of elements in lst satisfying the predicate<br>
+</div>
+
+<pre><span id="VALlist_sum"><span class="keyword">val</span> list_sum</span> : <code class="type">int list -> int</code></pre><div class="info ">
+Returns the sum of all elements in an int list<br>
+</div>
+
+<pre><span id="VALlist_max"><span class="keyword">val</span> list_max</span> : <code class="type">int list -> int</code></pre><div class="info ">
+Returns the max of all elements in an int list<br>
+</div>
+
+<pre><span id="VALlist_indexof"><span class="keyword">val</span> list_indexof</span> : <code class="type">('a -> bool) -> 'a list -> int</code></pre><div class="info ">
+Returns the index of the first element satisfying the predicate. Not <code class="code">[]</code>-safe<br>
+</div>
+
+<pre><span id="VALlist_memremove"><span class="keyword">val</span> list_memremove</span> : <code class="type">('a -> bool) -> 'a list -> 'a list</code></pre><div class="info ">
+Returns list with the first item satisfying the predicate removed. Not <code class="code">[]</code>-safe<br>
+</div>
+
+<pre><span id="VALpick_random"><span class="keyword">val</span> pick_random</span> : <code class="type">'a list -> 'a option</code></pre><div class="info ">
+Returns Some(x) where x is an element in the list, or None for the empty list<br>
+</div>
+
+<pre><span id="VALpick_one"><span class="keyword">val</span> pick_one</span> : <code class="type">'a list -> 'a * 'a list</code></pre><div class="info ">
+Returns <code class="code">(x, lst - {x})</code>, where x is a list element. Not <code class="code">[]</code>-safe<br>
+</div>
+
+<pre><span id="VALrandomize"><span class="keyword">val</span> randomize</span> : <code class="type">'a list -> 'a list</code></pre><div class="info ">
+Returns the list with elements in randomized order<br>
+</div>
+<br>
+<h2 id="2_HiddenUtils">Hidden Utils</h2><br>
+
+<pre><span id="VALhide"><span class="keyword">val</span> hide</span> : <code class="type"><a href="Definition.html#TYPEcards">Definition.cards</a> -> <a href="Definition.html#TYPEcards">Definition.cards</a></code></pre><div class="info ">
+Hides the cards if they are revealed<br>
+</div>
+
+<pre><span id="VALreveal"><span class="keyword">val</span> reveal</span> : <code class="type"><a href="Definition.html#TYPEcards">Definition.cards</a> -> <a href="Definition.html#TYPEcard">Definition.card</a> list</code></pre><div class="info ">
+Unwrap Reveal(c) -&gt; c<br>
+</div>
+
+<pre><span id="VALwrap_reveal"><span class="keyword">val</span> wrap_reveal</span> : <code class="type"><a href="Definition.html#TYPEcard">Definition.card</a> list -> <a href="Definition.html#TYPEcards">Definition.cards</a></code></pre><div class="info ">
+Wrap c -&gt; Reveal(c)<br>
+</div>
+
+<pre><span id="VALappend_card"><span class="keyword">val</span> append_card</span> : <code class="type"><a href="Definition.html#TYPEcards">Definition.cards</a> -> <a href="Definition.html#TYPEcard">Definition.card</a> -> <a href="Definition.html#TYPEcards">Definition.cards</a></code></pre><div class="info ">
+Adds a card to a Reveal<br>
+</div>
+<br>
+<h2 id="2_CostUtils">Cost Utils</h2><br>
+
+<pre><span id="VALsum_cost"><span class="keyword">val</span> sum_cost</span> : <code class="type"><a href="Definition.html#TYPEcost">Definition.cost</a> -> int</code></pre><div class="info ">
+Sum of all the elements in the cost tuple<br>
+</div>
+
+<pre><span id="VALmap_cost"><span class="keyword">val</span> map_cost</span> : <code class="type">(int -> 'a) -> <a href="Definition.html#TYPEcost">Definition.cost</a> -> 'a * 'a * 'a * 'a * 'a</code></pre><div class="info ">
+Maps a function across the cost tuple<br>
+</div>
+
+<pre><span id="VALmap_cost2"><span class="keyword">val</span> map_cost2</span> : <code class="type">(int -> int -> 'a) -><br>       <a href="Definition.html#TYPEcost">Definition.cost</a> -> <a href="Definition.html#TYPEcost">Definition.cost</a> -> 'a * 'a * 'a * 'a * 'a</code></pre><div class="info ">
+Maps a function across two cost tuples<br>
+</div>
+<br>
+<h2 id="2_Matchutils">Match utils</h2><br>
+
+<pre><span id="VALresource_of_terrain"><span class="keyword">val</span> resource_of_terrain</span> : <code class="type"><a href="Definition.html#TYPEterrain">Definition.terrain</a> -> <a href="Definition.html#TYPEresource">Definition.resource</a> option</code></pre><div class="info ">
+Returns Some(r) where r is the resource produced by terrain, or None if none is produced<br>
+</div>
+
+<pre><span id="VALsingle_resource_cost"><span class="keyword">val</span> single_resource_cost</span> : <code class="type"><a href="Definition.html#TYPEresource">Definition.resource</a> -> <a href="Definition.html#TYPEcost">Definition.cost</a></code></pre><div class="info ">
+Returns a cost where there is one of the resource specified, and zero of all others<br>
+</div>
+
+<pre><span id="VALsettlement_num_resources"><span class="keyword">val</span> settlement_num_resources</span> : <code class="type"><a href="Definition.html#TYPEsettlement">Definition.settlement</a> -> int</code></pre><div class="info ">
+Returns the number of resources generated by a type of settlement<br>
+</div>
+
+<pre><span id="VALnum_resource_in_inventory"><span class="keyword">val</span> num_resource_in_inventory</span> : <code class="type"><a href="Definition.html#TYPEinventory">Definition.inventory</a> -> <a href="Definition.html#TYPEresource">Definition.resource</a> -> int</code></pre><div class="info ">
+Returns the number of a specific resource in an inventory<br>
+</div>
+
+<pre><span id="VALcost_of_build"><span class="keyword">val</span> cost_of_build</span> : <code class="type"><a href="Definition.html#TYPEbuild">Definition.build</a> -> <a href="Definition.html#TYPEcost">Definition.cost</a></code></pre><div class="info ">
+Returns the cost of building a build<br>
+</div>
+
+<pre><span id="VALnext_turn"><span class="keyword">val</span> next_turn</span> : <code class="type"><a href="Definition.html#TYPEcolor">Definition.color</a> -> <a href="Definition.html#TYPEcolor">Definition.color</a></code></pre><div class="info ">
+Returns the next turn's color in normal forward order<br>
+</div>
+
+<pre><span id="VALprev_turn"><span class="keyword">val</span> prev_turn</span> : <code class="type"><a href="Definition.html#TYPEcolor">Definition.color</a> -> <a href="Definition.html#TYPEcolor">Definition.color</a></code></pre><div class="info ">
+Returns the next turn's color in reverse order<br>
+</div>
+
+<pre><span id="VALcard_of_playcard"><span class="keyword">val</span> card_of_playcard</span> : <code class="type"><a href="Definition.html#TYPEplaycard">Definition.playcard</a> -> <a href="Definition.html#TYPEcard">Definition.card</a></code></pre><div class="info ">
+Identifies the card variant based on the playcard<br>
+</div>
+
+<pre><span id="VALadjacent_points"><span class="keyword">val</span> adjacent_points</span> : <code class="type"><a href="Definition.html#TYPEpoint">Definition.point</a> -> <a href="Definition.html#TYPEpoint">Definition.point</a> list</code></pre><div class="info ">
+Returns a list of points reachable from point in one road length<br>
+</div>
+
+<pre><span id="VALadjacent_pieces"><span class="keyword">val</span> adjacent_pieces</span> : <code class="type"><a href="Definition.html#TYPEpoint">Definition.point</a> -> <a href="Definition.html#TYPEpiece">Definition.piece</a> list</code></pre><div class="info ">
+Returss a list of hex indices corresponding to pieces that point borders<br>
+</div>
+
+<pre><span id="VALpiece_corners"><span class="keyword">val</span> piece_corners</span> : <code class="type"><a href="Definition.html#TYPEpiece">Definition.piece</a> -> <a href="Definition.html#TYPEpoint">Definition.point</a> list</code></pre><div class="info ">
+Returns the indices of all points bordering the hex piece<br>
+</div>
+<br>
+<h2 id="2_Longestroad">Longest road</h2><br>
+
+<pre><span id="VALlongest_road"><span class="keyword">val</span> longest_road</span> : <code class="type"><a href="Definition.html#TYPEcolor">Definition.color</a> -><br>       <a href="Definition.html#TYPEroad">Definition.road</a> list -> <a href="Definition.html#TYPEintersection">Definition.intersection</a> list -> int</code></pre><div class="info ">
+Returns the road-length of a player's longest road<br>
+</div>
+<br>
+<h2 id="2_Stategeneration">State generation</h2><br>
+
+<pre><span id="VALnew_turn"><span class="keyword">val</span> new_turn</span> : <code class="type"><a href="Definition.html#TYPEcolor">Definition.color</a> -> <a href="Definition.html#TYPEturn">Definition.turn</a></code></pre><div class="info ">
+Returns a blank turn with active = color<br>
+</div>
+
+<pre><span id="VALgen_initial_state"><span class="keyword">val</span> gen_initial_state</span> : <code class="type">unit -> <a href="Definition.html#TYPEstate">Definition.state</a></code></pre><div class="info ">
+Default initial state generator<br>
+</div>
+
+<pre><span id="VALgen_random_initial_state"><span class="keyword">val</span> gen_random_initial_state</span> : <code class="type">unit -> <a href="Definition.html#TYPEstate">Definition.state</a></code></pre><div class="info ">
+Produces random initial states for experimenting with bots<br>
+</div>
+</body></html>
