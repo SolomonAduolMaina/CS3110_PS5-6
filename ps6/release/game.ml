@@ -11,7 +11,7 @@ let game_of_state s = s
 
 let init_game () = game_of_state (gen_initial_state())
 
-(** [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2] *)
+(* [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2] *)
 (* invalid move if p1 has a town already or it's at a distance of one road from another town. Also invalid if road p1-p2 already exist.
 Check for valid -> add town and road.
 [TO-DO: figure out how to make two initail moves as the rules states. specifically what will next be updated to]
@@ -35,7 +35,7 @@ let handle_RobberMove s (p, x) = s
 
 
 
-(** Number of each resource the player wishes to discard, in B,W,O,G,L order.
+(* Number of each resource the player wishes to discard, in B,W,O,G,L order.
 invalid move 
 updated game = update this player's resources. 
 
@@ -47,7 +47,7 @@ let handle_DiscardMove s cost = s
 
 
 
-(** b = true to accept the trade | false to reject. 
+(* b = true to accept the trade | false to reject. 
 invalid move if there is no offer for this current player or number of trades made in this turn = cNUM_TRADES_PER_TURN
 
 updated game = update [turn] to move the deal from the bending trades. Apply the
@@ -72,8 +72,14 @@ let handle_RollDice s = s
 
 
 
-
-let handle_MaritimeTrade s maritimetrade = s
+(** Pre: s is a valid state, have and want are valid resources 
+		If next has at least cMARITIME_DEFAULT_RATIO of have resources in their inventory,
+		then subtract cMARITIME_DEFAULT_RATIO of have from next and add 1 to want from
+		next. Retain next as the person to act next, and give them an ActionRequest.
+		This move is invalid if next has less than cMARITIME_DEFAULT_RATIO of have 
+		resources in their inventory, in which case if is_none t.dicerolled then 
+		handle_RollDice s else handle_EndTurn s **)
+let handle_MaritimeTrade ((_, _, t, (next, r)) as s) (have, want) = s
 
 
 let handle_DomesticTrade s trade = s
@@ -84,7 +90,9 @@ let handle_BuyBuild s build = s
 
 let handle_PlayCard s playcard = s
 
-
+(** Pre: s is a valid state
+		Make the turn an empty turn with turn.active as the next colour and pass to
+		the next colour an ActionRequest **)
 let handle_EndTurn s = s
 
 
@@ -114,9 +122,9 @@ let handle_move ((b,pl,t,(c, r)) as s : game) (m : move) : game outcome =
     print_update c m updated_game; (*TODO: update m if it was an invalid move*)
     (None, updated_game)
 
-let presentation ((board, plist, turn, (next, r)) : game) : game =
+let presentation ((board, plist, turn, (colour, r)) : game) : game =
   let f plist ((c, (inv, hand), ts) : player) =
-    if next <> c
+    if colour <> c
     then (c, (inv, (hide hand)), ts) :: plist
     else (c, (inv, hand), ts) :: plist in
   let custom = List.fold_left f [] plist in 
