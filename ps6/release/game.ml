@@ -11,39 +11,45 @@ let game_of_state s = s
 
 let init_game () = game_of_state (gen_initial_state())
 
-(* [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2] *)
-(* invalid move if p1 has a town already or it's at a distance of one road from another town. Also invalid if road p1-p2 already exist.
-Check for valid -> add town and road.
-[TO-DO: figure out how to make two initail moves as the rules states. specifically what will next be updated to]
+(** [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2] *)
+(* invalid move if p1 has a town already or it's at a distance of one road from another town (i.e. a neighboring points of p1 has a town). 
+Also invalid if road p1-p2 already exist. If invalid, then pick a random valid line.
 
-updated game = new town and road added to the board. next will be next player * InitialRequest (TODO: figure out if everybody went twice for initial move)*)
-let handle_InitialMove s (p1, p2) = s 
+updated game = add new town and road to the board. Generate resources for the player from the new town if this is  his second town
+if there are less than 4 twons on the board (including the new town created here) -> next = next_turn (c) * InitialRequest 
+if there are exactly 4 towns (including the new town created here) (i.e. next_turn (c) = t.active)-> next = x * InitialRequest
+if there are >= 4 towns (including the new town created here) -> next = prev_turn (c) * InitialRequest
+if there are 8 towns (i.e. c = t.active) -> next = t.active * ActionRequest 
+*)
+let handle_InitialMove ((b,pl,t,(c, r)) as s) (p1, p2) = s 
 
 
 
 (* RobberMove (p, x)
 re-locate the robber to piece p. if x = None then do nothing else. 
-if x = Some c, then steal a resource from player c, if c has a town that borders p.
-invalid move if c doesn't have a town bordering p, in which case, make x = none  
+if x = Some pl, then steal a resource from player pl, if pl has a town that borders p.
+invalid move if pl doesn't have a town bordering p, in which case, make x = none  
 
-question: 
-is stolen resource a 1 unit of some resource or all avaliable units of a single resource?
-is the type of resource selected at random?
-
-updated game = robber moved to p and if applicable, resources are moved from c to this player. next = same player * ActionRequest*)
-let handle_RobberMove s (p, x) = s
-
+updated game = robber moved to p and if applicable, a unit of a random resource of player pl is moved from pl to t.active player.
+next = t.active * ActionRequest *)
+let handle_RobberMove ((b,pl,t,(c, r)) as s) (p, x) = s
 
 
 (* Number of each resource the player wishes to discard, in B,W,O,G,L order.
-invalid move 
-updated game = update this player's resources. 
+invalid move if the discarded is not equal to the floor of .5 of the total. In which case, 
+pick a random cost that equal the exact amount required to discard.
+invalid if they have <= cMAX_HAND_SIZE, in which case ignore the move 
 
-look at cMAX_HAND_SIZE in Constant.ml (player only discard half of their cards only if they have MORE than cMAX_HAND_SIZE )
+updated game = update c's resources. 
 
+let x = c
+LOOP:
+If next_turn (x) = t.active -> next = t.active * RobberRequest
+else
+   if next_turn (x) has > cMAX_HAND_SIZE resources -> next = next_turn (x) * DiscardRequest
+   else let x = next_turn (x) and jump to LOOP
 *)
-
-let handle_DiscardMove s cost = s
+let handle_DiscardMove ((b,pl,t,(c, r)) as s) cost = s
 
 
 
@@ -53,7 +59,7 @@ invalid move if there is no offer for this current player or number of trades ma
 updated game = update [turn] to move the deal from the bending trades. Apply the
  trade and update the resources of both sides of the trade if trade was accepted. 
 next = same player * ActionRequest *)
-let handle_TradeResponse s b =  s
+let handle_TradeResponse ((b,pl,t,(c, r)) as s) b =  s
 
 
 (* generate a random roll between 2-12. If roll = cROBBER_ROLL, send a DiscardRequest to other players. after they all discard 
@@ -68,7 +74,7 @@ the floor of half their resources, send a RobberRequest to the active player. ha
 
   look at cMAX_HAND_SIZE in Constant.ml (player only discard half of their cards only if they have MORE than cMAX_HAND_SIZE )
  *)
-let handle_RollDice s = s
+let handle_RollDice ((b,pl,t,(c, r)) as s) = s
 
 
 
