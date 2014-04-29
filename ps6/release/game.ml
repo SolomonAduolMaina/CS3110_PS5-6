@@ -114,4 +114,12 @@ let handle_move ((b,pl,t,(c, r)) as s : game) (m : move) : game outcome =
     print_update c m updated_game; (*TODO: update m if it was an invalid move*)
     (None, updated_game)
 
-let presentation s = s
+let presentation ((board, plist, turn, (next, r)) : game) : game =
+  let f plist ((c, (inv, hand), ts) : player) =
+    if next <> c
+    then (c, (inv, (hide hand)), ts) :: plist
+    else (c, (inv, hand), ts) :: plist in
+  let custom = List.fold_left f [] plist in 
+    let ((map, structures, deck, discards, robber) : board) = board in
+    let newboard = (map, structures, (hide deck), discards, robber) in
+    (newboard, custom, turn, (next, r))
