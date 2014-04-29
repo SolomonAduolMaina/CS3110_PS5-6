@@ -11,35 +11,6 @@ let game_of_state s = s
 
 let init_game () = game_of_state (gen_initial_state())
 
-let handle_move ((b,pl,t,(c, r)) as s : game) (m : move) : game = 
-  let updated_game = match r, m with 
-    | InitialRequest, InitialMove (p1,p2) -> handle_InitialMove s (p1,p2)
-    | InitialRequest, _ -> handle_InitialMove s (Random.int cNUM_POINTS, Random.int cNUM_POINTS) (* invalid move *)
-    
-    | RobberRequest, RobberMove (p, x) -> handle_RobberMove s (p, x)
-    | RobberRequest, _ -> handle_RobberMove s (Random.int cNUM_PIECES, random_color())) (* invalid move *)
-    
-    | DiscardRequest, DiscardMove cost -> handle_DiscardMove s cost
-    | DiscardRequest, _ -> handle_DiscardMove s (0, 0, 0, 0, 0) (* invalid move: TODO: make it discard floor(.5 resources) picked at random *)
-    
-    | TradeRequest, TradeResponse b -> handle_TradeResponse s b
-    | TradeRequest, _ -> handle_TradeResponse s (Random.int 2 = 1) (* invalid move *)
-    
-    | ActionRequest, Action (RollDice) -> handle_RollDice s
-    | ActionRequest, Action (MaritimeTrade maritimetrade) -> handle_MaritimeTrades s maritimetrade
-    | ActionRequest, Action (DomesticTrade trade) -> handle_DomesticTrade s trade
-    | ActionRequest, Action (BuyBuild build) -> handle_BuyBuild s build
-    | ActionRequest, Action (PlayCard playcard) -> handle_PlayCard s playcard
-    | ActionRequest, Action (EndTurn) -> handle_EndTurn s
-    | ActionRequest, _ -> if is_none t.dicerolled then handle_RollDice s else handle_EndTurn s
-  in 
-    print_update c m updated_game; (*TODO: update m if it was an invalid move*)
-    (None, updated_game)
-
-let presentation s = s
-
-
-
 (** [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2] *)
 (* invalid move if p1 has a town already or it's at a distance of one road from another town. Also invalid if road p1-p2 already exist.
 Check for valid -> add town and road.
@@ -115,3 +86,32 @@ let handle_PlayCard s playcard = s
 
 
 let handle_EndTurn s = s
+
+
+
+let handle_move ((b,pl,t,(c, r)) as s : game) (m : move) : game outcome = 
+  let updated_game = match r, m with 
+    | InitialRequest, InitialMove (p1,p2) -> handle_InitialMove s (p1,p2)
+    | InitialRequest, _ -> handle_InitialMove s (Random.int cNUM_POINTS, Random.int cNUM_POINTS) (* invalid move *)
+    
+    | RobberRequest, RobberMove (p, x) -> handle_RobberMove s (p, x)
+    | RobberRequest, _ -> handle_RobberMove s (Random.int cNUM_PIECES, random_color()) (* invalid move *)
+    
+    | DiscardRequest, DiscardMove cost -> handle_DiscardMove s cost
+    | DiscardRequest, _ -> handle_DiscardMove s (0, 0, 0, 0, 0) (* invalid move: TODO: make it discard floor(.5 resources) picked at random *)
+    
+    | TradeRequest, TradeResponse b -> handle_TradeResponse s b
+    | TradeRequest, _ -> handle_TradeResponse s (Random.int 2 = 1) (* invalid move *)
+    
+    | ActionRequest, Action (RollDice) -> handle_RollDice s
+    | ActionRequest, Action (MaritimeTrade maritimetrade) -> handle_MaritimeTrade s maritimetrade
+    | ActionRequest, Action (DomesticTrade trade) -> handle_DomesticTrade s trade
+    | ActionRequest, Action (BuyBuild build) -> handle_BuyBuild s build
+    | ActionRequest, Action (PlayCard playcard) -> handle_PlayCard s playcard
+    | ActionRequest, Action (EndTurn) -> handle_EndTurn s
+    | ActionRequest, _ -> if is_none t.dicerolled then handle_RollDice s else handle_EndTurn s
+  in 
+    print_update c m updated_game; (*TODO: update m if it was an invalid move*)
+    (None, updated_game)
+
+let presentation s = s
