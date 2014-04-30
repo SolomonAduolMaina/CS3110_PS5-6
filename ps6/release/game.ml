@@ -25,14 +25,14 @@ if there are 8 towns (i.e. c = t.active) -> next = t.active * ActionRequest
 let handle_InitialMove ((((map, structures, deck, discard, robber), pl ,t ,(c, req))) : game) ((p1, p2) : line) = 
   let (inter_list, road_list) = structures 
   in
+  let n = num_towns inter_list 
+  in
   let rec check_and_fix (x, y) = 
     match is_valid_town inter_list x, is_valid_line (x, y) with
     | true, true -> (x, y)
     | true, false -> (x, get_some (pick_random (adjacent_points x)))
     | _, _ -> check_and_fix (Random.int cNUM_POINTS, Random.int cNUM_POINTS)
-  in
-    let n = num_towns inter_list 
-  in
+  in  
     let (new_p1, new_p2) = check_and_fix (p1, p2)
   in 
     let new_pl = if n < 4 then pl 
@@ -58,7 +58,13 @@ invalid move if pl doesn't have a town bordering p, in which case, make x = none
 
 updated game = robber moved to p and if applicable, a unit of a random resource of player pl is moved from pl to t.active player.
 next = t.active * ActionRequest *)
-let handle_RobberMove ((b,pl,t,(c, r)) as s) (p, x) = (s, RobberMove (p, x))
+let handle_RobberMove ((map, structures, deck, discard, robber),pl,t,(c, r)) (p, x) = 
+  let new_pl = 
+    if not (is_none x) && has_settlement_around_piece p (get_some x) (fst structures) 
+    then steal_from_and_give_to (get_some x) c pl else pl
+  in
+  let new_robber = p and next = (t.active, ActionRequest) in
+    (((map, structures, deck, discard, new_robber),new_pl,t,next), RobberMove (p, x))
 
 
 (* Number of each resource the player wishes to discard, in B,W,O,G,L order.
