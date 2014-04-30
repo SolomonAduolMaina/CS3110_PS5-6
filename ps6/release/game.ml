@@ -2,6 +2,7 @@ open Definition
 open Constant
 open Util
 open Print
+open MyUtil
 
 (* type state = board * player list * turn * next *)
 type game = state
@@ -15,14 +16,39 @@ let init_game () = game_of_state (gen_initial_state())
 (* invalid move if p1 has a town already or it's at a distance of one road from another town (i.e. a neighboring points of p1 has a town). 
 Also invalid if road p1-p2 already exist. If invalid, then pick a random valid line.
 
-updated game = add new town and road to the board. Generate resources for the player from the new town if this is  his second town
+updated game = add new town and road to the board. Generate resources for the player from the new town if this is his second town
 if there are less than 4 twons on the board (including the new town created here) -> next = next_turn (c) * InitialRequest 
 if there are exactly 4 towns (including the new town created here) (i.e. next_turn (c) = t.active)-> next = x * InitialRequest
 if there are >= 4 towns (including the new town created here) -> next = prev_turn (c) * InitialRequest
 if there are 8 towns (i.e. c = t.active) -> next = t.active * ActionRequest 
 *)
-let handle_InitialMove ((b,pl,t,(c, r)) as s) (p1, p2) = s 
-
+let handle_InitialMove ((((map, structures, deck, discard, robber), pl ,t ,(c, req))) : game) ((p1, p2) : line) = 
+  let (inter_list, road_list) = structures 
+  in
+  let rec check_and_fix (x, y) = 
+    match is_valid_town inter_list x, is_valid_line (x, y) with
+    | true, true -> (x, y)
+    | true, false -> (x, get_some (pick_random (adjacent_points x)))
+    | _, _ -> check_and_fix (Random.int cNUM_POINTS, Random.int cNUM_POINTS)
+  in
+    let n = num_towns inter_list 
+  in
+    let (new_p1, new_p2) = check_and_fix (p1, p2)
+  in 
+    let new_pl = if n < 4 then pl 
+      else add_resources_to_player c 
+      (gen_all_resources new_p1 cRESOURCES_GENERATED_TOWN (fst map) robber) pl
+  in
+    let new_structures = 
+    (add_settlement new_p1 c Town inter_list, add_road (new_p1, new_p2) c road_list)
+  in 
+    let next =
+      if (n+1)< 4 then (next_turn (c), InitialRequest) 
+      else if (n +1) = 4 then (c, InitialRequest)
+      else if (n +1) > 4 && (n +1) < 8 then (prev_turn (c), InitialRequest)
+      else (t.active, ActionRequest)
+  in 
+    (((map, new_structures, deck, discard, robber), new_pl, t, next), InitialMove (new_p1, new_p2))
 
 
 (* RobberMove (p, x)
@@ -32,7 +58,7 @@ invalid move if pl doesn't have a town bordering p, in which case, make x = none
 
 updated game = robber moved to p and if applicable, a unit of a random resource of player pl is moved from pl to t.active player.
 next = t.active * ActionRequest *)
-let handle_RobberMove ((b,pl,t,(c, r)) as s) (p, x) = s
+let handle_RobberMove ((b,pl,t,(c, r)) as s) (p, x) = (s, RobberMove (p, x))
 
 
 (* Number of each resource the player wishes to discard, in B,W,O,G,L order.
@@ -49,7 +75,7 @@ else
    if next_turn (x) has > cMAX_HAND_SIZE resources -> next = next_turn (x) * DiscardRequest
    else let x = next_turn (x) and jump to LOOP
 *)
-let handle_DiscardMove ((b,pl,t,(c, r)) as s) cost = s
+let handle_DiscardMove ((b,pl,t,(c, r)) as s) cost = (s, DiscardMove cost)
 
 
 
@@ -59,7 +85,7 @@ invalid move if there is no offer for this current player or number of trades ma
 updated game = update [turn] to move the deal from the bending trades. Apply the
  trade and update the resources of both sides of the trade if trade was accepted. 
 next = same player * ActionRequest *)
-let handle_TradeResponse ((b,pl,t,(c, r)) as s) b =  s
+let handle_TradeResponse ((b,pl,t,(c, r)) as s) b =  (s, TradeResponse b)
 
 
 (* generate a random roll between 2-12. If roll = cROBBER_ROLL, send a DiscardRequest to other players. after they all discard 
@@ -74,7 +100,7 @@ the floor of half their resources, send a RobberRequest to the active player. ha
 
   look at cMAX_HAND_SIZE in Constant.ml (player only discard half of their cards only if they have MORE than cMAX_HAND_SIZE )
  *)
-let handle_RollDice ((b,pl,t,(c, r)) as s) = s
+let handle_RollDice ((b,pl,t,(c, r)) as s) = (s, Action (RollDice))
 
 
 
@@ -85,31 +111,31 @@ let handle_RollDice ((b,pl,t,(c, r)) as s) = s
 		This move is invalid if next has less than cMARITIME_DEFAULT_RATIO of have 
 		resources in their inventory, in which case if is_none t.dicerolled then 
 		handle_RollDice s else handle_EndTurn s **)
-let handle_MaritimeTrade ((_, _, t, (next, r)) as s) (have, want) = s
+let handle_MaritimeTrade ((_, _, t, (next, r)) as s) (have, want) = (s, Action (MaritimeTrade (have, want)))
 
 
-let handle_DomesticTrade s trade = s
+let handle_DomesticTrade s trade = (s, Action (DomesticTrade trade))
 
 
-let handle_BuyBuild s build = s
+let handle_BuyBuild s build = (s, Action (BuyBuild build))
 
 
-let handle_PlayCard s playcard = s
+let handle_PlayCard s playcard = (s, Action (PlayCard playcard))
 
 (** Pre: s is a valid state
 		Make the turn an empty turn with turn.active as the next colour and pass to
 		the next colour an ActionRequest **)
-let handle_EndTurn s = s
+let handle_EndTurn s = (s, Action EndTurn)
 
 
 
 let handle_move ((b,pl,t,(c, r)) as s : game) (m : move) : game outcome = 
-  let updated_game = match r, m with 
+  let (updated_game, actual_move) = match r, m with 
     | InitialRequest, InitialMove (p1,p2) -> handle_InitialMove s (p1,p2)
     | InitialRequest, _ -> handle_InitialMove s (Random.int cNUM_POINTS, Random.int cNUM_POINTS) (* invalid move *)
     
     | RobberRequest, RobberMove (p, x) -> handle_RobberMove s (p, x)
-    | RobberRequest, _ -> handle_RobberMove s (Random.int cNUM_PIECES, random_color()) (* invalid move *)
+    | RobberRequest, _ -> handle_RobberMove s (Random.int cNUM_PIECES, Some (random_color())) (* invalid move *)
     
     | DiscardRequest, DiscardMove cost -> handle_DiscardMove s cost
     | DiscardRequest, _ -> handle_DiscardMove s (0, 0, 0, 0, 0) (* invalid move: TODO: make it discard floor(.5 resources) picked at random *)
@@ -125,7 +151,7 @@ let handle_move ((b,pl,t,(c, r)) as s : game) (m : move) : game outcome =
     | ActionRequest, Action (EndTurn) -> handle_EndTurn s
     | ActionRequest, _ -> if is_none t.dicerolled then handle_RollDice s else handle_EndTurn s
   in 
-    print_update c m updated_game; (*TODO: update m if it was an invalid move*)
+    print_update c actual_move updated_game; (*TODO: update m if it was an invalid move*)
     (None, updated_game)
 
 let presentation ((board, plist, turn, (colour, r)) : game) : game =
@@ -136,4 +162,4 @@ let presentation ((board, plist, turn, (colour, r)) : game) : game =
   let custom = List.fold_left f [] plist in 
     let ((map, structures, deck, discards, robber) : board) = board in
     let newboard = (map, structures, (hide deck), discards, robber) in
-    (newboard, custom, turn, (next, r))
+    (newboard, custom, turn, (colour, r))
