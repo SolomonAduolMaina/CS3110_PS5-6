@@ -81,7 +81,24 @@ else
    if next_turn (x) has > cMAX_HAND_SIZE resources -> next = next_turn (x) * DiscardRequest
    else let x = next_turn (x) and jump to LOOP
 *)
-let handle_DiscardMove ((b,pl,t,(c, r)) as s) cost = (s, DiscardMove cost)
+let handle_DiscardMove ((b,pl,t,(c, r)) : game) cost = 
+  let (x, xs) = get_player c pl
+  in 
+    let new_x, new_cost = check_and_fix_discard_move x cost
+  in
+    let new_pl = new_x :: xs     
+  in
+    let rec next p = 
+      let x = next_turn (p) 
+      in 
+        if x = t.active then (t.active, RobberRequest)
+        else begin
+          let (y, _) = get_player x new_pl in 
+          if needs_to_discard y then (x, DiscardRequest)
+          else next x 
+        end
+  in
+    ((b, new_pl, t, next c), DiscardMove new_cost)
 
 
 

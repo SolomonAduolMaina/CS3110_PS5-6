@@ -2,6 +2,16 @@ open Definition
 open Constant
 open Util
 
+(* return a tuple (x, xs) where x is the player with 
+  color c and xs is a list of the rest of the player  *)
+let get_player c player_list = 
+  let (x, xs) = List.partition (fun (color,_,_) -> color = c) player_list
+  in 
+    match x with 
+    | [y] -> (y, xs)
+    | _ -> failwith "<get_player> player with the color provided
+       is not present (or present multiple times) in player_list" 
+
 (* set element at index i to e. preserves order of list*)
 let list_update_elem (i : int) (e : 'a) (lst : 'a list) : 'a list = 
   let rec helper i l1 current l2 = 
@@ -42,8 +52,11 @@ let is_valid_town inter_list p1 =
   in
     is_none (List.nth inter_list p1) && helper (adjacent_points p1)
 
-(* add two resources *)
+(* = resource1 + resource2 *)
 let plus_recources resource1 resource2 = map_cost2 ( + ) resource1 resource2
+
+(* = resource1 - resource2 *)
+let subtract_recources resource1 resource2 = map_cost2 ( - ) resource1 resource2
 
 (* return the hexes corresponding to the a pieces in plst *)
 let get_hexes_from_pieces (plst : piece list) (hlst : hex list): hex list = 
@@ -95,9 +108,11 @@ let add_resources_to_player c r player_list =
 let random_resource_type () = match Random.int 5 with 
     | 0 -> Brick | 1 -> Wool | 2-> Ore | 3-> Grain | _-> Lumber
 
-(* return a random single resource cost of a resource that this player has. 
-  If player's inventory is empty return (0,0,0,0,0)  *)
-let get_single_avliable_resource (color, (inventory, cards), trophies) = 
+
+
+(* return a random single resource cost of a resource from inventory.
+   if inventory is empty, return (0,0,0,0,0)  *)
+let get_a_resource_from inventory = 
   if sum_cost inventory = 0 then (0,0,0,0,0) 
   else begin
     let rec helper () = 
@@ -108,6 +123,11 @@ let get_single_avliable_resource (color, (inventory, cards), trophies) =
       helper () 
   end
 
+(* return a random single resource cost of a resource that this player has. 
+  If player's inventory is empty return (0,0,0,0,0)  *)
+let get_single_avaliable_resource (color, (inventory, cards), trophies) = 
+  get_a_resource_from inventory
+
 (* steal a resource from player c1 and give it to player c2. 
   If c1 has empty inventory then pl is returned unchanged *)
 let steal_from_and_give_to c1 c2 pl =  
@@ -116,8 +136,8 @@ let steal_from_and_give_to c1 c2 pl =
     | ((color, (inventory, cards), trophies) as p)::t ->  begin
       if color <> c1 then steal (p::l1) t
       else (
-        let stolen = get_single_avliable_resource p in 
-        let new_p = (color, (plus_recources inventory (map_cost (fun x -> (-1) * x) stolen), cards), trophies) 
+        let stolen = get_single_avaliable_resource p in 
+        let new_p = (color, (subtract_recources inventory stolen, cards), trophies) 
         in
           ((new_p::l1) @ l2, stolen) 
       )
@@ -143,3 +163,36 @@ let has_settlement_around_piece p c inter_list =
   let f x = (not (is_none x)) && (fst (get_some x) = c) in 
   list_count f (get_intersections_from_points (piece_corners p) inter_list) > 0
   
+(* computes (total inventory)/2 - (total cost). *)
+let is_floor_half (color, (inventory, cards), trophies) cost = 
+  sum_cost (inventory)/2 - sum_cost(cost)
+
+(* true iff player's inventory is greater than the max hand size a player can have
+ before needing to discard when the robber is activated *)
+let needs_to_discard (color, (inventory, cards), trophies) = 
+  sum_cost inventory > cMAX_HAND_SIZE
+
+(* true iff the player has enough resources in their inventory to cover cost *)
+let has_enough_resources (color, (inventory, cards), trophies) cost = 
+  let (d1,d2,d3,d4,d5) = subtract_recources inventory cost in 
+    d1 >=0 && d2 >=0 && d3 >=0 && d4 >=0 && d5 >=0
+
+(* check if inventory can cover cost, and that cost is floor half of inventory 
+  return new olayer with update inventory, and also return the modified cost.
+  if cost was not modified then return cost *)
+let check_and_fix_discard_move ((color, (inventory, cards), trophies) as pl) cost : player * cost = 
+  let new_inventory, new_cost =
+    if has_enough_resources pl cost && (is_floor_half pl cost = 0) 
+    then (subtract_recources inventory cost, cost)
+    else begin
+      let rec helper remain cost = 
+        if is_floor_half pl cost = 0 then (remain, cost)
+        else 
+          let single = get_a_resource_from remain in 
+          helper (subtract_recources remain single) (plus_recources cost single)
+      in  
+      let half = map_cost (fun x -> x /2) inventory in
+      helper (subtract_recources inventory half) (half)
+    end
+  in 
+    ((color, (new_inventory, cards), trophies), new_cost)  
