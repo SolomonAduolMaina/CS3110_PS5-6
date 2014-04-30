@@ -102,17 +102,40 @@ let handle_DiscardMove ((b,pl,t,(c, r)) : game) cost =
 
 
 
-(* b = true to accept the trade | false to reject. 
-invalid move if there is no offer for this current player or number of trades made in this turn = cNUM_TRADES_PER_TURN
+(* accept = true to accept the trade | false to reject. 
+invalid move if any of the two players have insufficient fundings 
+for the trade to happen
 
 updated game = update [turn] to move the deal from the bending trades. Apply the
  trade and update the resources of both sides of the trade if trade was accepted. 
 next = same player * ActionRequest *)
-let handle_TradeResponse ((b,pl,t,(c, r)) as s) b =  (s, TradeResponse b)
+let handle_TradeResponse (b,pl,t,(c, r)) accepted =  
+  let new_turn = 
+    { active = t.active; dicerolled = t.dicerolled; 
+      cardplayed = t.cardplayed; cardsbought = t.cardsbought ; 
+      tradesmade = t.tradesmade; pendingtrade = None}
+  in 
+  let new_pl, new_accepted = 
+    if not accepted then (pl, false) else begin
+      let (id, from_active, from_other) = get_some t.pendingtrade in
+      let (active, _) = get_player t.active pl and (other, _ ) = get_player id pl in
+        if has_enough_resources other from_other && 
+           has_enough_resources active from_active
+        then begin
+          let change_active = subtract_resources from_other from_active 
+          and change_other = subtract_resources from_active from_other in  
+          let pl1 = add_resources_to_player t.active change_active pl in
+          let pl2 = add_resources_to_player id change_other pl1 in
+            (pl2, true)
+        end 
+        else (pl, false)
+    end
+  in
+      ((b,new_pl,new_turn,(t.active, ActionRequest)), TradeResponse new_accepted)
 
 
 (* generate a random roll between 2-12. If roll = cROBBER_ROLL, send a DiscardRequest to other players. after they all discard 
-the floor of half their resources, send a RobberRequest to the active player. handle these moves and come back to the actie player.
+the floor of half their resources, send a RobberRequest to the active player. handle these moves and come back to the active player.
   If rool != cROBBER_ROLL, traverse the hex list in board to find all the hex with the roll number, make those generate resources
   and update the resources of players that have neighboring towns or cities to those hexes.
 

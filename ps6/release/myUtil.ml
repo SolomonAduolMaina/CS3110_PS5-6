@@ -53,10 +53,10 @@ let is_valid_town inter_list p1 =
     is_none (List.nth inter_list p1) && helper (adjacent_points p1)
 
 (* = resource1 + resource2 *)
-let plus_recources resource1 resource2 = map_cost2 ( + ) resource1 resource2
+let plus_resources resource1 resource2 = map_cost2 ( + ) resource1 resource2
 
 (* = resource1 - resource2 *)
-let subtract_recources resource1 resource2 = map_cost2 ( - ) resource1 resource2
+let subtract_resources resource1 resource2 = map_cost2 ( - ) resource1 resource2
 
 (* return the hexes corresponding to the a pieces in plst *)
 let get_hexes_from_pieces (plst : piece list) (hlst : hex list): hex list = 
@@ -95,20 +95,25 @@ let gen_hex_resource (num : int) ((tar, _) : hex)  =
 let gen_all_resources p num hex_list robber = 
   let adj = List.filter (fun x -> x <> robber) (adjacent_pieces p) in
   let hexes = get_hexes_from_pieces adj hex_list in 
-  let f acc elem = plus_recources acc (gen_hex_resource num elem) in
+  let f acc elem = plus_resources acc (gen_hex_resource num elem) in
   List.fold_left f (0,0,0,0,0) hexes  
 
 (* add resources r to the inventory of player c *)
 let add_resources_to_player c r player_list = 
   let f ((color, (inventory, cards), trophies) as pl) = 
-    if color = c then ((color, (plus_recources inventory r, cards), trophies)) else pl
+    if color = c then ((color, (plus_resources inventory r, cards), trophies)) else pl
+  in
+    List.map f player_list 
+
+(* subtract resources r to the inventory of player c *)
+let subtract_resources_from_player c r player_list = 
+  let f ((color, (inventory, cards), trophies) as pl) = 
+    if color = c then ((color, (subtract_resources inventory r, cards), trophies)) else pl
   in
     List.map f player_list 
 
 let random_resource_type () = match Random.int 5 with 
     | 0 -> Brick | 1 -> Wool | 2-> Ore | 3-> Grain | _-> Lumber
-
-
 
 (* return a random single resource cost of a resource from inventory.
    if inventory is empty, return (0,0,0,0,0)  *)
@@ -137,7 +142,7 @@ let steal_from_and_give_to c1 c2 pl =
       if color <> c1 then steal (p::l1) t
       else (
         let stolen = get_single_avaliable_resource p in 
-        let new_p = (color, (subtract_recources inventory stolen, cards), trophies) 
+        let new_p = (color, (subtract_resources inventory stolen, cards), trophies) 
         in
           ((new_p::l1) @ l2, stolen) 
       )
@@ -148,7 +153,7 @@ let steal_from_and_give_to c1 c2 pl =
     | ((color, (inventory, cards), trophies) as p)::t ->  begin
       if color <> c2 then give (p::l1) t stolen
       else (
-        let new_p = (color, (plus_recources inventory stolen, cards), trophies) 
+        let new_p = (color, (plus_resources inventory stolen, cards), trophies) 
         in(new_p::l1) @ l2
       )
     end
@@ -174,7 +179,7 @@ let needs_to_discard (color, (inventory, cards), trophies) =
 
 (* true iff the player has enough resources in their inventory to cover cost *)
 let has_enough_resources (color, (inventory, cards), trophies) cost = 
-  let (d1,d2,d3,d4,d5) = subtract_recources inventory cost in 
+  let (d1,d2,d3,d4,d5) = subtract_resources inventory cost in 
     d1 >=0 && d2 >=0 && d3 >=0 && d4 >=0 && d5 >=0
 
 (* check if inventory can cover cost, and that cost is floor half of inventory 
@@ -183,16 +188,16 @@ let has_enough_resources (color, (inventory, cards), trophies) cost =
 let check_and_fix_discard_move ((color, (inventory, cards), trophies) as pl) cost : player * cost = 
   let new_inventory, new_cost =
     if has_enough_resources pl cost && (is_floor_half pl cost = 0) 
-    then (subtract_recources inventory cost, cost)
+    then (subtract_resources inventory cost, cost)
     else begin
       let rec helper remain cost = 
         if is_floor_half pl cost = 0 then (remain, cost)
         else 
           let single = get_a_resource_from remain in 
-          helper (subtract_recources remain single) (plus_recources cost single)
+          helper (subtract_resources remain single) (plus_resources cost single)
       in  
       let half = map_cost (fun x -> x /2) inventory in
-      helper (subtract_recources inventory half) (half)
+      helper (subtract_resources inventory half) (half)
     end
   in 
     ((color, (new_inventory, cards), trophies), new_cost)  
