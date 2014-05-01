@@ -11,7 +11,7 @@ open MyUtil
 open Util2
   
 let handle : state -> state =
-  fun (board, pl, t, (colour, request)) ->
+  fun (((board, pl, t, (colour, request)) as s)) ->
     match t.dicerolled with
     | Some _ ->
         let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active pl in
@@ -20,5 +20,5 @@ let handle : state -> state =
         let new_colour = next_turn colour in
         let fresh = new_turn new_colour
         in (board, (p :: l), fresh, (new_colour, ActionRequest))
-    | None -> (board, pl, t, (t.active, ActionRequest))
+    | None -> s
   
