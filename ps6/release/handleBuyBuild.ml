@@ -18,7 +18,7 @@ let handle_road (board, plist, turn, (colour, request)) bld (c1, (p1, p2)) =
   let is_valid = (is_valid_line (p1, p2)) && (c1 = c) in
   let cost = cost_of_build bld in
   let enough = has_enough_resources p cost in
-  let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
+  let allowed = (player_roads c roads) < cMAX_ROADS_PER_PLAYER
   in
     match (not_bought, is_valid, enough, allowed) with
     | (true, true, true, true) ->
@@ -37,7 +37,7 @@ let handle_town (board, plist, turn, (colour, request)) build point =
   let is_valid = is_valid_town insecs point in
   let cost = cost_of_build build in
   let enough = has_enough_resources p cost in
-  let player_towns = player_settlements_built c Town insecs in
+  let player_towns = player_settlements c Town insecs in
   let allowed = player_towns < cMAX_TOWNS_PER_PLAYER
   in
     match (not_built, is_valid, enough, allowed) with
@@ -59,7 +59,7 @@ let handle_city (board, plist, turn, (colour, request)) build point =
   let is_valid = (c = c') && (setl = Town) in
   let cost = cost_of_build build in
   let enough = has_enough_resources p cost in
-  let player_cities = player_settlements_built c City insecs in
+  let player_cities = player_settlements c City insecs in
   let allowed = player_cities < cMAX_CITIES_PER_PLAYER
   in
     match (built, is_valid, enough, allowed) with

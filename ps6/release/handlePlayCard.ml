@@ -71,7 +71,7 @@ let handle_road : state -> (road * (road option)) -> state =
         let (a1, (insecs, roads), deck, a4, a5) = board in
         let not_bought = not (road_bought (p1, p2) roads) in
         let is_valid = (is_valid_line (p1, p2)) && (c1 = c) in
-        let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
+        let allowed = (player_roads c roads) < cMAX_ROADS_PER_PLAYER
         in
           match (not_bought, allowed, is_valid) with
           | (true, true, true) ->

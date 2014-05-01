@@ -13,19 +13,18 @@ open Util2
 let handle : state -> (resource * resource) -> state =
   fun (((board, plist, turn, (colour, request)) as s)) (have, want) ->
     let ((c, (inv, hand), (ks, lr, la)), rest) = get_player colour plist in
-    let number = num_resource_in_inventory inv have in
-    let ((_, ports), (insecs, _), _, _, _) = board in
-    let ratio = least_ratio c ports insecs have
+    let number = num_resource_in_inventory inv have
     in
-      match number >= ratio with
+		(* TODO: Handle case of port ratio *)
+      match number >= cMARITIME_DEFAULT_RATIO with
       | true ->
           let minus =
             (match have with
-             | Brick -> subtract_resources inv (ratio, 0, 0, 0, 0)
-             | Wool -> subtract_resources inv (0, ratio, 0, 0, 0)
-             | Ore -> subtract_resources inv (0, 0, ratio, 0, 0)
-             | Grain -> subtract_resources inv (0, 0, 0, ratio, 0)
-             | Lumber -> subtract_resources inv (0, 0, 0, 0, ratio)) in
+             | Brick -> subtract_resources inv (4, 0, 0, 0, 0)
+             | Wool -> subtract_resources inv (0, 4, 0, 0, 0)
+             | Ore -> subtract_resources inv (0, 0, 4, 0, 0)
+             | Grain -> subtract_resources inv (0, 0, 0, 4, 0)
+             | Lumber -> subtract_resources inv (0, 0, 0, 0, 4)) in
           let newinv =
             (match want with
              | Brick -> plus_resources minus (1, 0, 0, 0, 0)
