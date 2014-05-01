@@ -8,8 +8,6 @@ open Print
   
 open MyUtil
   
-open Util2
-  
 let handle_road (board, plist, turn, (colour, request)) bld (c1, (p1, p2)) =
   let (p, l) = get_player colour plist in
   let (c, (inv, hand), (ks, lr, la)) = p in

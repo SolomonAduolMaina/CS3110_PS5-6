@@ -8,8 +8,6 @@ open Print
   
 open MyUtil
   
-open Util2
-  
 let remove_card : card -> player -> player =
   fun card_type p ->
     let (colour, (inv, hand), ts) = p in

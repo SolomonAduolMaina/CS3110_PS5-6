@@ -8,8 +8,6 @@ open Print
   
 open MyUtil
   
-open Util2
-  
 let handle : state -> state =
   fun (((board, pl, t, (colour, request)) as s)) ->
     match t.dicerolled with

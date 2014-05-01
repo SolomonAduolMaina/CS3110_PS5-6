@@ -8,8 +8,6 @@ open Print
   
 open MyUtil
   
-open Util2
-  
 let handle : state -> (resource * resource) -> state =
   fun (((board, plist, turn, (colour, request)) as s)) (have, want) ->
     let ((c, (inv, hand), (ks, lr, la)), rest) = get_player colour plist in

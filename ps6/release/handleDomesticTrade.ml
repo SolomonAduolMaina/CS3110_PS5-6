@@ -8,8 +8,6 @@ open Print
   
 open MyUtil
   
-open Util2
-  
 let handle : state -> trade -> state =
   fun (((board, plist, t, (_, r)) as s)) (requestee, c1, c2) ->
     let (p1, l) = get_player t.active plist in
