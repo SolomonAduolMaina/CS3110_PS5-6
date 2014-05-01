@@ -16,7 +16,7 @@ module Bot = functor (S : Soul) -> struct
     let (c, r) = n in
     match r with
       | InitialRequest -> InitialMove(0, 0)
-      | RobberRequest -> RobberMove(0, None)
+      | RobberRequest -> RobberMove(Random.int cNUM_PIECES, Some (random_color()))
       | DiscardRequest-> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeResponse(true)
       | ActionRequest -> 

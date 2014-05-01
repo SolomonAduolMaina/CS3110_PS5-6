@@ -2,6 +2,43 @@ open Definition
 open Constant
 open Util
 
+
+
+(*******************************************************)
+(*********  string representation of tupes *************)
+(*******************************************************)
+
+let string_of_hex (tar, roll) = 
+  (match tar with
+  | Hill -> "(Hill, " 
+  | Pasture -> "(Pasture, "
+  | Mountain -> "(Mountain, "
+  | Field -> "(Field, "
+  | Forest -> "(Forest, "
+  | Desert-> "(Desert, ") ^ (string_of_int roll) ^ ")"
+
+let string_of_resources (d1,d2,d3,d4,d5) = 
+  "(" ^ (string_of_int d1) ^","^ (string_of_int d2)  ^","^ 
+    (string_of_int d3)  ^","^ (string_of_int d4)  ^","^ (string_of_int d5) ^")"
+
+let string_of_color color =
+  match color with
+    | Blue -> "Blue "
+    | Red -> "Red "
+    | Orange -> "Orange "
+    | White -> "White "
+
+let string_of_settlement settl =
+  match settl with
+   | Town -> "Town "
+   | City -> "City "
+
+let string_of_intersection inter =
+  if is_none inter then "[no settlement]" else 
+  let (color, settl) = get_some inter in
+  "[" ^ (string_of_color color) ^ ": " ^  (string_of_settlement settl) ^ "]" 
+
+
 (* return a tuple (x, xs) where x is the player with 
   color c and xs is a list of the rest of the player  *)
 let get_player c player_list = 
@@ -58,11 +95,16 @@ let plus_resources resource1 resource2 = map_cost2 ( + ) resource1 resource2
 (* = resource1 - resource2 *)
 let subtract_resources resource1 resource2 = map_cost2 ( - ) resource1 resource2
 
-(* return the hexes corresponding to the a pieces in plst *)
+(* if resource = (r1, r2, r3, r4, r5), 
+  return (num *r1, num *r2, num *r3, num *r4, num *r5) *)
+let mult_resources resource num = map_cost (fun x -> num * x) resource 
+
+(* return the hexes corresponding to the a pieces in plst. In output,
+  hex are ordered by increasing based on their piece number *)
 let get_hexes_from_pieces (plst : piece list) (hlst : hex list): hex list = 
   let rec helper out plst hlst nth = 
     match plst, hlst, nth with 
-    | [], _, _ -> out
+    | [], _, _ -> List.rev out
     | ph::pt, hh::ht, n -> begin
       if ph = n then helper (hh::out) pt ht (n+1) 
       else helper out plst ht (n+1)
@@ -71,16 +113,17 @@ let get_hexes_from_pieces (plst : piece list) (hlst : hex list): hex list =
   in 
     helper [] (List.sort (compare) plst) hlst 0
 
-(* return the intersections corresponding to the a pieces in plst *)
+(* return the intersections corresponding to the a points in plst. In output,
+  intersections are ordered by increasing based on their point number *)
 let get_intersections_from_points (plst : point list) (ilst : intersection list): intersection list = 
   let rec helper out plst ilst nth = 
     match plst, ilst, nth with 
-    | [], _, _ -> out
+    | [], _, _ -> List.rev out
     | ph::pt, hh::ht, n -> begin
       if ph = n then helper (hh::out) pt ht (n+1) 
       else helper out plst ht (n+1)
     end
-    | _ -> failwith "<get_hexes_from_pieces> entries in plst don't map to entries in ilst"  
+    | _ -> failwith "<get_intersections_from_points> entries in plst don't map to entries in ilst"  
   in 
     helper [] (List.sort (compare) plst) ilst 0
 
@@ -201,3 +244,99 @@ let check_and_fix_discard_move ((color, (inventory, cards), trophies) as pl) cos
     end
   in 
     ((color, (new_inventory, cards), trophies), new_cost)  
+
+(* return a list of tuples (p, h) such that h is a hex associated 
+  with roll and p is its piec number *)
+let get_hex_with_roll hex_list roll : (int * hex) list = 
+  let rec helper index out = function
+    | [] -> out
+    | ((_, roll') as h)::t -> begin
+      if roll = roll' then helper (index+1) ((index, h)::out) t
+      else helper (index+1) out t
+    end  
+  in 
+    helper 0 [] hex_list
+
+
+(* generate resources for every settlement that borders a hex 
+  corresponding to the dice roll if not inhabited by the robber.
+  Generate resources are added to the owner of the settlement *)
+let gen_roll_resources pl inter_list hex_list roll robber = 
+  let h = get_hex_with_roll hex_list roll
+  in 
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" hex at (" ^ (string_of_int p) ^ ", " ^ string_of_hex h)) () h
+        in *)
+  let (_, hexes) = 
+    List.partition (fun (p,_) -> p = robber) h 
+  in 
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" hexes at (" ^ (string_of_int p) ^ ", " ^ string_of_hex h)) () hexes
+        in *)
+  let piece_resource = 
+    let f (p, (tar, _)) = (p, if is_none (resource_of_terrain tar) then (0,0,0,0,0) 
+                    else single_resource_cost (get_some (resource_of_terrain tar)))
+    in
+      List.map f hexes 
+  in
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" piece_resource at (" ^ (string_of_int p) ^ ", " ^ (string_of_resources h))) 
+          () piece_resource 
+        in *)
+  let points_resources = 
+    let f (p, resource) = List.map (fun p -> (p, resource)) (piece_corners p) in
+    List.flatten (List.map f piece_resource) 
+  in
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" point_resources at (" ^ (string_of_int p) ^ ", " ^ (string_of_resources h))) 
+          () points_resources 
+        in *)
+  let ordered_points_resources = 
+    List.sort (fun (x1, _) (x2,_) -> compare x2 x1) points_resources
+  in
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" ordered_points_resources at (" ^ (string_of_int p) ^ ", " ^ (string_of_resources h))) 
+          () ordered_points_resources 
+        in *)
+  let combined = 
+    let rec helper out (p, sum) = function 
+      | [] -> (p, sum)::out
+      | (p1, r1)::t -> begin
+        if p1 = p then helper out (p, plus_resources r1 sum) t 
+        else helper ((p, sum)::out) (p1,r1) t 
+      end
+    in
+      match ordered_points_resources with 
+      | [] -> []
+      | h::t -> helper [] h t
+  in
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" combined at (" ^ (string_of_int p) ^ ", " ^ (string_of_resources h))) 
+          () combined 
+        in *)
+  let (points, sum_res) = List.split combined
+  in
+  let inters_resources = 
+    List.combine (get_intersections_from_points points inter_list) sum_res
+  in
+(*         let () = List.fold_left (fun () (p, h) -> 
+          print_endline (" inters_resources at (" ^ (string_of_intersection p) ^ ", " ^ (string_of_resources h))) 
+          () inters_resources 
+        in *)
+  let settl_resources = 
+    let f (inter, x) = if is_none inter then [] else [(get_some inter,x)] in
+    List.flatten (List.map f inters_resources)
+  in
+(*           let () = List.fold_left (fun () ((c,s), h) -> 
+          print_endline (" settl_resources at (" ^ "[" ^ (string_of_color c) ^ "; " ^ (string_of_settlement s) ^ "], " ^ (string_of_resources h))) 
+          () settl_resources 
+        in *)
+  let rec add_resources working_pl = function
+    | [] -> working_pl
+    | ((c, settl_type), sum)::t -> begin 
+      let wieghted_sum = mult_resources sum (settlement_num_resources settl_type) 
+      in
+        add_resources (add_resources_to_player c wieghted_sum working_pl) t 
+    end
+  in
+    add_resources pl settl_resources

@@ -59,12 +59,12 @@ invalid move if pl doesn't have a town bordering p, in which case, make x = none
 updated game = robber moved to p and if applicable, a unit of a random resource of player pl is moved from pl to t.active player.
 next = t.active * ActionRequest *)
 let handle_RobberMove ((map, structures, deck, discard, robber),pl,t,(c, r)) (p, x) = 
-  let new_pl = 
+  let new_pl, robbed = 
     if not (is_none x) && has_settlement_around_piece p (get_some x) (fst structures) 
-    then steal_from_and_give_to (get_some x) c pl else pl
+    then (steal_from_and_give_to (get_some x) c pl, x) else (pl, None) 
   in
   let new_robber = p and next = (t.active, ActionRequest) in
-    (((map, structures, deck, discard, new_robber),new_pl,t,next), RobberMove (p, x))
+    (((map, structures, deck, discard, new_robber),new_pl,t,next), RobberMove (p, robbed))
 
 
 (* Number of each resource the player wishes to discard, in B,W,O,G,L order.
@@ -146,7 +146,32 @@ the floor of half their resources, send a RobberRequest to the active player. ha
 
   look at cMAX_HAND_SIZE in Constant.ml (player only discard half of their cards only if they have MORE than cMAX_HAND_SIZE )
  *)
-let handle_RollDice ((b,pl,t,(c, r)) as s) = (s, Action (RollDice))
+let handle_RollDice ((map,structures,deck,discard,robber) as b,pl,t,(c, r)) =
+  let roll = random_roll () in  
+  let new_turn = 
+  { active = t.active; dicerolled = Some roll; 
+    cardplayed = t.cardplayed; cardsbought = t.cardsbought ; 
+    tradesmade = t.tradesmade; pendingtrade = t.pendingtrade}
+  in
+  let rec get_next_if_ROBBER_ROLL p = 
+    let x = next_turn (p) 
+    in 
+      if x = t.active then (t.active, RobberRequest)
+      else begin
+        let (y, _) = get_player x pl in 
+        if needs_to_discard y then (x, DiscardRequest)
+        else get_next_if_ROBBER_ROLL x 
+      end
+  in
+  let next  = 
+    if roll = cROBBER_ROLL then get_next_if_ROBBER_ROLL t.active
+    else (t.active, ActionRequest) 
+  in
+  let new_pl = 
+    if roll = cROBBER_ROLL then pl
+    else gen_roll_resources pl (fst structures) (fst map) roll robber
+  in
+    ((b,new_pl,new_turn,next), Action (RollDice))
 
 
 
