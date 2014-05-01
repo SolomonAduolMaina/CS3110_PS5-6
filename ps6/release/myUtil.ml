@@ -340,3 +340,22 @@ let gen_roll_resources pl inter_list hex_list roll robber =
     end
   in
     add_resources pl settl_resources
+		
+let road_bought : line -> road list -> bool =
+  fun (p1, p2) roads ->
+    let p (_, (p3, p4)) = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3))
+    in List.for_all p roads
+  
+let player_settlements : color -> settlement -> intersection list -> int =
+  fun c setl inter_list ->
+    let f x =
+      (not (is_none x)) && (let (a, b) = get_some x in (a = c) && (b = setl))
+    in list_count f inter_list
+  
+let player_roads : color -> road list -> int =
+  fun c roads ->
+    let f n (colour, _) = if colour = c then n + 1 else n
+    in List.fold_left f 0 roads
+  
+let cost_fold : ('a -> int -> 'a) -> 'a -> cost -> 'a =
+  fun f v (b, w, o, l, g) -> f (f (f (f (f v b) w) o) l) g

@@ -182,21 +182,28 @@ let handle_RollDice ((map,structures,deck,discard,robber) as b,pl,t,(c, r)) =
 		This move is invalid if next has less than cMARITIME_DEFAULT_RATIO of have 
 		resources in their inventory, in which case if is_none t.dicerolled then 
 		handle_RollDice s else handle_EndTurn s **)
-let handle_MaritimeTrade ((_, _, t, (next, r)) as s) (have, want) = (s, Action (MaritimeTrade (have, want)))
+let handle_MaritimeTrade ((_, _, t, (next, r)) as s) (have, want) = 
+	let s = HandleMaritimeTrade.handle s (have, want) in
+	(s, Action (MaritimeTrade (have, want)))
 
 
-let handle_DomesticTrade s trade = (s, Action (DomesticTrade trade))
+let handle_DomesticTrade s trade = 
+	let s = HandleDomesticTrade.handle s trade in
+	(s, Action (DomesticTrade trade))
 
 
-let handle_BuyBuild s build = (s, Action (BuyBuild build))
+let handle_BuyBuild s build = let s = HandleBuyBuild.handle s build in
+(s, Action (BuyBuild build))
 
 
-let handle_PlayCard s playcard = (s, Action (PlayCard playcard))
+let handle_PlayCard s playcard = 
+let s = HandlePlayCard.handle s playcard in (s, Action (PlayCard playcard))
 
 (** Pre: s is a valid state
 		Make the turn an empty turn with turn.active as the next colour and pass to
 		the next colour an ActionRequest **)
-let handle_EndTurn s = (s, Action EndTurn)
+let handle_EndTurn s = let s = HandleEndTurn.handle s in
+(s, Action EndTurn)
 
 
 
