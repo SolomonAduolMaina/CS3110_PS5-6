@@ -63,9 +63,6 @@ let list_update_elem (i : int) (e : 'a) (lst : 'a list) : 'a list =
 let add_settlement point color settl_type inter_list =
 	list_update_elem point (Some (color, settl_type)) inter_list
 
-(* update [road_list] to add road on [line] for player [color] *)
-let add_road line color road_list = (color, line):: road_list
-
 (* returns number of towns on the board *)
 let num_towns inter_list =
 	let f x = (not (is_none x)) && (snd (get_some x) = Town) in
@@ -334,10 +331,17 @@ let gen_roll_resources pl inter_list hex_list roll robber =
 	in
 	add_resources pl settl_resources
 
-let road_bought : line -> road list -> bool =
-	fun (p1, p2) roads ->
-			let p (_, (p3, p4)) = ((p1, p2) = (p3, p4)) || ((p1, p2) = (p4, p3))
-			in List.for_all p roads
+let valid_road_build : road -> road list -> bool =
+	fun (c1, (p1, p2)) roads ->
+			match is_valid_line (p1, p2) with
+			| true ->
+					let f bool (c2, (p3, p4)) =
+						let not_bought = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3)) in
+						let adjacent = p1 = p3 || p1 = p4 || p2 = p3 || p2 = p4 in
+						let same_player = c1 = c2 in
+						let valid = not_bought && adjacent && same_player in
+						bool || valid in List.fold_left f false roads
+			| false -> false
 
 let player_settlements_built : color -> settlement -> intersection list -> int =
 	fun c setl inter_list ->

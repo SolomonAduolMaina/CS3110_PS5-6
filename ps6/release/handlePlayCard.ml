@@ -44,7 +44,7 @@ let update_armies : color -> player list -> player list =
       then (c, bank, (ks, lr, true)) :: nl
       else (c, bank, (ks, lr, false)) :: nl
   
-let handle_knight : state -> robbermove -> state * bool =
+let handle_knight : state -> robbermove -> (state * bool) =
   fun (board, plist, t, (c, r)) robbermove ->
     let (p, l) = get_player c plist in
     let nl = (remove_card Knight p) :: l in
@@ -65,42 +65,42 @@ let handle_knight : state -> robbermove -> state * bool =
           in ((board, nl, (played_card t), (c, ActionRequest)), true)
       | false -> ((board, nl, (played_card t), (c, ActionRequest)), false)
   
-let handle_road : state -> (road * (road option)) -> state * bool =
-  fun (((board, plist, t, (c, r)) as s)) ((c1, (p1, p2)), opt) ->
-    let handle_helper : state -> road -> (state * bool) =
-      fun (board, plist, t, (c, r)) (c1, (p1, p2)) ->
+let handle_road : state -> (road * (road option)) -> (state * bool) =
+  fun (((board, plist, t, (c, r)) as s)) (road, opt) ->
+    let handle_road_helper : state -> road -> (state * bool) =
+      fun (board, plist, t, (c, r)) road ->
         let (p, l) = get_player c plist in
-        let nl = (remove_card RoadBuilding p) :: l in 
+        let nl = (remove_card RoadBuilding p) :: l in
         let (c, (inv, hand), (ks, lr, la)) = p in
         let (a1, (insecs, roads), deck, a4, a5) = board in
-        let not_bought = not (road_bought (p1, p2) roads) in
-        let is_valid = (is_valid_line (p1, p2)) && (c1 = c) in
+        let valid = valid_road_build road roads in
         let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
         in
-          match (not_bought, allowed, is_valid) with
-          | (true, true, true) ->
-              let newroads = (c1, (p1, p2)) :: roads in
+          match (valid, allowed) with
+          | (true, true) ->
+              let newroads = road :: roads in
               let b = (a1, (insecs, newroads), deck, a4, a5)
               in ((b, nl, t, (c, ActionRequest)), true)
           | _ -> ((board, nl, t, (c, r)), false)
     in
-      match handle_helper s (c1, (p1, p2)) with
+      match handle_road_helper s road with
       | (first, true) ->
           (match is_none opt with
-           | true -> first, true
+           | true -> (first, true)
            | false ->
-               (match handle_helper first (get_some opt) with
-                | (both, true) -> both, true
+               (match handle_road_helper first (get_some opt) with
+                | (both, true) -> (both, true)
                 | _ -> ((HandleEndTurn.handle first), false)))
       | (failed, false) ->
           (match is_none opt with
            | true -> ((HandleEndTurn.handle failed), false)
            | false ->
-               (match handle_helper s (get_some opt) with
+               (match handle_road_helper s (get_some opt) with
                 | (second, true) -> ((HandleEndTurn.handle second), false)
                 | _ -> ((HandleEndTurn.handle failed), false)))
   
-let handle_plenty : state -> (resource * (resource option)) -> state * bool =
+let handle_plenty :
+  state -> (resource * (resource option)) -> (state * bool) =
   fun (board, plist, t, (c, r)) (resource, opt) ->
     let (p, l) = get_player c plist in
     let (c, (inv, hand), (ks, lr, la)) = remove_card YearOfPlenty p in
@@ -109,14 +109,14 @@ let handle_plenty : state -> (resource * (resource option)) -> state * bool =
       match is_none opt with
       | true ->
           let p = (c, (newinv, hand), (ks, lr, la))
-          in (board, (p :: l), t, (c, ActionRequest)), true
+          in ((board, (p :: l), t, (c, ActionRequest)), true)
       | false ->
           let more = single_resource_cost (get_some opt) in
           let newinv = plus_resources newinv more in
           let p = (c, (newinv, hand), (ks, lr, la))
           in ((board, (p :: l), t, (c, ActionRequest)), true)
   
-let handle_monopoly : state -> resource -> state * bool =
+let handle_monopoly : state -> resource -> (state * bool) =
   fun (board, plist, t, _) resource ->
     let (p, l) = get_player t.active plist in
     let p = remove_card Monopoly p in
@@ -140,7 +140,7 @@ let handle_monopoly : state -> resource -> state * bool =
       | Lumber -> add_resources_to_player t.active (0, 0, 0, 0, n) plist
     in ((board, plist, t, ((t.active), ActionRequest)), true)
   
-let handle : state -> playcard -> state * bool =
+let handle : state -> playcard -> (state * bool) =
   fun (board, plist, t, n) playcard ->
     let (map, structs, deck, discard, robber) = board in
     let discard = (card_of_playcard playcard) :: discard in
