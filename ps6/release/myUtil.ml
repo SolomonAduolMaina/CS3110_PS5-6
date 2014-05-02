@@ -378,3 +378,20 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 				| false, false -> n
 			in List.fold_left f cMARITIME_DEFAULT_RATIO ports
 
+let random_resource () : resource =
+	match Random.int 5 with
+	| 0 -> Brick
+	| 1 -> Wool
+	| 2 -> Ore
+	| 3 -> Grain
+	| _ -> Lumber
+
+let random_cost () : cost =
+	let n1 = Random.int 6 in
+	let n2 = Random.int 6 in
+	let n3 = Random.int 6 in
+	let n4 = Random.int 6 in let n5 = Random.int 6 in (n1, n2, n3, n4, n5)
+
+let string_of_road (c1, (p1, p2)) : string =
+	"(" ^
+	((string_of_color c1) ^ (" (" ^ ((soi p1) ^ ("," ^ ((soi p2) ^ "))")))))
