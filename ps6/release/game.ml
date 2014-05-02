@@ -224,9 +224,7 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 		| ActionRequest, Action (EndTurn) -> handle_EndTurn s
 		| ActionRequest, _ -> handle_EndTurn s
 	in
-	let (_, (_, roads), _, _, _) = b in
-	print_update c actual_move updated_game;
-	print (string_of_list string_of_road roads);
+	let () = print_update c actual_move updated_game in
 	(None, updated_game)
 
 let presentation ((board, plist, turn, (colour, request)) : game) : game =
