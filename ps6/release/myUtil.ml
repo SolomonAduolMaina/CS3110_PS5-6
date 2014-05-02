@@ -331,15 +331,19 @@ let gen_roll_resources pl inter_list hex_list roll robber =
 	in
 	add_resources pl settl_resources
 
+let road_not_bought : road -> road list -> bool =
+	fun (_, (p1, p2)) roads ->
+			let f (_, (p3, p4)) = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3)) in
+			List.for_all f roads
+
 let valid_road_build : road -> road list -> bool =
-	fun (c1, (p1, p2)) roads ->
-			match is_valid_line (p1, p2) with
+	fun ((c1, (p1, p2)) as road) roads ->
+			match is_valid_line (p1, p2) && road_not_bought road roads with
 			| true ->
 					let f bool (c2, (p3, p4)) =
-						let not_bought = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3)) in
 						let adjacent = p1 = p3 || p1 = p4 || p2 = p3 || p2 = p4 in
 						let same_player = c1 = c2 in
-						let valid = not_bought && adjacent && same_player in
+						let valid = adjacent && same_player in
 						bool || valid in List.fold_left f false roads
 			| false -> false
 
