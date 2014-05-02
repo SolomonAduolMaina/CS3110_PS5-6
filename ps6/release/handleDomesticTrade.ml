@@ -9,7 +9,7 @@ open Print
 open MyUtil
   
 let handle : state -> trade -> state =
-  fun (((board, plist, t, (_, r)) as s)) (requestee, c1, c2) ->
+  fun (((board, plist, t, _) as s)) (requestee, c1, c2) ->
     let (p1, l) = get_player t.active plist in
     let (p2, _) = get_player requestee l in
     let f bool n = bool || (n > 0) in

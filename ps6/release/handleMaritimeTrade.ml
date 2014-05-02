@@ -9,8 +9,8 @@ open Print
 open MyUtil
   
 let handle : state -> (resource * resource) -> state =
-  fun (((board, plist, turn, (colour, request)) as s)) (have, want) ->
-    let ((c, (inv, hand), (ks, lr, la)), rest) = get_player colour plist in
+  fun (((board, plist, t, _) as s)) (have, want) ->
+    let ((c, (inv, hand), (ks, lr, la)), rest) = get_player t.active plist in
     let number = num_resource_in_inventory inv have in
     let ((_, ports), (insecs, _), _, _, _) = board in
     let ratio = least_ratio c ports insecs have
@@ -32,6 +32,6 @@ let handle : state -> (resource * resource) -> state =
              | Grain -> plus_resources minus (0, 0, 0, 1, 0)
              | Lumber -> plus_resources minus (0, 0, 0, 0, 1)) in
           let p = (c, (newinv, hand), (ks, lr, la))
-          in (board, (p :: rest), turn, (colour, ActionRequest))
+          in (board, (p :: rest), t, (t.active, ActionRequest))
       | false -> HandleEndTurn.handle s
   

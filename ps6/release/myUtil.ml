@@ -336,7 +336,7 @@ let gen_roll_resources pl inter_list hex_list roll robber =
 
 let road_bought : line -> road list -> bool =
 	fun (p1, p2) roads ->
-			let p (_, (p3, p4)) = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3))
+			let p (_, (p3, p4)) = ((p1, p2) = (p3, p4)) || ((p1, p2) = (p4, p3))
 			in List.for_all p roads
 
 let player_settlements_built : color -> settlement -> intersection list -> int =

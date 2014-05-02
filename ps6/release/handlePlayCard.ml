@@ -15,7 +15,7 @@ let remove_card : card -> player -> player =
     let newdeck = list_memremove p (reveal hand)
     in (colour, (inv, (wrap_reveal newdeck)), ts)
   
-let update_turn : turn -> turn =
+let played_card : turn -> turn =
   fun t ->
     {
       active = t.active;
@@ -50,14 +50,20 @@ let handle_knight : state -> robbermove -> state =
     let newlist = (remove_card Knight p) :: l in (* Could fail *)
     let newlist = update_armies c newlist in
     let (piece, opt) = robbermove in
-    let victim = get_some opt in (* Could fail *)
-    let (_, (inter_list, _), _, _, _) = board in
-    let is_valid = has_settlement_around_piece piece victim inter_list in
-    let newlist =
-      match is_valid with
-      | true -> steal_from_and_give_to victim c newlist
-      | (* Could fail *) false -> newlist
-    in (board, newlist, (update_turn t), (c, ActionRequest))
+    let (map, structs, deck, discard, _) = board in
+    let board = (map, structs, deck, discard, piece)
+    in
+      match not (is_none opt) with
+      | true ->
+          let victim = get_some opt in
+          let (_, (inter_list, _), _, _, _) = board in
+          let v = has_settlement_around_piece piece victim inter_list in
+          let newlist =
+            (match v with
+             | true -> steal_from_and_give_to victim c newlist
+             | (* Could fail *) false -> newlist)
+          in (board, newlist, (played_card t), (c, ActionRequest))
+      | false -> (board, newlist, (played_card t), (c, ActionRequest))
   
 let handle_road : state -> (road * (road option)) -> state =
   fun (((board, plist, t, (c, r)) as s)) ((c1, (p1, p2)), opt) ->
@@ -115,7 +121,7 @@ let handle_monopoly : state -> resource -> state =
     let (p, l) = get_player c plist in
     let (((c, (inv, hand), (ks, lr, la)) as p)) = remove_card Monopoly p in
     let f (n, list) (c, ((b, w, o, l, g), hand), q) =
-      let n' = num_resource_in_inventory inv resource
+      let n' = num_resource_in_inventory (b, w, o, l, g) resource
       in
         match resource with
         | Brick -> ((n + n'), ((c, ((0, w, o, l, g), hand), q) :: list))
@@ -123,22 +129,27 @@ let handle_monopoly : state -> resource -> state =
         | Ore -> ((n + n'), ((c, ((b, w, 0, l, g), hand), q) :: list))
         | Grain -> ((n + n'), ((c, ((b, w, o, 0, g), hand), q) :: list))
         | Lumber -> ((n + n'), ((c, ((b, w, o, l, 0), hand), q) :: list)) in
-    let (n, plist) = List.fold_left f (0, []) l in
-    let newlist = p :: plist in
-    let updated =
+    let (n, victims) = List.fold_left f (0, []) l in
+    let plist = p :: victims in
+    let plist =
       match resource with
-      | Brick -> add_resources_to_player c (n, 0, 0, 0, 0) newlist
-      | Wool -> add_resources_to_player c (0, n, 0, 0, 0) newlist
-      | Ore -> add_resources_to_player c (0, 0, n, 0, 0) newlist
-      | Grain -> add_resources_to_player c (0, 0, 0, n, 0) newlist
-      | Lumber -> add_resources_to_player c (0, 0, 0, 0, n) newlist
-    in (board, updated, t, (c, ActionRequest))
+      | Brick -> add_resources_to_player c (n, 0, 0, 0, 0) plist
+      | Wool -> add_resources_to_player c (0, n, 0, 0, 0) plist
+      | Ore -> add_resources_to_player c (0, 0, n, 0, 0) plist
+      | Grain -> add_resources_to_player c (0, 0, 0, n, 0) plist
+      | Lumber -> add_resources_to_player c (0, 0, 0, 0, n) plist
+    in (board, plist, t, (c, ActionRequest))
   
 let handle : state -> playcard -> state =
-  fun (((board, plist, t, (c, r)) as s)) playcard ->
-    match playcard with
-    | PlayKnight robbermove -> handle_knight s robbermove
-    | PlayRoadBuilding (road, opt) -> handle_road s (road, opt)
-    | PlayYearOfPlenty (resource, opt) -> handle_plenty s (resource, opt)
-    | PlayMonopoly resource -> handle_monopoly s resource
+  fun s playcard ->
+    let (board, plist, t, (c, r)) =
+      match playcard with
+      | PlayKnight robbermove -> handle_knight s robbermove
+      | PlayRoadBuilding (road, opt) -> handle_road s (road, opt)
+      | PlayYearOfPlenty (resource, opt) -> handle_plenty s (resource, opt)
+      | PlayMonopoly resource -> handle_monopoly s resource in
+    let (map, structs, deck, discard, robber) = board in
+    let discard = (card_of_playcard playcard) :: discard in
+    let board = (map, structs, deck, discard, robber)
+    in (board, plist, t, (c, r))
   

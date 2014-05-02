@@ -8,13 +8,13 @@ open Print
   
 open MyUtil
   
-let handle_road (board, plist, turn, (colour, request)) bld (c1, (p1, p2)) =
-  let (p, l) = get_player colour plist in
+let handle_road (((board, plist, turn, _) as s)) build (c1, (p1, p2)) =
+  let (p, l) = get_player turn.active plist in
   let (c, (inv, hand), (ks, lr, la)) = p in
   let (a1, (insecs, roads), deck, a4, a5) = board in
   let not_bought = not (road_bought (p1, p2) roads) in
   let is_valid = (is_valid_line (p1, p2)) && (c1 = c) in
-  let cost = cost_of_build bld in
+  let cost = cost_of_build build in
   let enough = has_enough_resources p cost in
   let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
   in
@@ -24,87 +24,85 @@ let handle_road (board, plist, turn, (colour, request)) bld (c1, (p1, p2)) =
         let p = (c, (newinv, hand), (ks, lr, la)) in
         let newroads = (c1, (p1, p2)) :: roads in
         let b = (a1, (insecs, newroads), deck, a4, a5)
-        in (b, (p :: l), turn, (colour, ActionRequest))
-    | _ -> HandleEndTurn.handle (board, plist, turn, (colour, request))
+        in (b, (p :: l), turn, ((turn.active), ActionRequest))
+    | _ -> HandleEndTurn.handle s
   
-let handle_town (board, plist, turn, (colour, request)) build point =
-  let (p, l) = get_player colour plist in
-  let (c, (inv, hand), (ks, lr, la)) = p in
+let handle_town (((board, plist, turn, _) as s)) build point =
+  let (p, l) = get_player turn.active plist in
+  let (c, (inv, hand), ts) = p in
   let (a1, (insecs, roads), deck, a4, a5) = board in
   let not_built = is_none (List.nth insecs point) in
   let is_valid = is_valid_town insecs point in
   let cost = cost_of_build build in
   let enough = has_enough_resources p cost in
-  let player_towns = player_settlements_built c Town insecs in
-  let allowed = player_towns < cMAX_TOWNS_PER_PLAYER
+  let towns_built = player_settlements_built c Town insecs in
+  let allowed = towns_built < cMAX_TOWNS_PER_PLAYER
   in
     match (not_built, is_valid, enough, allowed) with
     | (true, true, true, true) ->
         let newinv = subtract_resources inv cost in
-        let p = (c, (newinv, hand), (ks, lr, la)) in
+        let p = (c, (newinv, hand), ts) in
         let newins = add_settlement point c Town insecs in
         let b = (a1, (newins, roads), deck, a4, a5)
-        in (b, (p :: l), turn, (colour, ActionRequest))
-    | _ -> HandleEndTurn.handle (board, plist, turn, (colour, request))
+        in (b, (p :: l), turn, ((turn.active), ActionRequest))
+    | _ -> HandleEndTurn.handle s
   
-let handle_city (board, plist, turn, (colour, request)) build point =
-  let (p, l) = get_player colour plist in
-  let (c, (inv, hand), (ks, lr, la)) = p in
+let handle_city (((board, plist, t, _) as s)) build point =
+  let (p, l) = get_player t.active plist in
+  let (c, (inv, hand), ts) = p in
   let (a1, (insecs, roads), deck, a4, a5) = board in
   let settlement = List.nth insecs point in
   let built = not (is_none settlement) in
-  let (c', setl) = get_some settlement in (* Danger *)
-  let is_valid = (c = c') && (setl = Town) in
+  let (c', settlement) = get_some settlement in (* Danger *)
+  let is_valid = (c = c') && (settlement = Town) in
   let cost = cost_of_build build in
   let enough = has_enough_resources p cost in
-  let player_cities = player_settlements_built c City insecs in
-  let allowed = player_cities < cMAX_CITIES_PER_PLAYER
+  let cities_built = player_settlements_built c City insecs in
+  let allowed = cities_built < cMAX_CITIES_PER_PLAYER
   in
     match (built, is_valid, enough, allowed) with
     | (true, true, true, true) ->
         let newinv = subtract_resources inv cost in
-        let p = (c, (newinv, hand), (ks, lr, la)) in
+        let p = (c, (newinv, hand), ts) in
         let newins = add_settlement point c City insecs in
         let b = (a1, (newins, roads), deck, a4, a5)
-        in (b, (p :: l), turn, (colour, ActionRequest))
-    | _ -> HandleEndTurn.handle (board, plist, turn, (colour, request))
+        in (b, (p :: l), t, ((t.active), ActionRequest))
+    | _ -> HandleEndTurn.handle s
   
-let handle_card (((board, plist, turn, (colour, request)) as s)) build =
-  let (p, l) = get_player colour plist in
-  let (c, (inv, hand), (ks, lr, la)) = p in
+let handle_card (((board, plist, turn, _) as s)) build =
+  let (p, l) = get_player turn.active plist in
+  let (c, (inv, hand), ts) = p in
   let (a1, (insecs, roads), deck, a4, a5) = board in
   let cost = cost_of_build build
   in
-    match has_enough_resources p cost with
-    | true ->
-        (match (List.length (reveal deck)) > 0 with
-         | true ->
-             let newinv = subtract_resources inv cost in
-             let p = (c, (newinv, hand), (ks, lr, la)) in
-             let (card, newdeck) = pick_one (reveal deck) in
-             let cs = card :: (reveal turn.cardsbought) in
-             let newturn =
-               {
-                 active = turn.active;
-                 dicerolled = turn.dicerolled;
-                 cardplayed = turn.cardplayed;
-                 cardsbought = wrap_reveal cs;
-                 tradesmade = turn.tradesmade;
-                 pendingtrade = turn.pendingtrade;
-               } in
-             let hidden = wrap_reveal newdeck in
-             let b = (a1, (insecs, roads), hidden, a4, a5)
-             in (b, (p :: l), newturn, (colour, ActionRequest))
-         | false -> HandleEndTurn.handle s)
-    | false -> HandleEndTurn.handle s
+    match ((has_enough_resources p cost), ((List.length (reveal deck)) > 0))
+    with
+    | (true, true) ->
+        let newinv = subtract_resources inv cost in
+        let p = (c, (newinv, hand), ts) in
+        let (card, newdeck) = pick_one (reveal deck) in
+        let all_bought = card :: (reveal turn.cardsbought) in
+        let newturn =
+          {
+            active = turn.active;
+            dicerolled = turn.dicerolled;
+            cardplayed = turn.cardplayed;
+            cardsbought = wrap_reveal all_bought;
+            tradesmade = turn.tradesmade;
+            pendingtrade = turn.pendingtrade;
+          } in
+        let hidden = wrap_reveal newdeck in
+        let b = (a1, (insecs, roads), hidden, a4, a5)
+        in (b, (p :: l), newturn, ((turn.active), ActionRequest))
+    | _ -> HandleEndTurn.handle s
   
 let handle : state -> build -> state =
-  fun (((board, plist, turn, (colour, request)) as s)) build ->
-    match turn.active <> colour with
+  fun (((_, _, turn, (c, _)) as s)) build ->
+    match turn.active <> c with
     | false -> HandleEndTurn.handle s
     | true ->
         (match build with
-         | BuildRoad (c1, (p1, p2)) -> handle_road s build (c1, (p1, p2))
+         | BuildRoad road -> handle_road s build road
          | BuildTown point -> handle_town s build point
          | BuildCity point -> handle_city s build point
          | BuildCard -> handle_card s build)
