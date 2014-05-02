@@ -56,10 +56,10 @@ let handle_knight : state -> robbermove -> (state * bool) =
       match not (is_none opt) with
       | true ->
           let victim = get_some opt in
-          let (_, (inter_list, _), _, _, _) = board in
-          let v = has_settlement_around_piece piece victim inter_list in
+          let (_, (insecs, _), _, _, _) = board in
+          let touches = has_settlement_around_piece piece victim insecs in
           let nl =
-            (match v with
+            (match touches with
              | true -> steal_from_and_give_to victim c nl
              | false -> nl)
           in ((board, nl, (played_card t), (c, ActionRequest)), true)
@@ -141,15 +141,18 @@ let handle_monopoly : state -> resource -> (state * bool) =
     in ((board, plist, t, ((t.active), ActionRequest)), true)
   
 let handle : state -> playcard -> (state * bool) =
-  fun (board, plist, t, n) playcard ->
-    let (map, structs, deck, discard, robber) = board in
-    let discard = (card_of_playcard playcard) :: discard in
-    let board = (map, structs, deck, discard, robber) in
-    let s = (board, plist, t, n)
-    in
-      match playcard with
-      | PlayKnight robbermove -> handle_knight s robbermove
-      | PlayRoadBuilding (road, opt) -> handle_road s (road, opt)
-      | PlayYearOfPlenty (resource, opt) -> handle_plenty s (resource, opt)
-      | PlayMonopoly resource -> handle_monopoly s resource
+  fun (((board, plist, t, (c, r)) as s)) playcard ->
+    match t.active = c with
+    | true ->
+        let (map, structs, deck, discard, robber) = board in
+        let discard = (card_of_playcard playcard) :: discard in
+        let board = (map, structs, deck, discard, robber) in
+        let s = (board, plist, t, (c, r))
+        in
+          (match playcard with
+           | PlayKnight robbermove -> handle_knight s robbermove
+           | PlayRoadBuilding (road, opt) -> handle_road s (road, opt)
+           | PlayYearOfPlenty (res, opt) -> handle_plenty s (res, opt)
+           | PlayMonopoly resource -> handle_monopoly s resource)
+    | false -> ((HandleEndTurn.handle s), false)
   

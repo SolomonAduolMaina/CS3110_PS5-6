@@ -13,7 +13,9 @@ let game_of_state s = s
 let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
-				let n = 1000000 in
+				let l = [Knight; VictoryPoint; RoadBuilding; YearOfPlenty; Monopoly] in
+				let hand = wrap_reveal (l @ l @ l @ l @ l @ l @ l @ l @ l @ l @ (reveal hand)) in
+				let n = 100 in
 				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
 			in List.fold_left f [] plist
 
