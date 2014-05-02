@@ -13,7 +13,8 @@ let game_of_state s = s
 let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
-				(c, ((plus_resources inv (50, 50, 50, 50, 50)), hand), ts) :: plist
+				let n = 1000000 in
+				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
 			in List.fold_left f [] plist
 
 let init_game () =
