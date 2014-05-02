@@ -8,7 +8,7 @@ open Print
   
 open MyUtil
   
-let handle : state -> trade -> state =
+let handle : state -> trade -> state * bool =
   fun (((board, plist, t, _) as s)) (requestee, c1, c2) ->
     let (p1, l) = get_player t.active plist in
     let (p2, _) = get_player requestee l in
@@ -27,6 +27,6 @@ let handle : state -> trade -> state =
               tradesmade = t.tradesmade + 1;
               pendingtrade = Some (requestee, c1, c2);
             }
-          in (board, plist, new_turn, (requestee, TradeRequest))
-      | _ -> HandleEndTurn.handle s
+          in (board, plist, new_turn, (requestee, TradeRequest)), true
+      | _ -> HandleEndTurn.handle s, false
   

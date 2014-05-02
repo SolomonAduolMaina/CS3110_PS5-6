@@ -165,23 +165,30 @@ let handle_RollDice ((map, structures, deck, discard, robber) as b, pl, t, (c, r
 	in
 	((b, new_pl, new_turn, next), Action (RollDice))
 
+let handle : state -> state * bool -> move -> state * move =
+	fun s (s', bool) move ->
+			match bool with
+			| true -> (s', move)
+			| false -> if s <> s' then (s', Action (EndTurn)) else handle_RollDice s
+
 let handle_MaritimeTrade s (have, want) =
-	let s = HandleMaritimeTrade.handle s (have, want) in (s, Action (MaritimeTrade (have, want)))
+	let move = Action (MaritimeTrade (have, want)) in
+	handle s (HandleMaritimeTrade.handle s (have, want)) move
 
 let handle_DomesticTrade s trade =
-	let s = HandleDomesticTrade.handle s trade in (s, Action (DomesticTrade trade))
+	let move = Action (DomesticTrade trade) in
+	handle s (HandleDomesticTrade.handle s trade) move
 
 let handle_BuyBuild s build =
-	let s = HandleBuyBuild.handle s build in (s, Action (BuyBuild build))
+	let move = Action (BuyBuild build) in
+	handle s (HandleBuyBuild.handle s build) move
 
 let handle_PlayCard s playcard =
-	let s = HandlePlayCard.handle s playcard in (s, Action (PlayCard playcard))
+	let move = Action (PlayCard playcard) in
+	handle s (HandlePlayCard.handle s playcard) move
 
-let handle_EndTurn ((_, _, _, (c1, _)) as s) =
-	let (_, _, _, (c2, _)) as s' = HandleEndTurn.handle s in
-	match c1 = c2 with
-	| true -> handle_RollDice s
-	| false -> (s' , Action (EndTurn))
+let handle_EndTurn s = let s' = HandleEndTurn.handle s in
+	if s <> s' then (s', Action (EndTurn)) else handle_RollDice s
 
 let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 	let (updated_game, actual_move) = match r, m with

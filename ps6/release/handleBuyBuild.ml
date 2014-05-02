@@ -24,8 +24,8 @@ let handle_road (((board, plist, turn, _) as s)) build (c1, (p1, p2)) =
         let p = (c, (newinv, hand), (ks, lr, la)) in
         let newroads = (c1, (p1, p2)) :: roads in
         let b = (a1, (insecs, newroads), deck, a4, a5)
-        in (b, (p :: l), turn, ((turn.active), ActionRequest))
-    | _ -> HandleEndTurn.handle s
+        in (b, (p :: l), turn, ((turn.active), ActionRequest)), true
+    | _ -> HandleEndTurn.handle s, false
   
 let handle_town (((board, plist, turn, _) as s)) build point =
   let (p, l) = get_player turn.active plist in
@@ -44,8 +44,8 @@ let handle_town (((board, plist, turn, _) as s)) build point =
         let p = (c, (newinv, hand), ts) in
         let newins = add_settlement point c Town insecs in
         let b = (a1, (newins, roads), deck, a4, a5)
-        in (b, (p :: l), turn, ((turn.active), ActionRequest))
-    | _ -> HandleEndTurn.handle s
+        in (b, (p :: l), turn, ((turn.active), ActionRequest)), true
+    | _ -> HandleEndTurn.handle s, false
   
 let handle_city (((board, plist, t, _) as s)) build point =
   let (p, l) = get_player t.active plist in
@@ -66,8 +66,8 @@ let handle_city (((board, plist, t, _) as s)) build point =
         let p = (c, (newinv, hand), ts) in
         let newins = add_settlement point c City insecs in
         let b = (a1, (newins, roads), deck, a4, a5)
-        in (b, (p :: l), t, ((t.active), ActionRequest))
-    | _ -> HandleEndTurn.handle s
+        in (b, (p :: l), t, ((t.active), ActionRequest)), true
+    | _ -> HandleEndTurn.handle s, false
   
 let handle_card (((board, plist, turn, _) as s)) build =
   let (p, l) = get_player turn.active plist in
@@ -93,13 +93,13 @@ let handle_card (((board, plist, turn, _) as s)) build =
           } in
         let hidden = wrap_reveal newdeck in
         let b = (a1, (insecs, roads), hidden, a4, a5)
-        in (b, (p :: l), newturn, ((turn.active), ActionRequest))
-    | _ -> HandleEndTurn.handle s
+        in (b, (p :: l), newturn, ((turn.active), ActionRequest)), true
+    | _ -> HandleEndTurn.handle s, false
   
-let handle : state -> build -> state =
+let handle : state -> build -> state * bool =
   fun (((_, _, turn, (c, _)) as s)) build ->
     match turn.active <> c with
-    | false -> HandleEndTurn.handle s
+    | false -> HandleEndTurn.handle s, false
     | true ->
         (match build with
          | BuildRoad road -> handle_road s build road
