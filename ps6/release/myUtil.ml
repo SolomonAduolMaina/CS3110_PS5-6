@@ -1,6 +1,9 @@
 open Definition
 open Constant
 open Util
+open Print
+
+let _ = Random.self_init()
 
 (*******************************************************)
 (*********  string representation of tupes *************)
@@ -35,6 +38,23 @@ let string_of_intersection inter =
 	if is_none inter then "[no settlement]" else
 		let (color, settl) = get_some inter in
 		"[" ^ (string_of_color color) ^ ": " ^ (string_of_settlement settl) ^ "]"
+
+let string_of_road (c1, (p1, p2)) : string =
+	"(" ^ (string_of_color c1) ^ " (" ^ (soi p1) ^ "," ^ ((soi p2) ^ "))")
+
+let random_resource () : resource =
+	match Random.int 5 with
+	| 0 -> Brick
+	| 1 -> Wool
+	| 2 -> Ore
+	| 3 -> Grain
+	| _ -> Lumber
+
+let random_cost () : cost =
+	let n1 = Random.int 6 in
+	let n2 = Random.int 6 in
+	let n3 = Random.int 6 in
+	let n4 = Random.int 6 in let n5 = Random.int 6 in (n1, n2, n3, n4, n5)
 
 (* return a tuple (x, xs) where x is the player with color c and xs is a   *)
 (* list of the rest of the player                                          *)
@@ -347,6 +367,16 @@ let valid_road_build : road -> road list -> bool =
 						bool || valid in List.fold_left f false roads
 			| false -> false
 
+let touches_player_road : color -> point -> road list -> bool =
+	fun colour p roads ->
+			let f bool (c, (p1, p2)) = bool || (c = colour && (p = p1 || p = p2)) in
+			List.fold_left f false roads
+
+let valid_town_build : color -> point -> structures -> bool =
+	fun colour p structs ->
+			let (insecs, roads) = structs in
+			is_valid_town insecs p && touches_player_road colour p roads
+
 let player_settlements_built : color -> settlement -> intersection list -> int =
 	fun c setl inter_list ->
 			let f x =
@@ -377,21 +407,3 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 						if c2 = c && r < n && resource = res then r else n
 				| false, false -> n
 			in List.fold_left f cMARITIME_DEFAULT_RATIO ports
-
-let random_resource () : resource =
-	match Random.int 5 with
-	| 0 -> Brick
-	| 1 -> Wool
-	| 2 -> Ore
-	| 3 -> Grain
-	| _ -> Lumber
-
-let random_cost () : cost =
-	let n1 = Random.int 6 in
-	let n2 = Random.int 6 in
-	let n3 = Random.int 6 in
-	let n4 = Random.int 6 in let n5 = Random.int 6 in (n1, n2, n3, n4, n5)
-
-let string_of_road (c1, (p1, p2)) : string =
-	"(" ^
-	((string_of_color c1) ^ (" (" ^ ((soi p1) ^ ("," ^ ((soi p2) ^ "))")))))

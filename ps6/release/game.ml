@@ -5,8 +5,6 @@ open Print
 open MyUtil
 open Util2
 
-
-(* type state = board * player list * turn * next *)
 type game = state
 
 let state_of_game g = g
