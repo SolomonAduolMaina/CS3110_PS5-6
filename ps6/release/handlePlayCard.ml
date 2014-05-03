@@ -87,14 +87,8 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
            | false ->
                (match handle_road_helper first (get_some opt) with
                 | (both, true) -> (both, true)
-                | _ -> (first, true)))
-      | (failed, false) ->
-          (match is_none opt with
-           | true -> ((HandleEndTurn.handle s), false)
-           | false ->
-               (match handle_road_helper s (get_some opt) with
-                | (second, true) -> (second, true)
                 | _ -> ((HandleEndTurn.handle s), false)))
+      | (failed, false) -> ((HandleEndTurn.handle s), false)
   
 let handle_plenty (board, plist, t, (c, r)) (resource, opt) =
   let ((c, (inv, hand), ts), rest) = get_player c plist in

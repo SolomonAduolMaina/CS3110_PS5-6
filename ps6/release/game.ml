@@ -13,8 +13,8 @@ let game_of_state s = s
 let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
-				let l = [Knight; Knight; Knight; Knight ; Knight] in
-				let hand = wrap_reveal (l @ l @ l @ l @ l @(reveal hand)) in
+				let l = [RoadBuilding; RoadBuilding; RoadBuilding] in
+				let hand = wrap_reveal (l @ (reveal hand)) in
 				let n = 5 in
 				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
 			in List.fold_left f [] plist
@@ -72,11 +72,11 @@ let handle_InitialMove ((((map, structures, deck, discard, robber), pl , t , (c,
 (* to p and if applicable, a unit of a random resource of player pl is     *)
 (* moved from pl to t.active player. next = t.active * ActionRequest       *)
 let handle_RobberMove ((map, structures, deck, discard, robber), pl, t, (c, r)) (piece, x) =
-	let p = 
-    if piece >= cMIN_PIECE_NUM && piece <= cMAX_PIECE_NUM 
-    then piece else Random.int cNUM_PIECES
-  in
-  let new_pl, robbed =
+	let p =
+		if piece >= cMIN_PIECE_NUM && piece <= cMAX_PIECE_NUM
+		then piece else Random.int cNUM_PIECES
+	in
+	let new_pl, robbed =
 		if not (is_none x) && has_settlement_around_piece p (get_some x) (fst structures)
 		then (steal_from_and_give_to (get_some x) c pl, x) else (pl, None)
 	in
@@ -229,7 +229,9 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 		| ActionRequest, _ -> handle_EndTurn s
 	in
 	let () = print_update c actual_move updated_game in
-  let ((_, (inters, _),_,_,_),player_list,_, _) = updated_game in
+	let ((_, (inters, roads), _, _, _), player_list, _, _) = updated_game in
+	let () = print (longest_roads roads inters) in
+	let () = print (string_of_list string_of_road roads) in
 	(winner player_list t.active inters, updated_game)
 
 let presentation ((board, plist, turn, (colour, request)) : game) : game =
