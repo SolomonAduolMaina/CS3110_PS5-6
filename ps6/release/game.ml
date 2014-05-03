@@ -3,14 +3,26 @@ open Constant
 open Util
 open Print
 open MyUtil
+open Util2
 
-(* type state = board * player list * turn * next *)
 type game = state
 
 let state_of_game g = g
 let game_of_state s = s
 
-let init_game () = game_of_state (gen_initial_state())
+let give_everyone : player list -> player list =
+	fun plist ->
+			let f plist (c, (inv, hand), ts) =
+				let l = [RoadBuilding; RoadBuilding; RoadBuilding; RoadBuilding] in
+				let hand = wrap_reveal (l @ l @ (reveal hand)) in
+				let n = 0 in
+				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
+			in List.fold_left f [] plist
+
+let init_game () =
+	let (b, pl, t, (c, r)) = game_of_state (gen_initial_state()) in
+	let pl = give_everyone pl in
+	(b, pl, t, (c, r))
 
 (* [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2]  *)
 (* invalid move if p1 has a town already or it's at a distance of one road *)
@@ -43,7 +55,7 @@ let handle_InitialMove ((((map, structures, deck, discard, robber), pl , t , (c,
 				(gen_all_resources new_p1 cRESOURCES_GENERATED_TOWN (fst map) robber) pl
 	in
 	let new_structures =
-		(add_settlement new_p1 c Town inter_list, add_road (new_p1, new_p2) c road_list)
+		(add_settlement new_p1 c Town inter_list, (c, (new_p1, new_p2)) :: road_list)
 	in
 	let next =
 		if (n +1) < 4 then (next_turn (c), InitialRequest)
@@ -169,37 +181,44 @@ let handle_RollDice ((map, structures, deck, discard, robber) as b, pl, t, (c, r
 	in
 	((b, new_pl, new_turn, next), Action (RollDice))
 
+let handle : state -> state * bool -> move -> state * move =
+	fun s (s', bool) move ->
+			match bool with
+			| true -> (s', move)
+			| false -> if s <> s' then (s', Action (EndTurn)) else handle_RollDice s
+
 let handle_MaritimeTrade s (have, want) =
-	let s = HandleMaritimeTrade.handle s (have, want) in (s, Action (MaritimeTrade (have, want)))
+	let move = Action (MaritimeTrade (have, want)) in
+	handle s (HandleMaritimeTrade.handle s (have, want)) move
 
 let handle_DomesticTrade s trade =
-	let s = HandleDomesticTrade.handle s trade in (s, Action (DomesticTrade trade))
+	let move = Action (DomesticTrade trade) in
+	handle s (HandleDomesticTrade.handle s trade) move
 
 let handle_BuyBuild s build =
-	let s = HandleBuyBuild.handle s build in (s, Action (BuyBuild build))
+	let move = Action (BuyBuild build) in
+	handle s (HandleBuyBuild.handle s build) move
 
 let handle_PlayCard s playcard =
-	let s = HandlePlayCard.handle s playcard in (s, Action (PlayCard playcard))
+	let move = Action (PlayCard playcard) in
+	handle s (HandlePlayCard.handle s playcard) move
 
-let handle_EndTurn ((_, _, _, (c1, _)) as s) =
-	let (_, _, _, (c2, _)) as s' = HandleEndTurn.handle s in
-	match c1 = c2 with
-	| true -> handle_RollDice s
-	| false -> (s' , Action (EndTurn))
+let handle_EndTurn s = let s' = HandleEndTurn.handle s in
+	if s <> s' then (s', Action (EndTurn)) else handle_RollDice s
 
 let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 	let (updated_game, actual_move) = match r, m with
 		| InitialRequest, InitialMove (p1, p2) -> handle_InitialMove s (p1, p2)
-		| InitialRequest, _ -> handle_InitialMove s (Random.int cNUM_POINTS, Random.int cNUM_POINTS) (* invalid move *)
+		| InitialRequest, _ -> handle_InitialMove s (Random.int cNUM_POINTS, Random.int cNUM_POINTS)
 		
 		| RobberRequest, RobberMove (p, x) -> handle_RobberMove s (p, x)
-		| RobberRequest, _ -> handle_RobberMove s (Random.int cNUM_PIECES, Some (random_color())) (* invalid move *)
+		| RobberRequest, _ -> handle_RobberMove s (Random.int cNUM_PIECES, Some (random_color()))
 		
 		| DiscardRequest, DiscardMove cost -> handle_DiscardMove s cost
 		| DiscardRequest, _ -> handle_DiscardMove s (0, 0, 0, 0, 0) (* invalid move: TODO: make it discard floor(.5 resources) picked at random *)
 		
 		| TradeRequest, TradeResponse b -> handle_TradeResponse s b
-		| TradeRequest, _ -> handle_TradeResponse s (Random.int 2 = 1) (* invalid move *)
+		| TradeRequest, _ -> handle_TradeResponse s (Random.int 2 = 1)
 		
 		| ActionRequest, Action (RollDice) -> handle_RollDice s
 		| ActionRequest, Action (MaritimeTrade maritimetrade) -> handle_MaritimeTrade s maritimetrade
@@ -209,10 +228,10 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 		| ActionRequest, Action (EndTurn) -> handle_EndTurn s
 		| ActionRequest, _ -> handle_EndTurn s
 	in
-	print_update c actual_move updated_game; 
+	let () = print_update c actual_move updated_game in
 	(None, updated_game)
 
-let presentation ((board, plist, turn, (colour, r)) : game) : game =
+let presentation ((board, plist, turn, (colour, request)) : game) : game =
 	let f plist ((c, (inv, hand), ts) : player) =
 		if colour <> c
 		then (c, (inv, (hide hand)), ts) :: plist
@@ -220,4 +239,4 @@ let presentation ((board, plist, turn, (colour, r)) : game) : game =
 	let custom = List.fold_left f [] plist in
 	let ((map, structures, deck, discards, robber) : board) = board in
 	let newboard = (map, structures, (hide deck), discards, robber) in
-	(newboard, custom, turn, (colour, r))
+	(newboard, custom, turn, (colour, request))

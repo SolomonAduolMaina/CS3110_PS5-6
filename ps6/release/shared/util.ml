@@ -185,7 +185,7 @@ let settlement_num_resources (set : settlement) : int =
 
 (** Returns the number of a specific resource in an inventory *)
 let num_resource_in_inventory (inv : inventory) (res : resource) : int =
-  let (b,w,o,l,g) = inv in
+  let (b,w,o,g,l) = inv in
     match res with
       | Brick -> b
       | Wool -> w

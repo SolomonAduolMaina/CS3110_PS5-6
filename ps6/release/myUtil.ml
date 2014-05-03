@@ -1,6 +1,9 @@
 open Definition
 open Constant
 open Util
+open Print
+
+let _ = Random.self_init()
 
 (*******************************************************)
 (*********  string representation of tupes *************)
@@ -36,6 +39,23 @@ let string_of_intersection inter =
 		let (color, settl) = get_some inter in
 		"[" ^ (string_of_color color) ^ ": " ^ (string_of_settlement settl) ^ "]"
 
+let string_of_road (c1, (p1, p2)) : string =
+	"(" ^ (string_of_color c1) ^ " (" ^ (soi p1) ^ "," ^ ((soi p2) ^ "))")
+
+let random_resource () : resource =
+	match Random.int 5 with
+	| 0 -> Brick
+	| 1 -> Wool
+	| 2 -> Ore
+	| 3 -> Grain
+	| _ -> Lumber
+
+let random_cost () : cost =
+	let n1 = Random.int 6 in
+	let n2 = Random.int 6 in
+	let n3 = Random.int 6 in
+	let n4 = Random.int 6 in let n5 = Random.int 6 in (n1, n2, n3, n4, n5)
+
 (* return a tuple (x, xs) where x is the player with color c and xs is a   *)
 (* list of the rest of the player                                          *)
 let get_player c player_list =
@@ -62,9 +82,6 @@ let list_update_elem (i : int) (e : 'a) (lst : 'a list) : 'a list =
 (* type [settl_type]                                                       *)
 let add_settlement point color settl_type inter_list =
 	list_update_elem point (Some (color, settl_type)) inter_list
-
-(* update [road_list] to add road on [line] for player [color] *)
-let add_road line color road_list = (color, line):: road_list
 
 (* returns number of towns on the board *)
 let num_towns inter_list =
@@ -337,10 +354,31 @@ let gen_roll_resources pl inter_list hex_list roll robber =
 	in
 	add_resources pl settl_resources
 
-let road_bought : line -> road list -> bool =
-	fun (p1, p2) roads ->
-			let p (_, (p3, p4)) = ((p1, p2) = (p3, p4)) || ((p1, p2) = (p4, p3))
-			in List.for_all p roads
+let road_not_bought : road -> road list -> bool =
+	fun (_, (p1, p2)) roads ->
+			let f (_, (p3, p4)) = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3)) in
+			List.for_all f roads
+
+let valid_road_build : road -> road list -> bool =
+	fun ((c1, (p1, p2)) as road) roads ->
+			match is_valid_line (p1, p2) && road_not_bought road roads with
+			| true ->
+					let f bool (c2, (p3, p4)) =
+						let adjacent = p1 = p3 || p1 = p4 || p2 = p3 || p2 = p4 in
+						let same_player = c1 = c2 in
+						let valid = adjacent && same_player in
+						bool || valid in List.fold_left f false roads
+			| false -> false
+
+let touches_player_road : color -> point -> road list -> bool =
+	fun colour p roads ->
+			let f bool (c, (p1, p2)) = bool || (c = colour && (p = p1 || p = p2)) in
+			List.fold_left f false roads
+
+let valid_town_build : color -> point -> structures -> bool =
+	fun colour p structs ->
+			let (insecs, roads) = structs in
+			is_valid_town insecs p && touches_player_road colour p roads
 
 let player_settlements_built : color -> settlement -> intersection list -> int =
 	fun c setl inter_list ->
@@ -387,3 +425,4 @@ let who_has_longest_road (roads : road list) (inters : intersection list) : colo
 
 let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list = 
   let holder of
+
