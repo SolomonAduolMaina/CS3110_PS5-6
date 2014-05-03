@@ -94,7 +94,9 @@ let num_cities inter_list =
 	list_count f inter_list
 
 (* true iff a line exist between p1 and p2 *)
-let is_valid_line (p1, p2) = List.length (List.filter (fun x -> x = p2) (adjacent_points p1)) = 1
+let is_valid_line (p1, p2) = 
+  p1 >= cMIN_POINT_NUM && p1 <= cMAX_POINT_NUM &&  
+  List.length (List.filter (fun x -> x = p2) (adjacent_points p1)) = 1
 
 (* true iff p1 is at least two roads away from any other settlement and p1 *)
 (* does not have a settlement                                              *)
@@ -103,7 +105,8 @@ let is_valid_town inter_list p1 =
 		| [] -> true
 		| h:: t -> is_none (List.nth inter_list h) && helper t
 	in
-	is_none (List.nth inter_list p1) && helper (adjacent_points p1)
+    p1 >= cMIN_POINT_NUM && p1 <= cMAX_POINT_NUM &&  
+    is_none (List.nth inter_list p1) && helper (adjacent_points p1)
 
 (* = resource1 + resource2 *)
 let plus_resources resource1 resource2 = map_cost2 ( + ) resource1 resource2
@@ -403,3 +406,19 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 						if c2 = c && r < n && resource = res then r else n
 				| false, false -> n
 			in List.fold_left f cMARITIME_DEFAULT_RATIO ports
+
+(* returns the color of the player who has the longest road and the length of his long road*)
+let who_has_longest_road (roads : road list) (inters : intersection list) : color = 
+  let color_list = [Blue ; Red ; Orange ; White] in 
+  let f color = longest_road color roads inters in
+  let longest_roads_lengths = List.map f color_list in 
+  let lst = List.combine color_list longest_roads_lengths in
+  let my_compare (_, x) (_, y) = compare y x in 
+  let max = List.sort my_compare lst in 
+    match max with 
+    | [] -> failwith "<who_has_longest_road> impossible"
+    | (c,_)::t -> (c
+
+let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list = 
+  let holder of
+
