@@ -229,7 +229,8 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 		| ActionRequest, _ -> handle_EndTurn s
 	in
 	let () = print_update c actual_move updated_game in
-	(None, updated_game)
+  let ((_, (inters, _),_,_,_),player_list,_, _) = updated_game in
+	(winner player_list t.active inters, updated_game)
 
 let presentation ((board, plist, turn, (colour, request)) : game) : game =
 	let f plist ((c, (inv, hand), ts) : player) =
