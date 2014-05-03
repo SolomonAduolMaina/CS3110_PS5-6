@@ -16,9 +16,7 @@ let handle : state -> state =
         let newhand = wrap_reveal ((reveal t.cardsbought) @ (reveal hand)) in
         let p = (c, (inv, newhand), ts) in
         let new_colour = next_turn t.active in
-        let fresh = new_turn new_colour in
-        let (_, (inters, roads), _, _, _) = board in
-        let new_pl = update_longest_road_trophy (p :: l) roads inters in 
-        (board, new_pl, fresh, (new_colour, ActionRequest))
+        let fresh = new_turn new_colour
+        in (board, (p :: l), fresh, (new_colour, ActionRequest))
     | None -> s
   

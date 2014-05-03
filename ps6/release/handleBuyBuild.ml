@@ -9,7 +9,6 @@ open Print
 open MyUtil
   
 (* open Util2 *)
-  
 let handle_road (((board, plist, turn, _) as s)) build road =
   let (p, l) = get_player turn.active plist in
   let (c, (inv, hand), (ks, lr, la)) = p in
@@ -23,9 +22,10 @@ let handle_road (((board, plist, turn, _) as s)) build road =
     | (true, true, true) ->
         let newinv = subtract_resources inv cost in
         let p = (c, (newinv, hand), (ks, lr, la)) in
-        let newroads = road :: roads in
-        let b = (a1, (insecs, newroads), deck, a4, a5)
-        in ((b, (p :: l), turn, ((turn.active), ActionRequest)), true)
+        let roads = road :: roads in
+        let plist = update_longest_road_trophy (p :: l) roads insecs in
+        let b = (a1, (insecs, roads), deck, a4, a5)
+        in ((b, plist, turn, ((turn.active), ActionRequest)), true)
     | _ -> ((HandleEndTurn.handle s), false)
   
 let handle_town (((board, plist, turn, _) as s)) build point =

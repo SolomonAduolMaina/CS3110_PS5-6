@@ -14,7 +14,7 @@ let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
 				let l = [Knight; Knight; Knight; Knight ; Knight] in
-				let hand = wrap_reveal (l @ (reveal hand)) in
+				let hand = wrap_reveal (l @ l @ l @ l @ l @(reveal hand)) in
 				let n = 5 in
 				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
 			in List.fold_left f [] plist
