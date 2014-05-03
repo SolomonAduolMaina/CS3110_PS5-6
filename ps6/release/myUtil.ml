@@ -457,4 +457,45 @@ let update_longest_road_trophy (pl : player list) (roads : road list) (inters : 
   end
 
 
+(** Returns the number of victory point accociated with the type of settlement *)
+let settlement_victory_point (set : settlement) : int =
+  match set with
+    | Town -> cVP_TOWN
+    | City -> cVP_CITY
 
+
+let cVP_CARD = 1 (* per victory card *)
+let cVP_LONGEST_ROAD = 2 (* for owning longest road trophy *)
+let cVP_LARGEST_ARMY = 2 (* for owning largest army trophy *)
+
+(*  = (Some active) iff the active player has won the game. otherwise, = None*)
+let winner player_list active inters = 
+  let ((_, (_, cards), (_, longestroad, largestarmy)), _) = 
+    get_player active player_list 
+  in 
+  let points_from_settlement =
+    let rec helper out = function
+      | [] -> out 
+      | h::t -> begin 
+        if is_none h || fst (get_some h) != active then helper out t
+        else helper (out + (settlement_victory_point (snd (get_some h)))) t 
+      end
+    in 
+      helper 0 inters
+  in
+  let points_from_trophies = 
+    (if longestroad then cVP_LONGEST_ROAD else 0) +
+    (if largestarmy then cVP_LARGEST_ARMY else 0) 
+  in
+  let points_from_cards = 
+    match cards with 
+    | Hidden _ -> failwith "<winner> active player's cards are hidden."
+    | Reveal l -> begin
+      List.fold_left 
+        (fun acc card -> acc + (if card = VictoryPoint then cVP_CARD else 0))
+          0 l
+    end
+  in
+  let sum_points = points_from_settlement + points_from_trophies + points_from_cards 
+  in 
+    if sum_points >= cWIN_CONDITION then Some active else None
