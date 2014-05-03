@@ -434,6 +434,7 @@ let current_holder_of_longest_road (pl : player list) (roads : road list) (inter
     if is_none x then None 
     else Some (get_some x, longest_road (get_some x) roads inters)
 
+(* check and update the holder of the longest road trophy *)
 let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list =  
   let current_holder = current_holder_of_longest_road pl roads inters in 
   let (new_holder, length) = who_has_longest_road roads inters in 
@@ -454,4 +455,6 @@ let update_longest_road_trophy (pl : player list) (roads : road list) (inters : 
       (c', h', (k', false, army'))::ps' 
     )
   end
+
+
 
