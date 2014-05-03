@@ -31,7 +31,7 @@ let update_armies : color -> player list -> player list =
     let ((c, bank, (ks, lr, la)), l) = get_player c plist in
     let player = (c, bank, ((ks + 1), lr, la)) in
     let f ((c, bank, (ks, lr, la)), plist) (c', bank', (ks', lr', la')) =
-      match ks' > ks with
+      match (ks' >= ks) && la' with
       | true ->
           let nl = (c, bank, (ks, lr, false)) :: plist
           in ((c', bank', (ks', lr', la')), nl)
@@ -45,7 +45,7 @@ let update_armies : color -> player list -> player list =
       else (c, bank, (ks, lr, false)) :: nl
   
 let handle_knight : state -> robbermove -> (state * bool) =
-  fun (board, plist, t, (c, r)) (piece, opt) ->
+  fun (((board, plist, t, (c, r)) as s)) (piece, opt) ->
     let plist = update_armies c plist in
     let (map, structs, deck, discard, _) = board in
     let board = (map, structs, deck, discard, piece)
@@ -53,13 +53,15 @@ let handle_knight : state -> robbermove -> (state * bool) =
       match not (is_none opt) with
       | true ->
           let victim = get_some opt in
+          let sensible = victim <> t.active in
           let (_, (insecs, _), _, _, _) = board in
-          let touches = has_settlement_around_piece piece victim insecs in
-          let plist =
-            (match touches with
-             | true -> steal_from_and_give_to victim t.active plist
-             | false -> plist)
-          in ((board, plist, t, (c, ActionRequest)), true)
+          let touches = has_settlement_around_piece piece victim insecs
+          in
+            (match sensible && touches with
+             | true ->
+                 let plist = steal_from_and_give_to victim t.active plist
+                 in ((board, plist, t, (c, ActionRequest)), true)
+             | false -> ((HandleEndTurn.handle s), false))
       | false -> ((board, plist, t, (c, ActionRequest)), false)
   
 let handle_road : state -> (road * (road option)) -> (state * bool) =
@@ -146,7 +148,10 @@ let handle : state -> playcard -> (state * bool) =
                let q = (board, (p :: rest), (played_card t), (c, r))
                in
                  (match playcard with
-                  | PlayKnight robbermove -> handle_knight q robbermove
+                  | PlayKnight robbermove ->
+                      (match handle_knight q robbermove with
+                       | (_, false) -> ((HandleEndTurn.handle s), false)
+                       | n -> n)
                   | PlayRoadBuilding (road, opt) ->
                       (match handle_road q (road, opt) with
                        | (_, false) -> ((HandleEndTurn.handle s), false)

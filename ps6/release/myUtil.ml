@@ -202,31 +202,27 @@ let get_single_avaliable_resource (color, (inventory, cards), trophies) =
 (* steal a resource from player c1 and give it to player c2. If c1 has     *)
 (* empty inventory then pl is returned unchanged                           *)
 let steal_from_and_give_to c1 c2 pl =
-	let rec steal l1 l2 = match l2 with
-		| [] -> failwith "<steal_from_and_give_to> c1 is not a member of pl"
-		| ((color, (inventory, cards), trophies) as p):: t -> begin
-					if color <> c1 then steal (p:: l1) t
-					else (
+	let rec steal l1 l2 =
+		match l2 with
+		| [] -> failwith "This surely cannot happen"
+		| ((color, (inv, cards), ts) as p):: t ->
+				match color <> c1 with
+				| true -> steal (p:: l1) t
+				| false ->
 						let stolen = get_single_avaliable_resource p in
-						let new_p = (color, (subtract_resources inventory stolen, cards), trophies)
-						in
-						((new_p:: l1) @ l2, stolen)
-					)
-				end
+						let p = (color, (subtract_resources inv stolen, cards), ts)
+						in ((p:: l1) @ t, stolen)
 	in
-	let rec give l1 l2 stolen = match l2 with
-		| [] -> failwith "<steal_from_and_give_to> c2 is not a member of pl"
-		| ((color, (inventory, cards), trophies) as p):: t -> begin
-					if color <> c2 then give (p:: l1) t stolen
-					else (
-						let new_p = (color, (plus_resources inventory stolen, cards), trophies)
-						in(new_p:: l1) @ l2
-					)
-				end
-	in
-	let (intermidate_pl, stolen) = steal [] pl
-	in
-	give [] intermidate_pl stolen
+	let rec give l1 l2 stolen =
+		match l2 with
+		| [] -> failwith "This surely cannot happen"
+		| ((color, (inv, cards), ts) as p):: t ->
+				match color <> c2 with
+				| true -> give (p:: l1) t stolen
+				| false ->
+						let p = (color, (plus_resources inv stolen, cards), ts)
+						in (p:: l1) @ t
+	in let (ls, stolen) = steal [] pl in give [] ls stolen
 
 (* true iff player c has a settlement neighboring piece p *)
 let has_settlement_around_piece p c inter_list =
