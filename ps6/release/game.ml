@@ -3,7 +3,7 @@ open Constant
 open Util
 open Print
 open MyUtil
-open Util2
+(* open Util2 *)
 
 type game = state
 

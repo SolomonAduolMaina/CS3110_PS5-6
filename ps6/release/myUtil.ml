@@ -63,8 +63,10 @@ let get_player c player_list =
 	in
 	match x with
 	| [y] -> (y, xs)
-	| _ -> failwith " < get_player > player with the color provided
-is not present (or present multiple times) in player_list"
+	| _ -> let len = List.length x in 
+    failwith ( " < get_player > player with the color provided 
+    is not present (or present multiple times) in player_list." ^
+    "player is present " ^ string_of_int len ^ " times.")
 
 (* set element at index i to e. preserves order of list *)
 let list_update_elem (i : int) (e : 'a) (lst : 'a list) : 'a list =
@@ -411,8 +413,8 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 				| false, false -> n
 			in List.fold_left f cMARITIME_DEFAULT_RATIO ports
 
-(* returns the color of the player who has the longest road and the length of his long road*)
-let who_has_longest_road (roads : road list) (inters : intersection list) : color = 
+(* return the color of the player who has the longest road and the length of his long road*)
+let who_has_longest_road (roads : road list) (inters : intersection list) : color * int = 
   let color_list = [Blue ; Red ; Orange ; White] in 
   let f color = longest_road color roads inters in
   let longest_roads_lengths = List.map f color_list in 
@@ -421,8 +423,39 @@ let who_has_longest_road (roads : road list) (inters : intersection list) : colo
   let max = List.sort my_compare lst in 
     match max with 
     | [] -> failwith "<who_has_longest_road> impossible"
-    | (c,_)::t -> (c
+    | (c,len)::t -> (c,len) 
 
-let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list = 
-  let holder of
+(* return the color of the player who currently holds the trophy of the longest road, and 
+  the length of his longest road. If no one holds the trophy, then return None *)
+let current_holder_of_longest_road (pl : player list) (roads : road list) (inters : intersection list) : (color * int) option = 
+  let rec helper = function
+    | [] -> None 
+    | (c,_, (_, longestroad, _))::t -> 
+      if longestroad then Some c else helper t
+  in
+  let x = helper pl 
+  in
+    if is_none x then None 
+    else Some (get_some x, longest_road (get_some x) roads inters)
+
+let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list =  
+  let current_holder = current_holder_of_longest_road pl roads inters in 
+  let (new_holder, length) = who_has_longest_road roads inters in 
+  match current_holder with 
+  | None -> begin 
+    if length < cMIN_LONGEST_ROAD then pl
+    else (
+      let ((c, h, (k, _, army)), ps) = get_player new_holder pl in 
+      (c, h, (k, true, army))::ps
+    ) 
+  end
+  | Some (color, len) -> begin
+    if color = new_holder || len >= length then pl
+    else (
+      let ((c, h, (k, _, army)), ps) = get_player new_holder pl in 
+      let pl' = (c, h, (k, true, army))::ps in 
+      let ((c', h', (k', _, army')), ps') = get_player new_holder pl' in 
+      (c', h', (k', false, army'))::ps' 
+    )
+  end
 
