@@ -84,30 +84,28 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
            | false ->
                (match handle_road_helper first (get_some opt) with
                 | (both, true) -> (both, true)
-                | _ -> ((HandleEndTurn.handle first), false)))
+                | _ -> (first, true)))
       | (failed, false) ->
           (match is_none opt with
-           | true -> ((HandleEndTurn.handle failed), false)
+           | true -> ((HandleEndTurn.handle s), false)
            | false ->
                (match handle_road_helper s (get_some opt) with
-                | (second, true) -> ((HandleEndTurn.handle second), false)
-                | _ -> ((HandleEndTurn.handle failed), false)))
+                | (second, true) -> (second, true)
+                | _ -> ((HandleEndTurn.handle s), false)))
   
-let handle_plenty :
-  state -> (resource * (resource option)) -> (state * bool) =
-  fun (board, plist, t, (c, r)) (resource, opt) ->
-    let ((c, (inv, hand), ts), rest) = get_player c plist in
-    let newinv = plus_resources inv (single_resource_cost resource)
-    in
-      match is_none opt with
-      | true ->
-          let p = (c, (newinv, hand), ts)
-          in ((board, (p :: rest), t, (c, ActionRequest)), true)
-      | false ->
-          let more = single_resource_cost (get_some opt) in
-          let newinv = plus_resources newinv more in
-          let p = (c, (newinv, hand), ts)
-          in ((board, (p :: rest), t, (c, ActionRequest)), true)
+let handle_plenty (board, plist, t, (c, r)) (resource, opt) =
+  let ((c, (inv, hand), ts), rest) = get_player c plist in
+  let newinv = plus_resources inv (single_resource_cost resource)
+  in
+    match is_none opt with
+    | true ->
+        let p = (c, (newinv, hand), ts)
+        in ((board, (p :: rest), t, (c, ActionRequest)), true)
+    | false ->
+        let more = single_resource_cost (get_some opt) in
+        let newinv = plus_resources newinv more in
+        let p = (c, (newinv, hand), ts)
+        in ((board, (p :: rest), t, (c, ActionRequest)), true)
   
 let handle_monopoly : state -> resource -> (state * bool) =
   fun (board, plist, t, _) resource ->
@@ -145,13 +143,16 @@ let handle : state -> playcard -> (state * bool) =
                let discard = card :: discard in
                let board = (map, structs, deck, discard, robber) in
                let p = remove_card card (c, (inv, hand), ts) in
-               let s = (board, (p :: rest), (played_card t), (c, r))
+               let q = (board, (p :: rest), (played_card t), (c, r))
                in
                  (match playcard with
-                  | PlayKnight robbermove -> handle_knight s robbermove
-                  | PlayRoadBuilding (road, opt) -> handle_road s (road, opt)
-                  | PlayYearOfPlenty (res, opt) -> handle_plenty s (res, opt)
-                  | PlayMonopoly resource -> handle_monopoly s resource)
+                  | PlayKnight robbermove -> handle_knight q robbermove
+                  | PlayRoadBuilding (road, opt) ->
+                      (match handle_road q (road, opt) with
+                       | (_, false) -> ((HandleEndTurn.handle s), false)
+                       | n -> n)
+                  | PlayYearOfPlenty (res, opt) -> handle_plenty q (res, opt)
+                  | PlayMonopoly resource -> handle_monopoly q resource)
            | false -> ((HandleEndTurn.handle s), false))
     | false -> ((HandleEndTurn.handle s), false)
   
