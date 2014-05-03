@@ -59,8 +59,12 @@ let handle_InitialMove ((((map, structures, deck, discard, robber), pl , t , (c,
 (* bordering p, in which case, make x = none updated game = robber moved   *)
 (* to p and if applicable, a unit of a random resource of player pl is     *)
 (* moved from pl to t.active player. next = t.active * ActionRequest       *)
-let handle_RobberMove ((map, structures, deck, discard, robber), pl, t, (c, r)) (p, x) =
-	let new_pl, robbed =
+let handle_RobberMove ((map, structures, deck, discard, robber), pl, t, (c, r)) (piece, x) =
+	let p = 
+    if piece >= cMIN_PIECE_NUM && piece <= cMAX_PIECE_NUM 
+    then piece else Random.int cNUM_PIECES
+  in
+  let new_pl, robbed =
 		if not (is_none x) && has_settlement_around_piece p (get_some x) (fst structures)
 		then (steal_from_and_give_to (get_some x) c pl, x) else (pl, None)
 	in
@@ -205,7 +209,7 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 		| ActionRequest, Action (EndTurn) -> handle_EndTurn s
 		| ActionRequest, _ -> handle_EndTurn s
 	in
-	print_update c actual_move updated_game; (*TODO: update m if it was an invalid move*)
+	print_update c actual_move updated_game; 
 	(None, updated_game)
 
 let presentation ((board, plist, turn, (colour, r)) : game) : game =
