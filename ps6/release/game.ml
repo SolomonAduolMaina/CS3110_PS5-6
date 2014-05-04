@@ -13,7 +13,7 @@ let game_of_state s = s
 let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
-				let l = [RoadBuilding; RoadBuilding; RoadBuilding] in
+				let l = [Knight; Knight; Knight] in
 				let hand = wrap_reveal (l @ (reveal hand)) in
 				let n = 5 in
 				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
@@ -230,8 +230,6 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 	in
 	let () = print_update c actual_move updated_game in
 	let ((_, (inters, roads), _, _, _), player_list, _, _) = updated_game in
-	let () = print (longest_roads roads inters) in
-	let () = print (string_of_list string_of_road roads) in
 	(winner player_list t.active inters, updated_game)
 
 let presentation ((board, plist, turn, (colour, request)) : game) : game =

@@ -54,15 +54,16 @@ let handle_knight : state -> robbermove -> (state * bool) =
       | true ->
           let victim = get_some opt in
           let sensible = victim <> t.active in
+          let ok = (piece >= cMIN_PIECE_NUM) && (piece <= cMAX_PIECE_NUM) in
           let (_, (insecs, _), _, _, _) = board in
           let touches = has_settlement_around_piece piece victim insecs
           in
-            (match sensible && touches with
+            (match sensible && (touches && ok) with
              | true ->
                  let plist = steal_from_and_give_to victim t.active plist
                  in ((board, plist, t, (c, ActionRequest)), true)
              | false -> ((HandleEndTurn.handle s), false))
-      | false -> ((board, plist, t, (c, ActionRequest)), false)
+      | false -> ((board, plist, t, (c, ActionRequest)), true)
   
 let handle_road : state -> (road * (road option)) -> (state * bool) =
   fun (((board, plist, t, (c, r)) as s)) (road, opt) ->
@@ -78,7 +79,7 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
               let plist = update_longest_road_trophy plist roads insecs in
               let b = (a1, (insecs, roads), deck, a4, a5)
               in ((b, plist, t, (c, ActionRequest)), true)
-          | _ -> ((board, plist, t, (c, r)), false)
+          | _ -> ((HandleEndTurn.handle s), false)
     in
       match handle_road_helper s road with
       | (first, true) ->
@@ -129,7 +130,7 @@ let handle_monopoly : state -> resource -> (state * bool) =
   
 let handle : state -> playcard -> (state * bool) =
   fun (((board, plist, t, (c, r)) as s)) playcard ->
-    match t.active = c with
+    match (t.active = c) && (not t.cardplayed) with
     | true ->
         let card = card_of_playcard playcard in
         let ((c, (inv, hand), ts), rest) = get_player t.active plist
