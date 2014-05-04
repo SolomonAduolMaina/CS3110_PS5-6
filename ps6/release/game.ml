@@ -73,11 +73,14 @@ let handle_InitialMove ((((map, structures, deck, discard, robber), pl , t , (c,
 (* moved from pl to t.active player. next = t.active * ActionRequest       *)
 let handle_RobberMove ((map, structures, deck, discard, robber), pl, t, (c, r)) (piece, x) =
 	let p =
-		if piece >= cMIN_PIECE_NUM && piece <= cMAX_PIECE_NUM
-		then piece else Random.int cNUM_PIECES
+    let rec helper piece = 
+		  if piece >= cMIN_PIECE_NUM && piece <= cMAX_PIECE_NUM && piece <> robber 
+		  then piece else helper (Random.int cNUM_PIECES)
+    in 
+      helper piece
 	in
 	let new_pl, robbed =
-		if not (is_none x) && has_settlement_around_piece p (get_some x) (fst structures)
+		if not (is_none x) && has_settlement_around_piece p (get_some x) (fst structures) && get_some x <> t.active
 		then (steal_from_and_give_to (get_some x) c pl, x) else (pl, None)
 	in
 	let new_robber = p and next = (t.active, ActionRequest) in
