@@ -464,10 +464,6 @@ let settlement_victory_point (set : settlement) : int =
 	| Town -> cVP_TOWN
 	| City -> cVP_CITY
 
-let cVP_CARD = 1 (* per victory card *)
-let cVP_LONGEST_ROAD = 2 (* for owning longest road trophy *)
-let cVP_LARGEST_ARMY = 2 (* for owning largest army trophy *)
-
 (* = (Some active) iff the active player has won the game. otherwise, =    *)
 (* None                                                                    *)
 let winner player_list active inters =
