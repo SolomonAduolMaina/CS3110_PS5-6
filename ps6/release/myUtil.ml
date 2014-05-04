@@ -409,12 +409,18 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 				| false, false -> n
 			in List.fold_left f cMARITIME_DEFAULT_RATIO ports
 
+(* get a list of raods that belong to player c *)
+let get_player_roads (c : color) (roads : road list) : road list =
+  fst (List.partition (fun (x, _) -> x = c) roads)
+
 (* return the color of the player who has the longest road and the length  *)
 (* of his long road                                                        *)
 let who_has_longest_road (roads : road list) (inters : intersection list) : color * int =
 	let color_list = [Blue ; Red ; Orange ; White] in
-	let f color = longest_road color roads inters in
-	let longest_roads_lengths = List.map f color_list in
+  let partition_roads = List.map (fun color -> get_player_roads color roads) color_list in
+  let players_roads = List.combine color_list partition_roads in
+  let f (color, color_roads) = longest_road color color_roads inters in
+	let longest_roads_lengths = List.map f players_roads in
 	let lst = List.combine color_list longest_roads_lengths in
 	let my_compare (_, x) (_, y) = compare y x in
 	let max = List.sort my_compare lst in
@@ -434,7 +440,7 @@ let current_holder_of_longest_road (pl : player list) (roads : road list) (inter
 	let x = helper pl
 	in
 	if is_none x then None
-	else Some (get_some x, longest_road (get_some x) roads inters)
+	else Some (get_some x, longest_road (get_some x) (get_player_roads (get_some x) roads) inters)
 
 (* check and update the holder of the longest road trophy *)
 let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list =
@@ -500,9 +506,11 @@ let winner player_list active inters =
 let longest_roads : road list -> intersection list -> string =
 	fun roads insecs ->
 			let players = [Blue; Red; Orange; White] in
-			let f string c =
-				let longest = longest_road c roads insecs in
+      let partition_roads = List.map (fun color -> get_player_roads color roads) players in
+      let player_roads = List.combine players partition_roads in
+			let f string (c, c_roads) =
+				let longest = longest_road c c_roads insecs in
 				match string = "" with
 				| true -> (string_of_color c) ^ " " ^ (soi longest)
 				| false -> string ^ ", " ^ (string_of_color c) ^ " " ^ (soi longest) in
-			"["^List.fold_left f "" players ^"]"
+			"["^List.fold_left f "" player_roads ^"]"
