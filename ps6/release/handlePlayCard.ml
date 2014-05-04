@@ -54,15 +54,16 @@ let handle_knight : state -> robbermove -> (state * bool) =
       | true ->
           let victim = get_some opt in
           let sensible = victim <> t.active in
+          let ok = (piece >= cMIN_PIECE_NUM) && (piece <= cMAX_PIECE_NUM) in
           let (_, (insecs, _), _, _, _) = board in
           let touches = has_settlement_around_piece piece victim insecs
           in
-            (match sensible && touches with
+            (match sensible && (touches && ok) with
              | true ->
                  let plist = steal_from_and_give_to victim t.active plist
                  in ((board, plist, t, (c, ActionRequest)), true)
              | false -> ((HandleEndTurn.handle s), false))
-      | false -> ((HandleEndTurn.handle s), false)
+      | false -> ((board, plist, t, (c, ActionRequest)), true)
   
 let handle_road : state -> (road * (road option)) -> (state * bool) =
   fun (((board, plist, t, (c, r)) as s)) (road, opt) ->
