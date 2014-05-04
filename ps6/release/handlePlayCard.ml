@@ -62,7 +62,7 @@ let handle_knight : state -> robbermove -> (state * bool) =
                  let plist = steal_from_and_give_to victim t.active plist
                  in ((board, plist, t, (c, ActionRequest)), true)
              | false -> ((HandleEndTurn.handle s), false))
-      | false -> ((board, plist, t, (c, ActionRequest)), false)
+      | false -> ((HandleEndTurn.handle s), false)
   
 let handle_road : state -> (road * (road option)) -> (state * bool) =
   fun (((board, plist, t, (c, r)) as s)) (road, opt) ->
@@ -78,7 +78,7 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
               let plist = update_longest_road_trophy plist roads insecs in
               let b = (a1, (insecs, roads), deck, a4, a5)
               in ((b, plist, t, (c, ActionRequest)), true)
-          | _ -> ((board, plist, t, (c, r)), false)
+          | _ -> ((HandleEndTurn.handle s), false)
     in
       match handle_road_helper s road with
       | (first, true) ->
