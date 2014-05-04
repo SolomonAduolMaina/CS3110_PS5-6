@@ -230,8 +230,6 @@ let handle_move ((b, pl, t, (c, r)) as s : game) (m : move) : game outcome =
 	in
 	let () = print_update c actual_move updated_game in
 	let ((_, (inters, roads), _, _, _), player_list, _, _) = updated_game in
-	let () = print (longest_roads roads inters) in
-	let () = print (string_of_list string_of_road roads) in
 	(winner player_list t.active inters, updated_game)
 
 let presentation ((board, plist, turn, (colour, request)) : game) : game =
