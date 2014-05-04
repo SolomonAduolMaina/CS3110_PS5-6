@@ -129,7 +129,7 @@ let handle_monopoly : state -> resource -> (state * bool) =
   
 let handle : state -> playcard -> (state * bool) =
   fun (((board, plist, t, (c, r)) as s)) playcard ->
-    match t.active = c with
+    match (t.active = c) && (not t.cardplayed) with
     | true ->
         let card = card_of_playcard playcard in
         let ((c, (inv, hand), ts), rest) = get_player t.active plist
