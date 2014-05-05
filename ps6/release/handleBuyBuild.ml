@@ -13,13 +13,14 @@ let handle_road (((board, plist, turn, _) as s)) build road =
   let (p, l) = get_player turn.active plist in
   let (c, (inv, hand), (ks, lr, la)) = p in
   let (a1, (insecs, roads), deck, a4, a5) = board in
-  let valid = valid_road_build road roads in
+  let valid = valid_road_build road roads insecs in
   let cost = cost_of_build build in
+  let sane = turn.active = (fst road) in
   let enough = has_enough_resources p cost in
   let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
   in
-    match (valid, enough, allowed) with
-    | (true, true, true) ->
+    match (valid, enough, allowed, sane) with
+    | (true, true, true, true) ->
         let newinv = subtract_resources inv cost in
         let p = (c, (newinv, hand), (ks, lr, la)) in
         let roads = road :: roads in

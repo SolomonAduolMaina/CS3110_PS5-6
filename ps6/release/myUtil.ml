@@ -357,15 +357,22 @@ let road_not_bought : road -> road list -> bool =
 			let f (_, (p3, p4)) = ((p1, p2) <> (p3, p4)) && ((p1, p2) <> (p4, p3)) in
 			List.for_all f roads
 
-let valid_road_build : road -> road list -> bool =
-	fun ((c1, (p1, p2)) as road) roads ->
+let valid_road_build : road -> road list -> intersection list -> bool =
+	fun ((c1, (p1, p2)) as road) roads insecs ->
 			match is_valid_line (p1, p2) && road_not_bought road roads with
 			| true ->
 					let f bool (c2, (p3, p4)) =
-						let adjacent = p1 = p3 || p1 = p4 || p2 = p3 || p2 = p4 in
-						let same_player = c1 = c2 in
-						let valid = adjacent && same_player in
-						bool || valid in List.fold_left f false roads
+						(match p1 = p3, p1 = p4, p2 = p3, p2 = p4 with
+							| true, _, _, _ | _, true, _, _ ->
+									let not_enemy = let setl = (List.nth insecs p1) in
+										is_none setl || fst (get_some setl) = c1 in
+									let valid = (c1 = c2) && not_enemy in bool || valid
+							| _, _, true, _ | _, _, _, true ->
+									let not_enemy = let setl = (List.nth insecs p2) in
+										is_none setl || fst (get_some setl) = c1 in
+									let valid = (c1 = c2) && not_enemy in bool || valid
+							| _ -> bool)
+					in List.fold_left f false roads
 			| false -> false
 
 let touches_player_road : color -> point -> road list -> bool =
@@ -411,15 +418,15 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 
 (* get a list of raods that belong to player c *)
 let get_player_roads (c : color) (roads : road list) : road list =
-  fst (List.partition (fun (x, _) -> x = c) roads)
+	fst (List.partition (fun (x, _) -> x = c) roads)
 
 (* return the color of the player who has the longest road and the length  *)
 (* of his long road                                                        *)
 let who_has_longest_road (roads : road list) (inters : intersection list) : color * int =
 	let color_list = [Blue ; Red ; Orange ; White] in
-  let partition_roads = List.map (fun color -> get_player_roads color roads) color_list in
-  let players_roads = List.combine color_list partition_roads in
-  let f (color, color_roads) = longest_road color color_roads inters in
+	let partition_roads = List.map (fun color -> get_player_roads color roads) color_list in
+	let players_roads = List.combine color_list partition_roads in
+	let f (color, color_roads) = longest_road color color_roads inters in
 	let longest_roads_lengths = List.map f players_roads in
 	let lst = List.combine color_list longest_roads_lengths in
 	let my_compare (_, x) (_, y) = compare y x in
@@ -506,8 +513,8 @@ let winner player_list active inters =
 let longest_roads : road list -> intersection list -> string =
 	fun roads insecs ->
 			let players = [Blue; Red; Orange; White] in
-      let partition_roads = List.map (fun color -> get_player_roads color roads) players in
-      let player_roads = List.combine players partition_roads in
+			let partition_roads = List.map (fun color -> get_player_roads color roads) players in
+			let player_roads = List.combine players partition_roads in
 			let f string (c, c_roads) =
 				let longest = longest_road c c_roads insecs in
 				match string = "" with

@@ -70,11 +70,12 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
     let handle_road_helper : state -> road -> (state * bool) =
       fun (board, plist, t, (c, r)) road ->
         let (a1, (insecs, roads), deck, a4, a5) = board in
-        let valid = valid_road_build road roads in
+        let valid = valid_road_build road roads insecs in
+        let sane = t.active = (fst road) in
         let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
         in
-          match (valid, allowed) with
-          | (true, true) ->
+          match (valid, allowed, sane) with
+          | (true, true, true) ->
               let roads = road :: roads in
               let plist = update_longest_road_trophy plist roads insecs in
               let b = (a1, (insecs, roads), deck, a4, a5)
