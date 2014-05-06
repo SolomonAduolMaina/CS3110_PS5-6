@@ -238,3 +238,12 @@ let subtract_resources resource1 resource2 = map_cost2 ( - ) resource1 resource2
 let num_settlements c t inter_list =
   let f x = (not (is_none x)) && (fst (get_some x) = c) && (snd (get_some x) = t) in
   list_count f inter_list
+	
+let cost_fold2 : ('a -> int -> int -> 'a) -> 'a -> cost -> cost -> 'a =
+    fun f v (b, w, o, l, g) (b', w', o', l', g')-> 
+			f (f (f (f (f v b b') w w') o o') l l') g g'
+
+let enough_resources : cost -> cost -> bool = 
+	fun cost1 cost2 ->
+		let f bool n1 n2 = bool && n1 >= n2 in cost_fold2 f true cost1 cost2
+	

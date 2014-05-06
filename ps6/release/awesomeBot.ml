@@ -120,8 +120,7 @@ module Bot = functor (S : Soul) -> struct
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeRequestBot.handle s (!stage)
-      | ActionRequest -> 
-        if is_none t.dicerolled then Action(RollDice) else Action(EndTurn)
+      | ActionRequest -> ActionRequestBot.handle s (!stage)
 end
 
 
