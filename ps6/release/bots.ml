@@ -2,6 +2,7 @@
 
 open Babybot
 
-open Testbot
+(* open Testbot
 
-open Testbot2
+open Testbot2 *)
+
