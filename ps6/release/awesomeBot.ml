@@ -89,8 +89,8 @@ let rec handle_InitialRequest (((map, structures, _, _, _), _, _, (c, _)) as s :
   else begin
     let options = get_second_town_options point_pieces piece_hex (snd map) (!resources_from_first_town) 
     in
-          let () = List.fold_left (fun () (p, (_, sum)) -> print_endline ("####(" ^ string_of_int p ^ 
-            ", " ^ string_of_float sum ^ ") ")) () options in 
+(*           let () = List.fold_left (fun () (p, (_, sum)) -> print_endline ("####(" ^ string_of_int p ^ 
+            ", " ^ string_of_float sum ^ ") ")) () options in  *)
     try
       let (p1, _) = List.find (fun (p, _) -> is_valid_town (fst structures) p) options in
       InitialMove (p1, get_some (pick_random (adjacent_points p1)))
