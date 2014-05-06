@@ -129,7 +129,7 @@ let is_valid_town inter_list p1 =
   and the port has a good trade ratio.
   return a list of tuples of (point, evaluation stats). The list is sorted by which point have 
   higher evaluation *)
-let get_second_town_options point_pieces piece_hex (port_list : port list) = 
+let get_second_town_options point_pieces piece_hex (port_list : port list) resources_from_first_town = 
   let f out ((p1, p2), ratio, kind) =
     let adj_pieces1 = adjacent_pieces p1 
     and adj_pieces2 = adjacent_pieces p2 in 
@@ -137,11 +137,19 @@ let get_second_town_options point_pieces piece_hex (port_list : port list) =
       let prob = get_roll_probablity (snd (Hashtbl.find piece_hex ele)) in
       (prob::prob_lst, prob +. sum)
     in 
-    let extra = abs(4-ratio) + (if kind = Any then 2 else 1) in
+    let trade_points = abs(4-ratio) + (if kind = Any then 1 else 0) in
+    let lst1, lst2 = 
+      (List.map (fun piece -> resource_of_terrain (fst (Hashtbl.find piece_hex piece))) (adjacent_pieces p1),
+       List.map (fun piece -> resource_of_terrain (fst (Hashtbl.find piece_hex piece))) (adjacent_pieces p2))
+    in
+    let terrain_points1, terrain_points2 = 
+      (list_count (fun x -> not (List.mem x resources_from_first_town)) lst1,
+       list_count (fun x -> not (List.mem x resources_from_first_town)) lst2)
+    in
     let (prob_lst1, sum1) = List.fold_left helper ([], 0.) adj_pieces1  
     and (prob_lst2, sum2) = List.fold_left helper ([], 0.) adj_pieces2 in
-      (p1, (prob_lst1, sum1 +. (float extra)))::
-      (p2, (prob_lst2, sum2 +. (float extra)))::out 
+      (p1, (prob_lst1, sum1 +. (float trade_points) +. (float terrain_points1)))::
+      (p2, (prob_lst2, sum2 +. (float trade_points) +. (float terrain_points2)))::out 
   in
   let lst = List.fold_left f [] port_list
   in 
@@ -149,7 +157,6 @@ let get_second_town_options point_pieces piece_hex (port_list : port list) =
     if compare sum1 sum2 <> 0 then compare sum1 sum2
     else compare (List.fold_left max 0. prob_lst1) (List.fold_left max 0. prob_lst2)
   in
-  let () = List.fold_left (fun () (p,(_,sum)) -> print_endline ("@@@@@@@(" ^ string_of_int p ^ ", " ^ string_of_float (sum*.36.) ^ ") ")) () lst in 
     List.sort my_compare lst 
 
 (* return a tuple (x, xs) where x is the player with color c and xs is a   *)
