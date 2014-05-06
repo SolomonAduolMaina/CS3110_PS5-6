@@ -2,6 +2,8 @@
 
 open Babybot
 
+open AwesomeBot
+
 (* open Testbot
 
 open Testbot2 *)

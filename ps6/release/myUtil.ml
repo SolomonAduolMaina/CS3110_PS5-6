@@ -521,3 +521,13 @@ let longest_roads : road list -> intersection list -> string =
 				| true -> (string_of_color c) ^ " " ^ (soi longest)
 				| false -> string ^ ", " ^ (string_of_color c) ^ " " ^ (soi longest) in
 			"["^List.fold_left f "" player_roads ^"]"
+
+
+let give_everyone : player list -> player list =
+	fun plist ->
+			let f plist (c, (inv, hand), ts) =
+				let l = [RoadBuilding; RoadBuilding; RoadBuilding] in
+				let hand = wrap_reveal (l @ (reveal hand)) in
+				let n = 5 in
+				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
+			in List.fold_left f [] plist			

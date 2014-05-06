@@ -5,21 +5,49 @@ open Util
 open BotUtil
 
 (** Give your bot a 2-20 character name. *)
-let name = "awesomeBot"
+let name = "awesome_bot"
 
 let stage = ref 0 
 (* the resources we care about the most in this stage. Update it whenever you switch stages  *)
 let resources_in_interest = ref []
+let point_pieces = Hashtbl.create cNUM_POINTS
+let piece_hex = Hashtbl.create cNUM_PIECES
+let first_move = ref true
+
+let handle_InitialRequest (((map, structures, _, _, _),_,_,_) : state) : move = 
+(*   if !first_move then begin *)
+    let () = first_move:=false in
+    let () = populate_piece_hex_hashtable piece_hex (fst map) in
+    let options = get_first_town_options point_pieces piece_hex in
+    let (p1,_) = List.find (fun (p,_) -> is_valid_town (fst structures) p) options in
+    let () = List.fold_left (fun () (p,(_,sum)) -> print_endline ("(" ^ string_of_int p ^ ", " ^ string_of_float (sum*.36.) ^ ") ")) () options in 
+    InitialMove (p1, get_some (pick_random (adjacent_points p1)))
+(*   end
+  else begin
+    InitialMove (0, 0)
+  end *)
+
+
 
 module Bot = functor (S : Soul) -> struct
   (* If you use side effects, start/reset your bot for a new game *)
-  let initialize () = ()
+  let initialize () =
+    let () = first_move := true in
+    let () = stage := 0 in
+    let (b,w,o,g,l) = cCOST_CITY in 
+    let lst = List.combine [b;w;o;g;l] [Brick; Wool; Ore; Grain; Lumber] in
+    let () = resources_in_interest := 
+      List.fold_left (fun acc (i, t) -> if i>0 then t::acc else acc) [] lst in
+    let () = Hashtbl.reset point_pieces in
+    let () = populate_point_pieces_hashtable point_pieces in 
+    let () = Hashtbl.reset piece_hex in
+    ()
+
 
   (* Invalid moves are overridden in game *)
-  let handle_request ((b,p,t,n) : state) : move =
-    let (c, r) = n in
+  let handle_request ((b,p,t,(c, r)) as s : state) : move = 
     match r with
-      | InitialRequest -> InitialMove(0, 0)
+      | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> RobberMove(Random.int cNUM_PIECES, Some (random_color()))
       | DiscardRequest-> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeResponse(true)
