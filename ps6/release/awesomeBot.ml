@@ -16,6 +16,29 @@ let piece_hex = Hashtbl.create cNUM_PIECES
 let first_move = ref true
 let myColor = ref White
 
+
+(* update resources_in_interest to include the types of resources needed for cost  *)
+let update_resources_in_interest cost = 
+  let (b, w, o, g, l) = cost in 
+  let lst = List.combine [b; w; o; g; l] [Brick; Wool; Ore; Grain; Lumber] in
+    resources_in_interest := 
+      List.fold_left (fun acc (i, t) -> if i > 0 then t:: acc else acc) [] lst
+
+(* takes player list and intersection list. Checks whether the goal of 
+   the current stage is met, and updates the value of stage and 
+   resources_in_interest if necessary.  *)
+let update_stage_and_resources_in_interest player_list inter_list = 
+  let ((_, _, (_,longestroad, _)),_) = get_player (!myColor) player_list in
+  let two_cities = num_settlements (!myColor) City inter_list = 2 in
+  match (!stage), longestroad, two_cities with
+  | 0, _, true  -> stage := 1; update_resources_in_interest cCOST_ROAD
+  | 0, _, false -> ()
+  | 1, true, _  -> stage := 2; update_resources_in_interest cCOST_TOWN
+  | 1, false, _ -> ()
+  | 2, true, _  -> ()
+  | 2, false, _ -> stage := 1; update_resources_in_interest cCOST_ROAD
+  | _,_,_ -> ()
+
 let handle_InitialRequest (((map, structures, _, _, _), _, _, (c, _)) : state) : move = 
   if !first_move then begin
     let () = first_move:= false in
@@ -59,28 +82,24 @@ let handle_RobberRequest (((map, structures, _, _, robber), pl, _, _) : state) :
     in get_random_piece ()
   end 
 
-(* update resources_in_interest to include the types of resources needed for cost  *)
-let update_resources_in_interest cost = 
-    let (b, w, o, g, l) = cost in 
-    let lst = List.combine [b; w; o; g; l] [Brick; Wool; Ore; Grain; Lumber] in
-      resources_in_interest := 
-        List.fold_left (fun acc (i, t) -> if i > 0 then t:: acc else acc) [] lst
-
-(* takes player list and intersection list. Checks whether the goal of 
-   the current stage is met, and updates the value of stage and 
-   resources_in_interest if necessary.  *)
-let update_stage_and_resources_in_interest player_list inter_list = 
-  let ((_, _, (_,longestroad, _)),_) = get_player (!myColor) player_list in
-  let two_cities = num_settlements (!myColor) City inter_list = 2 in
-  match (!stage), longestroad, two_cities with
-  | 0, _, true  -> stage := 1; update_resources_in_interest cCOST_ROAD
-  | 0, _, false -> ()
-  | 1, true, _  -> stage := 2; update_resources_in_interest cCOST_TOWN
-  | 1, false, _ -> ()
-  | 2, true, _  -> ()
-  | 2, false, _ -> stage := 1; update_resources_in_interest cCOST_ROAD
-  | _,_,_ -> ()
-
+let handle_DiscradRequest (((_, _, _, _, _), pl, _, _) : state) : move =
+  let ((_, ((b, w, o, g, l)as inv, _), _), _) = get_player (!myColor) pl in 
+  let half = (sum_cost inv) / 2 in 
+  let rec f out (count, kind) = 
+    if count <= 0 then out else f (kind::out) (count -1, kind) 
+  in
+  let all = 
+    List.flatten (List.map (f []) (List.combine [b; w; o; g; l] [Brick; Wool; Ore; Grain; Lumber]))
+  in
+  let l1, l2 = 
+    List.partition (fun x -> List.mem x (!resources_in_interest)) all 
+  in
+  let in_intereset, not_in_interest = (randomize l1, randomize l2) in 
+  let cost = 
+    match in_intereset, not_in_interest with 
+    | _,_ -> (half,0,0,0,0) (* TODO*)
+  in
+    DiscardMove cost
 
 module Bot = functor (S : Soul) -> struct
 	(* If you use side effects, start/reset your bot for a new game *)
