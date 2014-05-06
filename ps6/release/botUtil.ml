@@ -233,3 +233,8 @@ let plus_resources resource1 resource2 = map_cost2 ( + ) resource1 resource2
 
 (* = resource1 - resource2 *)
 let subtract_resources resource1 resource2 = map_cost2 ( - ) resource1 resource2
+
+(* returns number of settlement of type t that belong to player c  *)
+let num_settlements c t inter_list =
+  let f x = (not (is_none x)) && (fst (get_some x) = c) && (snd (get_some x) = t) in
+  list_count f inter_list

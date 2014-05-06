@@ -59,16 +59,35 @@ let handle_RobberRequest (((map, structures, _, _, robber), pl, _, _) : state) :
     in get_random_piece ()
   end 
 
+(* update resources_in_interest to include the types of resources needed for cost  *)
+let update_resources_in_interest cost = 
+    let (b, w, o, g, l) = cost in 
+    let lst = List.combine [b; w; o; g; l] [Brick; Wool; Ore; Grain; Lumber] in
+      resources_in_interest := 
+        List.fold_left (fun acc (i, t) -> if i > 0 then t:: acc else acc) [] lst
+
+(* takes player list and intersection list. Checks whether the goal of 
+   the current stage is met, and updates the value of stage and 
+   resources_in_interest if necessary.  *)
+let update_stage_and_resources_in_interest player_list inter_list = 
+  let ((_, _, (_,longestroad, _)),_) = get_player (!myColor) player_list in
+  let two_cities = num_settlements (!myColor) City inter_list = 2 in
+  match (!stage), longestroad, two_cities with
+  | 0, _, true  -> stage := 1; update_resources_in_interest cCOST_ROAD
+  | 0, _, false -> ()
+  | 1, true, _  -> stage := 2; update_resources_in_interest cCOST_TOWN
+  | 1, false, _ -> ()
+  | 2, true, _  -> ()
+  | 2, false, _ -> stage := 1; update_resources_in_interest cCOST_ROAD
+  | _,_,_ -> ()
+
 
 module Bot = functor (S : Soul) -> struct
 	(* If you use side effects, start/reset your bot for a new game *)
   let initialize () =
     let () = first_move := true in
     let () = stage := 0 in
-    let (b, w, o, g, l) = cCOST_CITY in 
-    let lst = List.combine [b; w; o; g; l] [Brick; Wool; Ore; Grain; Lumber] in
-    let () = resources_in_interest := 
-      List.fold_left (fun acc (i, t) -> if i >0 then t:: acc else acc) [] lst in
+    let () = update_resources_in_interest cCOST_CITY in
     let () = Hashtbl.reset point_pieces in
     let () = populate_point_pieces_hashtable point_pieces in 
     let () = Hashtbl.reset piece_hex in
