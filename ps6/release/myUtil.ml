@@ -6,7 +6,7 @@ open Print
 let _ = Random.self_init()
 
 (*******************************************************)
-(*********  string representation of tupes *************)
+(*********  string representation of types *************)
 (*******************************************************)
 
 let string_of_hex (tar, roll) =
@@ -41,6 +41,9 @@ let string_of_intersection inter =
 
 let string_of_road (c1, (p1, p2)) : string =
 	"(" ^ (string_of_color c1) ^ " (" ^ (soi p1) ^ "," ^ ((soi p2) ^ "))")
+
+(*******************************************************)
+(*******************************************************)
 
 let random_resource () : resource =
 	match Random.int 5 with
@@ -471,7 +474,7 @@ let update_longest_road_trophy (pl : player list) (roads : road list) (inters : 
 				)
 			end
 
-(** Returns the number of victory point accociated with the type of settlement *)
+(** Returns the number of victory point associated with the type of settlement *)
 let settlement_victory_point (set : settlement) : int =
 	match set with
 	| Town -> cVP_TOWN

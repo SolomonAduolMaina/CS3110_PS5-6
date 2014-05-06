@@ -13,20 +13,50 @@ let resources_in_interest = ref []
 let point_pieces = Hashtbl.create cNUM_POINTS
 let piece_hex = Hashtbl.create cNUM_PIECES
 let first_move = ref true
+let myColor = ref White
 
-let handle_InitialRequest (((map, structures, _, _, _),_,_,_) : state) : move = 
-(*   if !first_move then begin *)
-    let () = first_move:=false in
+let handle_InitialRequest (((map, structures, _, _, _),_,_,(c,_)) : state) : move = 
+  if !first_move then begin
+    let () = first_move:= false in
+    let () = myColor := c in
     let () = populate_piece_hex_hashtable piece_hex (fst map) in
     let options = get_first_town_options point_pieces piece_hex in
-    let (p1,_) = List.find (fun (p,_) -> is_valid_town (fst structures) p) options in
-    let () = List.fold_left (fun () (p,(_,sum)) -> print_endline ("(" ^ string_of_int p ^ ", " ^ string_of_float (sum*.36.) ^ ") ")) () options in 
-    InitialMove (p1, get_some (pick_random (adjacent_points p1)))
-(*   end
+    try 
+      let (p1,_) = List.find (fun (p,_) -> is_valid_town (fst structures) p) options in
+      InitialMove (p1, get_some (pick_random (adjacent_points p1)))
+    with _ -> InitialMove (Random.int cNUM_POINTS, Random.int cNUM_POINTS)
+  end
   else begin
-    InitialMove (0, 0)
-  end *)
+    let options = get_second_town_options point_pieces piece_hex (snd map) in
+    let () = List.fold_left (fun () (p,(_,sum)) -> print_endline ("####(" ^ string_of_int p ^ ", " ^ string_of_float (sum*.36.) ^ ") ")) () options in 
+    try
+      let (p1,_) = List.find (fun (p,_) -> is_valid_town (fst structures) p) options in
+      InitialMove (p1, get_some (pick_random (adjacent_points p1)))
+    with _ -> InitialMove (Random.int cNUM_POINTS, Random.int cNUM_POINTS)
+  end
 
+let handle_RobberRequest (((map, structures, _, _,robber),pl,_,_) : state) : move=
+  let options = get_opponents_vpoints pl (!myColor) (fst structures) in 
+  let rec helper = function
+    | [] -> None
+    | (color,(vp,hidden_num, settl))::t -> begin 
+      let pieces = List.flatten (List.map (adjacent_pieces) settl) in
+      let f p = p <> robber && not (has_settlement_around_piece p (!myColor) (fst structures)) in
+      try
+        Some (List.find f pieces, Some color)
+      with _ -> helper t
+    end
+  in
+  match helper options with 
+  | Some x -> RobberMove x
+  | None -> begin 
+    let rec get_random_piece () =
+      let p = Random.int cNUM_PIECES in 
+      if p <> robber && not (has_settlement_around_piece p (!myColor) (fst structures))
+      then RobberMove (p, None)
+      else get_random_piece () 
+    in get_random_piece ()
+  end 
 
 
 module Bot = functor (S : Soul) -> struct
@@ -48,7 +78,7 @@ module Bot = functor (S : Soul) -> struct
   let handle_request ((b,p,t,(c, r)) as s : state) : move = 
     match r with
       | InitialRequest -> handle_InitialRequest s
-      | RobberRequest -> RobberMove(Random.int cNUM_PIECES, Some (random_color()))
+      | RobberRequest -> handle_RobberRequest s
       | DiscardRequest-> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeResponse(true)
       | ActionRequest -> 
