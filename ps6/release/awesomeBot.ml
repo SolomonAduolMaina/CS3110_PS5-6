@@ -81,7 +81,7 @@ module Bot = functor (S : Soul) -> struct
       | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
-      | TradeRequest -> TradeResponse(true)
+      | TradeRequest -> TradeRequestBot.handle s (!stage)
       | ActionRequest -> 
         if is_none t.dicerolled then Action(RollDice) else Action(EndTurn)
 end
@@ -96,8 +96,8 @@ let _ = register_bot name
 (* try to do something else. E.g. in stage 0, if you can't upgrade a town  *)
 (* to a city, then try and build a road stage 0: try to build another two  *)
 (* cities towns to cities. stage 1: build roads to get longest road trophy *)
-(* stage 2: build an extra town and make it to a city and buying cards.    *)
-(* which one is possible at that point                                     *)
+(* stage 2: build an extra town. stage 3: convert third town to city.      *)
+(* stage 4: buy cards (largest army?).                                     *)
 
 (* should have a function that updates the stage. I should be called every *)
 (* time we build a city or a road. it checks if we met the goal of this    *)

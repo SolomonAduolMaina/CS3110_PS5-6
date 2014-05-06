@@ -216,4 +216,20 @@ let has_settlement_around_piece p c inter_list =
   let f x = (not (is_none x)) && (fst (get_some x) = c) in
   list_count f (get_intersections_from_points (piece_corners p) inter_list) > 0
 
-  
+(* return a tuple (x, xs) where x is the player with color c and xs is a   *)
+(* list of the rest of the player                                          *)
+let get_player c player_list =
+    let (x, xs) = List.partition (fun (color, _, _) -> color = c) player_list
+    in
+    match x with
+    | [y] -> (y, xs)
+    | _ -> let len = List.length x in
+            failwith ( " < get_player > player with the color provided
+                    is not present (or present multiple times) in player_list." ^
+                    "player is present " ^ string_of_int len ^ " times.")
+										
+(* = resource1 + resource2 *)
+let plus_resources resource1 resource2 = map_cost2 ( + ) resource1 resource2
+
+(* = resource1 - resource2 *)
+let subtract_resources resource1 resource2 = map_cost2 ( - ) resource1 resource2
