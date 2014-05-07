@@ -238,16 +238,7 @@ let get_opponents_vpoints player_list myColor inters =
 	let my_compare (_, (vp2, hidden_num2, _)) (_, (vp1, hidden_num1, _)) =
 		if (compare vp1 vp2) <> 0
 		then compare vp1 vp2
-		else compare hidden_num1 hidden_num2 in
-	let () =
-		List.fold_left
-			(fun () (c, (vp, h, _)) ->
-						print_endline
-							("@@@@@@@(" ^
-								((string_of_color c) ^
-									(", " ^
-										((string_of_int vp) ^ (", " ^ ((string_of_int h) ^ ") ")))))))
-			() lst
+		else compare hidden_num1 hidden_num2 
 	in List.sort my_compare lst
 
 (* true iff player c has a settlement neighboring piece p *)
