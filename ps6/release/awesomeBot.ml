@@ -181,7 +181,7 @@ module Bot = functor (S : Soul) -> struct
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeRequestBot.handle s (!stage)
-      | ActionRequest -> ActionRequestBot.handle s (!stage)
+      | ActionRequest -> ActionRequestBot.handle s (!stage) false
 end
 
 
