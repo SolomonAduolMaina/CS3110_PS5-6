@@ -529,8 +529,8 @@ let longest_roads : road list -> intersection list -> string =
 let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
-				let l = [RoadBuilding; RoadBuilding; RoadBuilding] in
+				let l = [] in
 				let hand = wrap_reveal (l @ (reveal hand)) in
-				let n = 5 in
+				let n = 50 in
 				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
 			in List.fold_left f [] plist			

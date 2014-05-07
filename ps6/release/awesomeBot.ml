@@ -5,7 +5,7 @@ open Util
 open BotUtil
 
 (** Give your bot a 2-20 character name. *)
-let name = "awesome_bot"
+let name = "awesomebot"
 
 (* stages refer to highest priority. If you can't meet this priority, then 
 try to do something else. E.g. in stage 0, if you can't upgrade a town  
@@ -24,6 +24,8 @@ let piece_hex = Hashtbl.create cNUM_PIECES
 let first_move = ref true
 let myColor = ref White
 let resources_from_first_town = ref []
+let goal : (point * point) option ref= ref None
+
 
 (* update resources_in_interest to include the types of resources needed for cost  *)
 let update_resources_in_interest cost = 
@@ -42,8 +44,7 @@ stage 2: build an extra town.         => resources_in_interest = cCOST_TOWN
 stage 3: convert third town to city.  => resources_in_interest = cCOST_CITY
 stage 4: buy cards, get largest army. => resources_in_interest = cCOST_CARD *)
   let ((_, _, (_,longestroad, _)),_) = get_player (!myColor) player_list in
-  let num_cities = num_settlements (!myColor) City inter_list 
-  and num_towns = num_settlements (!myColor) City inter_list in
+  let num_cities = num_settlements (!myColor) City inter_list in 
   match (!stage), longestroad with
   | 0, _ -> begin
     if num_cities >= 2 
@@ -51,9 +52,7 @@ stage 4: buy cards, get largest army. => resources_in_interest = cCOST_CARD *)
     else (stage := 0; update_resources_in_interest cCOST_CITY)
   end
   | 1, true -> begin 
-    let s, r =
-      if num_cities >= 3 then (4, cCOST_CARD) 
-      else (if num_towns = 0 then (2, cCOST_TOWN) else (3, cCOST_CITY)) 
+    let s, r = (2, cCOST_TOWN)
     in
     stage := s; update_resources_in_interest r
   end
@@ -183,7 +182,8 @@ module Bot = functor (S : Soul) -> struct
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeRequestBot.handle s (!stage)
-      | ActionRequest -> ActionRequestBot.handle s (!stage) false
+      | ActionRequest -> let m, opt = ActionRequestBot.handle s (!stage) false (!goal) in
+			let () = goal := opt in m
 end
 
 
