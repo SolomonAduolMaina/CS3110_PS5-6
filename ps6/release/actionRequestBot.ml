@@ -7,8 +7,41 @@ open Constant
 open Util
   
 open BotUtil
-    
-let best_route points insecs roads = failwith ""
+  
+let not_enemy : color -> point -> intersection list -> bool =
+  fun colour point insecs ->
+    let setl = List.nth insecs point
+    in (is_none setl) || ((fst (get_some setl)) = colour)
+  
+let best_route colour points (((board, plist, turn, next) as s)) =
+  let (a1, (insecs, roads), a2, a3, a4) = board in
+  let f (p1, opt) p2 =
+    let n1 = not_enemy turn.active p1 insecs in
+    let n2 = not_enemy turn.active p2 insecs in
+    let not_enemy = n1 || n2 in
+    let valid = valid_road_build ((turn.active), (p1, p2)) roads insecs
+    in
+      match valid && (not_enemy && (not (is_none opt))) with
+      | true -> (p1, (Some (turn.active, (p1, p2))))
+      | false -> (p1, opt) in
+  let g opt p1 = snd (List.fold_left f (p1, None) (adjacent_points p1))
+  in
+    match List.fold_left g None points with
+    | None -> (None, s)
+    | Some road ->
+        let roads = road :: roads in
+        let board = (a1, (insecs, roads), a2, a3, a4)
+        in ((Some road), (board, plist, turn, next))
+  
+let build_road (((board, plist, turn, (_, _)) as s)) =
+  let (_, (insecs, roads), _, _, _) = board in
+  let mine = get_player_roads turn.active roads in
+  let player_paths = player_paths turn.active mine insecs in
+  let f l =
+    let (p1, p2) = ((List.hd l), (List.hd (List.rev l)))
+    in [ fst p1; snd p1; fst p2; snd p2 ] in
+  let points = List.concat (List.map f player_paths)
+  in best_route turn.active points s
   
 let index : 'a list -> (int * 'a) list =
   fun list ->
@@ -23,6 +56,12 @@ let rec occupations colour indexed acc =
        | (_, None) -> occupations colour xs acc
        | (n, Some (c, _)) ->
            if c = colour then n :: acc else occupations colour xs acc)
+  
+let build_city (board, plist, turn, (_, _)) =
+  let (_, (insecs, _), _, _, _) = board in
+  let occupations = occupations turn.active (index insecs) [] in
+  let f n = (snd (get_some (List.nth insecs n))) = Town
+  in Action (BuyBuild (BuildCity (List.find f occupations)))
   
 let deck_size : cards -> int =
   fun hand ->
@@ -127,8 +166,6 @@ let play_plenty : state -> int -> playcard option =
       | false ->
           let (r2, _) = pick_one l in Some (PlayYearOfPlenty (r1, (Some r2)))
   
-let build_road state = failwith ""
-  
 let most_gain : player list -> resource list -> resource option =
   fun plist resources ->
     let f (resource, total) (c, (inv, hand), (ks, lr, la)) =
@@ -161,9 +198,11 @@ let what_card : state -> card -> int -> playcard option =
         let (r1, s) = build_road state in
         let (r2, _) = build_road s
         in
-          if is_none r2
-          then None
-          else Some (PlayRoadBuilding (r1, (Some (get_some r2))))
+          (match ((is_none r1), (is_none r2)) with
+           | (true, _) | (_, true) -> None
+           | _ ->
+               let (r1, r2) = ((get_some r1), (get_some r2))
+               in Some (PlayRoadBuilding (r1, (Some r2))))
     | YearOfPlenty -> play_plenty state stage
     | Monopoly -> play_monopoly state stage
     | _ -> failwith "No way"
@@ -252,26 +291,17 @@ and handle : state -> int -> bool -> move =
              | _ ->
                  if not tried then domestic_trade s stage else Action EndTurn)
 
-and build_city (board, plist, turn, (_, _)) =
-  let (_, (insecs, _), _, _, _) = board in
-  let occupations = occupations turn.active (index insecs) [] in
-  let f n = (snd (get_some (List.nth insecs n))) = Town
-  in Action (BuyBuild (BuildCity (List.find f occupations)))
-
-and build_road (board, plist, turn, (_, _)) =
-  let (_, (insecs, roads), _, _, _) = board in
-  let mine = get_player_roads turn.active roads in
-  let player_paths = player_paths turn.active mine insecs in
-  let f l = [ fst (List.hd l); snd (List.hd (List.rev l)) ] in
-  let points = List.concat (List.map f player_paths)
-  in best_route points insecs roads
-
 and build : state -> int -> bool -> move =
   fun (((board, plist, turn, (_, _)) as s)) stage tried ->
     match stage_cost stage with
     | n when n = cCOST_TOWN -> build_town s stage tried
     | n when n = cCOST_CITY -> build_city s
-    | n when n = cCOST_ROAD -> build_road s
+    | n when n = cCOST_ROAD ->
+        let (r1, _) = build_road s
+        in
+          (match r1 with
+           | None -> handle s (stage + 1) tried
+           | Some road -> Action (BuyBuild (BuildRoad road)))
     | _ -> Action (BuyBuild BuildCard)
 
 and build_town (((board, plist, turn, (_, _)) as s)) stage tried =
