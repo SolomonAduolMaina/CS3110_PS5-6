@@ -327,93 +327,6 @@ color -> port list -> intersection list -> resource -> ratio =
 let get_player_roads (c : color) (roads : road list) : road list =
 	fst (List.partition (fun (x, _) -> x = c) roads)
 
-let player_paths (c : color) (roads : road list) (inters : intersection list) =
-	let no_enemy (p : point) : bool =
-		match List.nth inters p with
-		| None -> true
-		| Some(color, _) -> c = color
-	in
-	(* sets are split by enemy settlements if there are no other connections *)
-	let includes (lst : line list) ((a, b) : line) : bool =
-		let includes_one (c, d) =
-			((a = c || b = c) && no_enemy c) || ((a = d || b = d) && no_enemy d)
-		in
-		List.exists includes_one lst
-	in
-	(* partition the set of lines into connected components *)
-	let split_sets (lines : line list) : line list list =
-		(* returns the partition of completed set * remaining lines *)
-		let rec one_set (start : line list) (rest : line list) : (line list * line list) =
-			let (added, r) = List.partition (includes start) rest in
-			match added with
-			| [] -> start, rest
-			| added -> one_set (added@start) r
-		in
-		(* completely partition a set of lines *)
-		let rec build_sets (sets : line list list) (lines_remaining : line list) : line list list =
-			match lines_remaining with
-			| [] -> sets
-			| h:: t -> (
-						let (new_set, remaining) = one_set [h] t in
-						build_sets (new_set:: sets) remaining)
-		in
-		build_sets [] lines
-	in
-	(* traverse the set from each endpoint *)
-	let count_length (set : line list) : int =
-		(* return lst with all duplicates removed *)
-		let rec remove_duplicates lst =
-			match lst with
-			| h:: t -> let rest = remove_duplicates t in
-					if List.mem h t then rest else h:: rest
-			| [] -> []
-		in
-		(* list of all the points in the set of lines *)
-		let all_points set =
-			remove_duplicates (List.flatten (List.map (fun (a, b) -> [a; b]) set))
-		in
-		(* return points in the set that are connected to p *)
-		let connected_points p =
-			let rec find lst points =
-				match lst with
-				| (a, b):: t ->
-						if a = p then find t (b:: points)
-						else if b = p then find t (a:: points)
-						else find t points
-				| [] -> points
-			in
-			find set []
-		in
-		let not_including lst i = List.filter ((<>) i) lst in
-		(* find the maximum length traversing from start *)
-		let traverse points start =
-			(* count the points traversed *)
-			let rec traverse_count ps s =
-				match not_including ps s with
-				| [] -> 1
-				| rest ->
-						let connected = connected_points s in
-						let paths = List.filter (fun x -> List.mem x rest) connected in
-						let lengths = List.map (traverse_count rest) paths in
-						(list_max lengths) + 1
-			in
-			(* length is 1 less than points traversed *)
-			(traverse_count points start) - 1
-		in
-		(* Find the max length starting from each point *)
-		let setpoints = all_points set in
-		let lengths = List.map (traverse setpoints) setpoints in
-		list_max lengths
-	in
-	(* Maximum of all of the player's sets *)
-	let my_lines = List.map snd roads in
-	let sets = split_sets my_lines in
-	let lengths = (List.map count_length sets) in
-	let pairs = List.combine sets lengths in
-	let f (_, r1) (_, r2) = - (r1 - r2) in
-	let sorted = List.sort f pairs in
-	let f (a, b) = a in List.map f sorted
-
 let touches_player_road : color -> point -> road list -> bool =
 	fun colour p roads ->
 			let f bool (c, (p1, p2)) = bool || (c = colour && (p = p1 || p = p2)) in
@@ -423,6 +336,7 @@ let valid_town_build : color -> point -> structures -> bool =
 	fun colour p structs ->
 			let (insecs, roads) = structs in
 			is_valid_town insecs p && touches_player_road colour p roads
+			
 let is_valid_line (p1, p2) =
 	p1 >= cMIN_POINT_NUM && p1 <= cMAX_POINT_NUM &&
 	List.length (List.filter (fun x -> x = p2) (adjacent_points p1)) = 1

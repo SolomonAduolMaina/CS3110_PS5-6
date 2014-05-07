@@ -203,6 +203,26 @@ let rec shortest_path colour p2 insecs queue map =
 let road_points : road list -> point list =
   fun roads -> List.concat (List.map (fun (_, (p1, p2)) -> [ p1; p2 ]) roads)
   
+let continue points (((board, plist, t, next) as s)) =
+  let (a1, (insecs, roads), a2, a3, a4) = board in
+  let f (p1, opt) p2 =
+    let valid = valid_road_build ((t.active), (p1, p2)) roads insecs
+    in
+      if (is_none opt) && valid
+      then (p1, (Some (t.active, (p1, p2))))
+      else (p1, opt) in
+  let g opt p =
+    if not (is_none opt)
+    then opt
+    else snd (List.fold_left f (p, None) (adjacent_points p))
+  in
+    match List.fold_left g None points with
+    | None -> (None, s, None)
+    | Some road ->
+        let roads = road :: roads in
+        let board = (a1, (insecs, roads), a2, a3, a4) in
+        let s = (board, plist, t, next) in ((Some road), s, None)
+  
 let rec which_road path points point =
   match path with
   | [] -> (None, None)
@@ -213,9 +233,9 @@ let rec which_road path points point =
             | z :: _ -> ((Some (x, y)), (Some (y, point)))
             | _ -> ((Some (x, y)), None))
        | (true, true) ->
-             (match xs with
-              | [] | [ _ ] -> ((Some (x, y)), None)
-              | _ -> which_road (y :: xs) points point)
+           (match xs with
+            | [] | [ _ ] -> ((Some (x, y)), None)
+            | _ -> which_road (y :: xs) points point)
        | (false, false) -> failwith "Nope"
        | (false, true) -> which_road (y :: xs) points point)
   | [ x ] -> (None, None)
@@ -225,20 +245,23 @@ let rec best_route colour (((board, plist, turn, next) as s)) opt =
   in
     match opt with
     | None ->
+        let () = print "Hapa hivi" in
         let mine = get_player_roads turn.active roads
         in
-          (match mine with
-           | (_, (p1, _)) :: (_, (p2, _)) :: _ ->
-               best_route turn.active s (Some (p1, p2))
-           | _ -> failwith "failed here")
+          (match (List.length mine) = 2 with
+           | true ->
+               let (_, (p1, _)) = List.hd mine in
+               let (_, (p2, _)) = List.hd (List.tl mine)
+               in best_route turn.active s (Some (p1, p2))
+           | false -> continue (road_points mine) s)
     | Some (p1, p2) ->
         let queue = Queue.create () in
         let map = PMap.empty in
         let () = Queue.add p1 queue in
         let map = PMap.add p1 [] map in
         let path = shortest_path turn.active p2 insecs queue map in
-        let points = road_points (get_player_roads turn.active roads) in
-        
+        let points = road_points (get_player_roads turn.active roads)
+        in
           (match which_road path points p2 with
            | (None, _) -> failwith "actually here"
            | (Some (x, y), None) ->
@@ -343,8 +366,7 @@ and handle (((board, plist, turn, (colour, _)) as s)) stage tried opt =
           then ((Action RollDice), opt)
           else
             (match (enough, (turn.tradesmade)) with
-             | (true, _) ->
-                  build s stage tried opt
+             | (true, _) -> build s stage tried opt
              | (false, n) when n < (limit / 2) ->
                  if not tried
                  then domestic_trade s stage opt
