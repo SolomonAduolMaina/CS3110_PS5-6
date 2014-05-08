@@ -17,7 +17,7 @@ let handle_road (((board, plist, turn, _) as s)) build road =
   let cost = cost_of_build build in
   let sane = turn.active = (fst road) in
   let enough = has_enough_resources p cost in
-  let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
+  let allowed = (player_roads_built c roads) <= cMAX_ROADS_PER_PLAYER
   in
     match (valid, enough, allowed, sane) with
     | (true, true, true, true) ->
@@ -38,7 +38,7 @@ let handle_town (((board, plist, turn, _) as s)) build point =
   let cost = cost_of_build build in
   let enough = has_enough_resources p cost in
   let towns_built = player_settlements_built c Town insecs in
-  let allowed = towns_built < cMAX_TOWNS_PER_PLAYER
+  let allowed = towns_built <= cMAX_TOWNS_PER_PLAYER
   in
     match (not_built, valid, enough, allowed) with
     | (true, true, true, true) ->
@@ -63,7 +63,7 @@ let handle_city (((board, plist, t, _) as s)) build point =
         let cost = cost_of_build build in
         let enough = has_enough_resources p cost in
         let cities_built = player_settlements_built c City insecs in
-        let allowed = cities_built < cMAX_CITIES_PER_PLAYER
+        let allowed = cities_built <= cMAX_CITIES_PER_PLAYER
         in
           (match (valid, enough, allowed) with
            | (true, true, true) ->

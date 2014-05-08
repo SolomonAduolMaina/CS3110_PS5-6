@@ -285,7 +285,7 @@ let cost_fold2 : ('a -> int -> int -> 'a) -> 'a -> cost -> cost -> 'a =
 let enough_resources : cost -> cost -> bool =
   fun cost1 cost2 ->
     let f bool n1 n2 = bool && (n1 >= n2) in cost_fold2 f true cost1 cost2
-  
+ 
 let player_settlements_built :
   color -> settlement -> intersection list -> int =
   fun c setl inter_list ->
@@ -370,3 +370,5 @@ let valid_road_build : road -> road list -> intersection list -> bool =
     | false -> false
   
 let sop (p1, p2) = "("^(soi p1)^","^(soi p2)^")"
+
+let sor (c1, (p1, p2)) = "("^( string_of_color c1)^ "," ^ (sop (p1, p2))^")"

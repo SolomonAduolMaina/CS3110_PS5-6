@@ -108,40 +108,70 @@ let account : cost -> cost -> (((resource * int) list) * (resource list)) =
     let f (n, l1, l2) v1 v2 =
       match n with
       | 0 ->
-          if v2 = 0
-          then ((n + 1), ((Brick, v1) :: l1), l2)
-          else
-            if v1 >= v2
-            then ((n + 1), l1, l2)
-            else ((n + 1), l1, (Brick :: l2))
+          (match v2 = 0 with
+           | true ->
+               if v1 > 0
+               then ((n + 1), ((Brick, v1) :: l1), l2)
+               else ((n + 1), l1, l2)
+           | false ->
+               if v1 > v2
+               then ((n + 1), ((Brick, v1) :: l1), l2)
+               else
+                 if v1 < v2
+                 then ((n + 1), l1, (Brick :: l2))
+                 else ((n + 1), l1, l2))
       | 1 ->
-          if v2 = 0
-          then ((n + 1), ((Wool, v1) :: l1), l2)
-          else
-            if v1 >= v2
-            then ((n + 1), l1, l2)
-            else ((n + 1), l1, (Wool :: l2))
+          (match v2 = 0 with
+           | true ->
+               if v1 > 0
+               then ((n + 1), ((Wool, v1) :: l1), l2)
+               else ((n + 1), l1, l2)
+           | false ->
+               if v1 > v2
+               then ((n + 1), ((Wool, v1) :: l1), l2)
+               else
+                 if v1 < v2
+                 then ((n + 1), l1, (Wool :: l2))
+                 else ((n + 1), l1, l2))
       | 2 ->
-          if v2 = 0
-          then ((n + 1), ((Ore, v1) :: l1), l2)
-          else
-            if v1 >= v2
-            then ((n + 1), l1, l2)
-            else ((n + 1), l1, (Ore :: l2))
+          (match v2 = 0 with
+           | true ->
+               if v1 > 0
+               then ((n + 1), ((Ore, v1) :: l1), l2)
+               else ((n + 1), l1, l2)
+           | false ->
+               if v1 > v2
+               then ((n + 1), ((Ore, v1) :: l1), l2)
+               else
+                 if v1 < v2
+                 then ((n + 1), l1, (Ore :: l2))
+                 else ((n + 1), l1, l2))
       | 3 ->
-          if v2 = 0
-          then ((n + 1), ((Grain, v1) :: l1), l2)
-          else
-            if v1 >= v2
-            then ((n + 1), l1, l2)
-            else ((n + 1), l1, (Grain :: l2))
+          (match v2 = 0 with
+           | true ->
+               if v1 > 0
+               then ((n + 1), ((Grain, v1) :: l1), l2)
+               else ((n + 1), l1, l2)
+           | false ->
+               if v1 > v2
+               then ((n + 1), ((Grain, v1) :: l1), l2)
+               else
+                 if v1 < v2
+                 then ((n + 1), l1, (Grain :: l2))
+                 else ((n + 1), l1, l2))
       | _ ->
-          if v2 = 0
-          then ((n + 1), ((Lumber, v1) :: l1), l2)
-          else
-            if v1 >= v2
-            then ((n + 1), l1, l2)
-            else ((n + 1), l1, (Lumber :: l2)) in
+          (match v2 = 0 with
+           | true ->
+               if v1 > 0
+               then ((n + 1), ((Lumber, v1) :: l1), l2)
+               else ((n + 1), l1, l2)
+           | false ->
+               if v1 > v2
+               then ((n + 1), ((Lumber, v1) :: l1), l2)
+               else
+                 if v1 < v2
+                 then ((n + 1), l1, (Lumber :: l2))
+                 else ((n + 1), l1, l2)) in
     let (_, have, want) = cost_fold2 f (0, [], []) cost1 cost2
     in (have, want)
   
@@ -256,7 +286,7 @@ let continue points (((board, plist, t, next) as s)) =
     | Some road ->
         let roads = road :: roads in
         let board = (a1, (insecs, roads), a2, a3, a4) in
-        let s = (board, plist, t, next) in ((Some road), s, None)
+        let state = (board, plist, t, next) in ((Some road), state, None)
   
 let rec which_road path points point s =
   match path with
@@ -314,32 +344,32 @@ let rec build_road colour (((board, plist, turn, next) as s)) opt =
   
 let what_card (((_, _, t, _) as state)) card stage opt =
   match card with
-  | Knight -> play_knight state
+  | Knight -> ((play_knight state), opt)
   | RoadBuilding ->
       let (r1, s, opt1) = build_road t.active state opt in
-      let (r2, _, _) = build_road t.active s opt1
+      let (r2, _, opt2) = build_road t.active s opt1
       in
         (match ((is_none r1), (is_none r2)) with
-         | (true, _) | (_, true) -> None
+         | (true, _) | (_, true) -> (None, opt)
          | _ ->
              let (r1, r2) = ((get_some r1), (get_some r2))
-             in Some (PlayRoadBuilding (r1, (Some r2))))
-  | YearOfPlenty -> play_plenty state stage
-  | Monopoly -> play_monopoly state stage
+             in ((Some (PlayRoadBuilding (r1, (Some r2)))), opt2))
+  | YearOfPlenty -> ((play_plenty state stage), opt)
+  | Monopoly -> ((play_monopoly state stage), opt)
   | _ -> failwith "No way"
   
 let rec play_card state hand stage opt =
   match hand with
-  | [] -> None
+  | [] -> (None, opt)
   | card :: cards ->
       let playcards = [ Knight; RoadBuilding; YearOfPlenty; Monopoly ]
       in
         (match List.mem card playcards with
          | true ->
-             let card = what_card state card stage opt
+             let (card, opt1) = what_card state card stage opt
              in
                (match is_none card with
-                | false -> card
+                | false -> (card, opt1)
                 | true -> play_card state cards stage opt)
          | false -> play_card state cards stage opt)
   
@@ -388,28 +418,26 @@ and maritime_trade (board, plist, turn, _) stage dom opt =
         in ((Action (MaritimeTrade (res, gain))), opt)
 
 and handle s orig mar dom opt =
-  let rec
-    helper (((board, plist, turn, (colour, _)) as s)) stage mar dom opt =
-    let ((c, (inv, hand), (ks, lr, la)), l) = get_player colour plist in
-    let card = play_card s (reveal hand) stage opt
+  let rec helper (((board, plist, t, (colour, _)) as s)) stage mar dom opt =
+    let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
+    let (card, opt1) = play_card s (reveal hand) stage opt
     in
-      match ((turn.cardplayed), (is_none card)) with
-      | (false, false) -> ((Action (PlayCard (get_some card))), opt)
+      match ((t.cardplayed), (is_none card)) with
+      | (false, false) -> ((Action (PlayCard (get_some card))), opt1)
       | _ ->
           let enough = enough_resources inv (stage_cost stage) in
-          let allowed = turn.tradesmade < cNUM_TRADES_PER_TURN
+          let allowed = t.tradesmade < cNUM_TRADES_PER_TURN
           in
-            if is_none turn.dicerolled
+            if is_none t.dicerolled
             then ((Action RollDice), opt)
             else
               (match (enough, allowed, mar, dom, (stage = 4)) with
                | (true, _, _, _, _) -> build s stage mar dom opt
-               | (_, _, _, _, false) ->
+               | (_, true, _, _, _) -> domestic_trade s orig mar dom opt
+               | (_, false, _, false, _) -> maritime_trade s orig dom opt
+               | (_, _, _, true, false) ->
                    let next = if stage = 2 then 4 else stage + 1
                    in helper s next mar dom opt
-               | (_, true, _, false, true) ->
-                   domestic_trade s orig mar dom opt
-               | (_, _, false, _, true) -> maritime_trade s orig dom opt
                | _ -> ((Action EndTurn), opt))
   in helper s orig mar dom opt
 
@@ -451,3 +479,4 @@ and build_town (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
         | _ ->
             let (p, _) = pick_one safes
             in ((Action (BuyBuild (BuildTown p))), opt)
+  

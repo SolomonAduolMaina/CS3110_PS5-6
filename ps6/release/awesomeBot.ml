@@ -8,7 +8,7 @@ open BotUtil
 let name = "awesomebot"
 
 module Bot = functor (S : Soul) -> struct
-    (* If you use side effects, start/reset your bot for a new game *)
+		(* If you use side effects, start/reset your bot for a new game *)
 
 (* stages refer to highest priority. If you can't meet this priority, then *)
 (* try to do something else. E.g. in stage 0, if you can't upgrade a town  *)
@@ -48,22 +48,12 @@ let update_stage_and_resources_in_interest player_list inter_list =
   let ((_, _, (_, longestroad, _)), _) = get_player (!myColor) player_list in
   let num_cities = num_settlements (!myColor) City inter_list in
     let num_towns = num_settlements (!myColor) Town inter_list in
-  match (!stage), longestroad with
-  | 0, _ -> begin
-    if num_cities >= 2 
-    then (stage := 1; update_resources_in_interest cCOST_ROAD)
+  match (!stage)with
+  | 0 -> if num_cities = 2 then (stage := 1; update_resources_in_interest cCOST_ROAD)
     else (stage := 0; update_resources_in_interest cCOST_CITY)
-  end
-  | 1, true -> begin 
-    let s, r = (2, cCOST_TOWN)
-    in
-    stage := s; update_resources_in_interest r
-  end
-  | _, false -> stage := 1; update_resources_in_interest cCOST_ROAD
-  | 2, _ -> (match num_towns >= 1 with
-    | true -> stage := 3; update_resources_in_interest cCOST_CITY
-    | false -> ())
-  | 3, _ -> stage := 4; update_resources_in_interest cCOST_CARD
+  | 1 -> if longestroad then (stage := 2; update_resources_in_interest cCOST_TOWN) else ()
+  | 2 -> if num_towns = 1 then (stage := 3; update_resources_in_interest cCOST_CITY) else () 
+  | 3 -> if num_cities = 3 then (stage := 4; update_resources_in_interest cCOST_CARD) else ()
   | _ -> ()
 
 
@@ -178,11 +168,12 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
     let () = goal := None in
     ()
 
-    (* Invalid moves are overridden in game *)
+		(* Invalid moves are overridden in game *)
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
         let (_, (inter_list, _), _, _, _) = b in
         let () = update_stage_and_resources_in_interest p inter_list in
-        (* let () = print_endline ("myColor = " ^ string_of_color !myColor) in *)
+				(* let () = print_endline ("myColor = " ^ string_of_color          *)
+				(* !myColor) in                                                    *)
     match r with
       | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> handle_RobberRequest s

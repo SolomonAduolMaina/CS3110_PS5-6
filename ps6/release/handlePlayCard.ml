@@ -72,7 +72,7 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
         let (a1, (insecs, roads), deck, a4, a5) = board in
         let valid = valid_road_build road roads insecs in
         let sane = t.active = (fst road) in
-        let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
+        let allowed = (player_roads_built c roads) <= cMAX_ROADS_PER_PLAYER
         in
           match (valid, allowed, sane) with
           | (true, true, true) ->
@@ -80,7 +80,7 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
               let plist = update_longest_road_trophy plist roads insecs in
               let b = (a1, (insecs, roads), deck, a4, a5)
               in ((b, plist, t, (c, ActionRequest)), true)
-          | _ -> ((HandleEndTurn.handle s), false)
+          | _ -> print "In here";((HandleEndTurn.handle s), false)
     in
       match handle_road_helper s road with
       | (first, true) ->
@@ -89,8 +89,8 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
            | false ->
                (match handle_road_helper first (get_some opt) with
                 | (both, true) -> (both, true)
-                | _ -> ((HandleEndTurn.handle s), false)))
-      | (failed, false) -> ((HandleEndTurn.handle s), false)
+                | _ -> print "Now here";((HandleEndTurn.handle s), false)))
+      | (failed, false) -> print "Actually here";((HandleEndTurn.handle s), false)
   
 let handle_plenty (board, plist, t, (c, r)) (resource, opt) =
   let ((c, (inv, hand), ts), rest) = get_player c plist in
