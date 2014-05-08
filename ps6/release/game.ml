@@ -10,7 +10,7 @@ type game = state
 let state_of_game g = g
 let game_of_state s = s
 
-let init_game () = game_of_state (gen_initial_state())
+let init_game () = game_of_state (gen_random_initial_state())
  	(*let (b, pl, t, (c, r)) = game_of_state (gen_initial_state()) in
 	let pl = give_everyone pl in
 	(b, pl, t, (c, r))*)
