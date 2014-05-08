@@ -8,7 +8,7 @@ open BotUtil
 let name = "awesomebot"
 
 module Bot = functor (S : Soul) -> struct
-	(* If you use side effects, start/reset your bot for a new game *)
+    (* If you use side effects, start/reset your bot for a new game *)
 
 (* stages refer to highest priority. If you can't meet this priority, then *)
 (* try to do something else. E.g. in stage 0, if you can't upgrade a town  *)
@@ -26,7 +26,6 @@ let first_move = ref true
 let myColor = ref White
 let resources_from_first_town = ref []
 let goal : (point * point) option ref = ref None
-let origin : (point * point) option ref = ref None
 
 (* update resources_in_interest to include the types of resources needed   *)
 (* for cost                                                                *)
@@ -48,7 +47,7 @@ let update_stage_and_resources_in_interest player_list inter_list =
 (* army. => resources_in_interest = cCOST_CARD                             *)
   let ((_, _, (_, longestroad, _)), _) = get_player (!myColor) player_list in
   let num_cities = num_settlements (!myColor) City inter_list in
-	let num_towns = num_settlements (!myColor) Town inter_list in
+    let num_towns = num_settlements (!myColor) Town inter_list in
   match (!stage), longestroad with
   | 0, _ -> begin
     if num_cities >= 2 
@@ -62,8 +61,8 @@ let update_stage_and_resources_in_interest player_list inter_list =
   end
   | _, false -> stage := 1; update_resources_in_interest cCOST_ROAD
   | 2, _ -> (match num_towns >= 1 with
-	| true -> stage := 3; update_resources_in_interest cCOST_CITY
-	| false -> ())
+    | true -> stage := 3; update_resources_in_interest cCOST_CITY
+    | false -> ())
   | 3, _ -> stage := 4; update_resources_in_interest cCOST_CARD
   | _ -> ()
 
@@ -177,24 +176,22 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
     let () = Hashtbl.reset piece_hex in
     let () = resources_from_first_town := [] in
     let () = goal := None in
-		let () = origin := None in
     ()
 
-	(* Invalid moves are overridden in game *)
+    (* Invalid moves are overridden in game *)
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
-		let (_, (inter_list, _), _, _, _) = b in
-		let () = update_stage_and_resources_in_interest p inter_list in
+        let (_, (inter_list, _), _, _, _) = b in
+        let () = update_stage_and_resources_in_interest p inter_list in
+        (* let () = print_endline ("myColor = " ^ string_of_color !myColor) in *)
     match r with
       | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeRequestBot.handle s (!stage)
-      | ActionRequest -> 
-				let m, (opt, orig) = 
-					ActionRequestBot.handle s (!stage) false false (!goal) (!origin) in
-					let () = goal := opt in
-					let () = origin := orig in m 
+      | ActionRequest -> let m, opt = ActionRequestBot.handle s (!stage) false false (!goal) in
+            let () = goal := opt in m
 end
+
 
 (* Do not change *)
 let _ = register_bot name
