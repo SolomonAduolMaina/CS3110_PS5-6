@@ -200,10 +200,10 @@ let get_player c player_list =
 let settlement_victory_point (set : settlement) : int =
   match set with | Town -> cVP_TOWN | City -> cVP_CITY
   
-let get_num_hidden =
+let get_num_hidden player =
   function
   | Hidden x -> x
-  | _ -> failwith "<get_num_hidden> card is a revealed card"
+  | _ -> failwith ("<get_num_hidden>" ^ string_of_color player ^ "'s cards are revealed")
   
 let get_player_vpoints player_list player inters =
   let ((_, (_, cards), (_, longestroad, largestarmy)), _) =
@@ -224,7 +224,7 @@ let get_player_vpoints player_list player inters =
   let points_from_trophies =
     (if longestroad then cVP_LONGEST_ROAD else 0) +
       (if largestarmy then cVP_LARGEST_ARMY else 0) in
-  let hidden_num = get_num_hidden cards in
+  let hidden_num = get_num_hidden player cards in
   let sum_points = points_from_settlement + points_from_trophies
   in (sum_points, hidden_num, settlements)
   

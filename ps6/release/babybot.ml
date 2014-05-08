@@ -18,7 +18,7 @@ module Bot = functor (S : Soul) -> struct
       | InitialRequest -> InitialMove(0, 0)
       | RobberRequest -> RobberMove(Random.int cNUM_PIECES, Some (random_color()))
       | DiscardRequest-> DiscardMove(0,0,0,0,0)
-      | TradeRequest -> TradeResponse(true)
+      | TradeRequest -> if Random.int 2 = 0 then TradeResponse(true) else TradeResponse(false) 
       | ActionRequest -> 
         if is_none t.dicerolled then Action(RollDice) else Action(EndTurn)
 end
