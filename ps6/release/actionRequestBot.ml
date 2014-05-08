@@ -110,23 +110,38 @@ let account : cost -> cost -> (((resource * int) list) * (resource list)) =
       | 0 ->
           if v2 = 0
           then ((n + 1), ((Brick, v1) :: l1), l2)
-          else ((n + 1), l1, (Brick :: l2))
+          else
+            if v1 >= v2
+            then ((n + 1), l1, l2)
+            else ((n + 1), l1, (Brick :: l2))
       | 1 ->
           if v2 = 0
           then ((n + 1), ((Wool, v1) :: l1), l2)
-          else ((n + 1), l1, (Wool :: l2))
+          else
+            if v1 >= v2
+            then ((n + 1), l1, l2)
+            else ((n + 1), l1, (Wool :: l2))
       | 2 ->
           if v2 = 0
           then ((n + 1), ((Ore, v1) :: l1), l2)
-          else ((n + 1), l1, (Ore :: l2))
+          else
+            if v1 >= v2
+            then ((n + 1), l1, l2)
+            else ((n + 1), l1, (Ore :: l2))
       | 3 ->
           if v2 = 0
           then ((n + 1), ((Grain, v1) :: l1), l2)
-          else ((n + 1), l1, (Grain :: l2))
+          else
+            if v1 >= v2
+            then ((n + 1), l1, l2)
+            else ((n + 1), l1, (Grain :: l2))
       | _ ->
           if v2 = 0
           then ((n + 1), ((Lumber, v1) :: l1), l2)
-          else ((n + 1), l1, (Lumber :: l2)) in
+          else
+            if v1 >= v2
+            then ((n + 1), l1, l2)
+            else ((n + 1), l1, (Lumber :: l2)) in
     let (_, have, want) = cost_fold2 f (0, [], []) cost1 cost2
     in (have, want)
   
@@ -200,6 +215,19 @@ let rec shortest_path colour p2 insecs queue map =
         let (queue, map) = List.fold_left f (queue, map) adjacent
         in shortest_path colour p2 insecs queue map
   
+let best_shortest colour (p1, p2) (p3, p4) insecs =
+  let f (p1, p2) =
+    let queue = Queue.create () in
+    let map = PMap.empty in
+    let () = Queue.add p1 queue in
+    let map = PMap.add p1 [] map
+    in List.length (shortest_path colour p2 insecs queue map) in
+  let pairs = [ (p1, p3); (p1, p4); (p2, p3); (p2, p4) ] in
+  let lengths = List.map f pairs in
+  let assoc = List.combine pairs lengths in
+  let f (_, l1) (_, l2) = l1 - l2 in
+  let sorted = List.sort f assoc in Some (fst (List.hd sorted))
+  
 let road_points : road list -> point list =
   fun roads -> List.concat (List.map (fun (_, (p1, p2)) -> [ p1; p2 ]) roads)
   
@@ -250,9 +278,10 @@ let rec best_route colour (((board, plist, turn, next) as s)) opt =
         in
           (match (List.length mine) = 2 with
            | true ->
-               let (_, (p1, _)) = List.hd mine in
-               let (_, (p2, _)) = List.hd (List.tl mine)
-               in best_route turn.active s (Some (p1, p2))
+               let (_, l1) = List.hd mine in
+               let (_, l2) = List.hd (List.tl mine) in
+               let road = best_shortest colour l1 l2 insecs
+               in best_route turn.active s road
            | false -> continue (road_points mine) s)
     | Some (p1, p2) ->
         let queue = Queue.create () in
@@ -308,7 +337,9 @@ let rec play_card state hand stage opt =
                 | true -> play_card state cards stage opt)
          | false -> play_card state cards stage opt)
   
-let rec trade (((board, plist, turn, (colour, _)) as s)) stage tried opt =
+let rec
+  domestic_trade (((board, plist, turn, (colour, _)) as s)) stage mar dom opt
+                 =
   let ((c, (inv, hand), (ks, lr, la)), rest) = get_player colour plist in
   let cost = stage_cost stage in
   let (have, want) = account inv cost in
@@ -323,8 +354,8 @@ let rec trade (((board, plist, turn, (colour, _)) as s)) stage tried opt =
   let sorted = List.sort f have
   in
     match (sorted, possible) with
-    | ([], _) -> handle s stage tried opt
-    | (_, []) -> handle s stage tried opt
+    | ([], _) -> handle s stage mar true opt
+    | (_, []) -> handle s stage mar true opt
     | _ ->
         let (res, _) = List.hd sorted in
         let ((c, resource), _) = pick_one possible in
@@ -332,7 +363,7 @@ let rec trade (((board, plist, turn, (colour, _)) as s)) stage tried opt =
         let gain = single_resource_cost resource
         in ((Action (DomesticTrade (c, give, gain))), opt)
 
-and domestic_trade (((board, plist, turn, (colour, _)) as s)) stage opt =
+and maritime_trade (((board, plist, turn, (colour, _)) as s)) stage dom opt =
   let ((c, (inv, hand), (ks, lr, la)), l) = get_player colour plist in
   let cost = stage_cost stage in
   let (have, want) = account inv cost in
@@ -347,12 +378,13 @@ and domestic_trade (((board, plist, turn, (colour, _)) as s)) stage opt =
   let give = List.fold_left f None sorted
   in
     match give with
-    | None -> handle s stage true opt
+    | None -> handle s stage true dom opt
     | Some (res, _) ->
         let (gain, _) = pick_one want
         in ((Action (MaritimeTrade (res, gain))), opt)
 
-and handle (((board, plist, turn, (colour, _)) as s)) stage tried opt =
+and handle (((board, plist, turn, (colour, _)) as s)) stage mar dom opt =
+  let () = print ("Handling stage " ^ (soi stage)) in
   let ((c, (inv, hand), (ks, lr, la)), l) = get_player colour plist in
   let card = play_card s (reveal hand) stage opt
   in
@@ -366,32 +398,39 @@ and handle (((board, plist, turn, (colour, _)) as s)) stage tried opt =
           then ((Action RollDice), opt)
           else
             (match (enough, (turn.tradesmade)) with
-             | (true, _) -> build s stage tried opt
+             | (true, _) -> build s stage mar dom opt
              | (false, n) when n < (limit / 2) ->
-                 if not tried
-                 then domestic_trade s stage opt
-                 else trade s (stage + 1) tried opt
+                 (match (mar, dom) with
+                  | (true, true) -> ((Action EndTurn), opt)
+                  | (true, false) -> domestic_trade s stage mar dom opt
+                  | (false, true) -> maritime_trade s stage dom opt
+                  | (false, false) -> domestic_trade s stage mar dom opt)
              | (false, n) when (n >= (limit / 2)) && (n < limit) ->
-                 trade s (stage + 1) tried opt
+                 (match (mar, dom) with
+                  | (true, true) -> ((Action EndTurn), opt)
+                  | (true, false) -> domestic_trade s (stage + 1) mar dom opt
+                  | (false, true) -> maritime_trade s (stage + 1) dom opt
+                  | (false, false) ->
+                      domestic_trade s (stage + 1) mar dom opt)
              | _ ->
-                 if not tried
-                 then domestic_trade s stage opt
+                 if not mar
+                 then maritime_trade s stage dom opt
                  else ((Action EndTurn), opt))
 
-and build (((board, plist, turn, (_, _)) as s)) stage tried opt =
+and build (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
   match stage_cost stage with
-  | n when n = cCOST_TOWN -> build_town s stage tried opt
+  | n when n = cCOST_TOWN -> build_town s stage mar dom opt
   | n when n = cCOST_CITY -> ((build_city s), opt)
   | n when n = cCOST_ROAD ->
       let (r1, _, opt) = build_road s opt
       in
         ((match r1 with
-          | None -> fst (handle s (stage + 1) tried opt)
+          | None -> fst (handle s (stage + 1) mar dom opt)
           | Some road -> Action (BuyBuild (BuildRoad road))),
          opt)
   | _ -> ((Action (BuyBuild BuildCard)), opt)
 
-and build_town (((board, plist, turn, (_, _)) as s)) stage tried opt =
+and build_town (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
   let (_, (insecs, roads), _, _, _) = board in
   let f (c1, _) = turn.active = c1 in
   let mine = List.filter f roads
@@ -409,7 +448,7 @@ and build_town (((board, plist, turn, (_, _)) as s)) stage tried opt =
       let safes = List.filter f potentials
       in
         match safes with
-        | [] -> handle s stage tried opt
+        | [] -> handle s stage mar dom opt
         | _ ->
             let (p, _) = pick_one safes
             in ((Action (BuyBuild (BuildTown p))), opt)
