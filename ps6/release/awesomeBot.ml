@@ -27,7 +27,6 @@ let myColor = ref White
 let resources_from_first_town = ref []
 let goal : (point * point) option ref = ref None
 
-
 (* update resources_in_interest to include the types of resources needed   *)
 (* for cost                                                                *)
 let update_resources_in_interest cost = 
@@ -165,7 +164,6 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
   in
     DiscardMove cost
 
-
   let initialize () =
     let () = first_move := true in
     let () = stage := 0 in
@@ -174,8 +172,8 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
     let () = populate_point_pieces_hashtable point_pieces in 
     let () = Hashtbl.reset piece_hex in
     let () = resources_from_first_town := [] in
+    let () = goal := None in
     ()
-
 
 	(* Invalid moves are overridden in game *)
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
