@@ -44,7 +44,7 @@ let update_stage_and_resources_in_interest player_list inter_list =
 (* resources_in_interest = cCOST_CITY stage 4: buy cards, get largest      *)
 (* army. => resources_in_interest = cCOST_CARD                             *)
   let ((_, _, (_, longestroad, _)), _) = get_player (!myColor) player_list in
-  let num_cities = num_settlements (!myColor) City inter_list in 
+  let num_cities = num_settlements (!myColor) City inter_list in
   match (!stage), longestroad with
   | 0, _ -> begin
     if num_cities >= 2 

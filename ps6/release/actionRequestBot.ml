@@ -148,13 +148,18 @@ let account : cost -> cost -> (((resource * int) list) * (resource list)) =
 let play_plenty : state -> int -> playcard option =
   fun (board, plist, turn, (colour, _)) stage ->
     let ((c, (inv, hand), (ks, lr, la)), rest) = get_player colour plist in
-    let (have, want) = account inv (stage_cost stage) in
-    let (r1, l) = pick_one want
+    let (have, want) = account inv (stage_cost stage)
     in
-      match l = [] with
+      match want = [] with
       | true -> None
       | false ->
-          let (r2, _) = pick_one l in Some (PlayYearOfPlenty (r1, (Some r2)))
+          let (r1, l) = pick_one want
+          in
+            (match l = [] with
+             | true -> None
+             | false ->
+                 let (r2, _) = pick_one l
+                 in Some (PlayYearOfPlenty (r1, (Some r2))))
   
 let most_gain : player list -> resource list -> resource option =
   fun plist resources ->
@@ -165,20 +170,22 @@ let most_gain : player list -> resource list -> resource option =
       let p = List.fold_left f (resource, 0) plist in p :: list in
     let pairs = List.fold_left g [] resources in
     let f (_, w1) (_, w2) = - (w1 - w2) in
-    let sorted = List.sort f pairs
-    in
-      match sorted with
-      | [] -> failwith "No way"
-      | (resource, total) :: _ -> if total > 0 then Some resource else None
+    let sorted = List.sort f pairs in
+    let (resource, total) = List.hd sorted
+    in if total > 0 then Some resource else None
   
 let play_monopoly (board, plist, t, (colour, _)) stage =
   let ((c, (inv, hand), (ks, lr, la)), rest) = get_player t.active plist in
-  let (have, want) = account inv (stage_cost stage) in
-  let resource = most_gain plist want
+  let (have, want) = account inv (stage_cost stage)
   in
-    match is_none resource with
+    match want = [] with
     | true -> None
-    | false -> Some (PlayMonopoly (get_some resource))
+    | false ->
+        let resource = most_gain plist want
+        in
+          (match is_none resource with
+           | true -> None
+           | false -> Some (PlayMonopoly (get_some resource)))
   
 module PMap =
   Map.Make(struct let compare = Pervasives.compare
@@ -251,7 +258,7 @@ let continue points (((board, plist, t, next) as s)) =
         let board = (a1, (insecs, roads), a2, a3, a4) in
         let s = (board, plist, t, next) in ((Some road), s, None)
   
-let rec which_road path points point =
+let rec which_road path points point s =
   match path with
   | [] -> (None, None)
   | x :: y :: xs ->
@@ -263,17 +270,18 @@ let rec which_road path points point =
        | (true, true) ->
            (match xs with
             | [] | [ _ ] -> ((Some (x, y)), None)
-            | _ -> which_road (y :: xs) points point)
-       | (false, false) -> failwith "Nope"
-       | (false, true) -> which_road (y :: xs) points point)
-  | [ x ] -> (None, None)
+            | _ -> which_road (y :: xs) points point s)
+       | (false, false) ->
+           let (opt, _, _) = continue points s in
+           let (_, road) = get_some opt in ((Some road), None)
+       | (false, true) -> which_road (y :: xs) points point s)
+  | [ x ] -> ((Some (x, point)), None)
   
-let rec best_route colour (((board, plist, turn, next) as s)) opt =
+let rec build_road colour (((board, plist, turn, next) as s)) opt =
   let (a1, (insecs, roads), a2, a3, a4) = board
   in
     match opt with
     | None ->
-        let () = print "Hapa hivi" in
         let mine = get_player_roads turn.active roads
         in
           (match (List.length mine) = 2 with
@@ -281,7 +289,7 @@ let rec best_route colour (((board, plist, turn, next) as s)) opt =
                let (_, l1) = List.hd mine in
                let (_, l2) = List.hd (List.tl mine) in
                let road = best_shortest colour l1 l2 insecs
-               in best_route turn.active s road
+               in build_road turn.active s road
            | false -> continue (road_points mine) s)
     | Some (p1, p2) ->
         let queue = Queue.create () in
@@ -291,7 +299,7 @@ let rec best_route colour (((board, plist, turn, next) as s)) opt =
         let path = shortest_path turn.active p2 insecs queue map in
         let points = road_points (get_player_roads turn.active roads)
         in
-          (match which_road path points p2 with
+          (match which_road path points p2 s with
            | (None, _) -> failwith "actually here"
            | (Some (x, y), None) ->
                let roads = ((turn.active), (x, y)) :: roads in
@@ -304,14 +312,12 @@ let rec best_route colour (((board, plist, turn, next) as s)) opt =
                let s = (board, plist, turn, next) in
                let road = Some (turn.active, (x, y)) in (road, s, q))
   
-let build_road (((_, _, t, _) as s)) opt = best_route t.active s opt
-  
-let what_card state card stage opt =
+let what_card (((_, _, t, _) as state)) card stage opt =
   match card with
   | Knight -> play_knight state
   | RoadBuilding ->
-      let (r1, s, opt1) = build_road state opt in
-      let (r2, _, _) = build_road s opt1
+      let (r1, s, opt1) = build_road t.active state opt in
+      let (r2, _, _) = build_road t.active s opt1
       in
         (match ((is_none r1), (is_none r2)) with
          | (true, _) | (_, true) -> None
@@ -384,7 +390,6 @@ and maritime_trade (((board, plist, turn, (colour, _)) as s)) stage dom opt =
         in ((Action (MaritimeTrade (res, gain))), opt)
 
 and handle (((board, plist, turn, (colour, _)) as s)) stage mar dom opt =
-  let () = print ("Handling stage " ^ (soi stage)) in
   let ((c, (inv, hand), (ks, lr, la)), l) = get_player colour plist in
   let card = play_card s (reveal hand) stage opt
   in
@@ -408,10 +413,12 @@ and handle (((board, plist, turn, (colour, _)) as s)) stage mar dom opt =
              | (false, n) when (n >= (limit / 2)) && (n < limit) ->
                  (match (mar, dom) with
                   | (true, true) -> ((Action EndTurn), opt)
-                  | (true, false) -> domestic_trade s (stage + 1) mar dom opt
-                  | (false, true) -> maritime_trade s (stage + 1) dom opt
+                  | (true, false) ->
+                      domestic_trade s ((stage + 1) mod 4) mar dom opt
+                  | (false, true) ->
+                      maritime_trade s ((stage + 1) mod 4) dom opt
                   | (false, false) ->
-                      domestic_trade s (stage + 1) mar dom opt)
+                      domestic_trade s ((stage + 1) mod 4) mar dom opt)
              | _ ->
                  if not mar
                  then maritime_trade s stage dom opt
@@ -422,10 +429,10 @@ and build (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
   | n when n = cCOST_TOWN -> build_town s stage mar dom opt
   | n when n = cCOST_CITY -> ((build_city s), opt)
   | n when n = cCOST_ROAD ->
-      let (r1, _, opt) = build_road s opt
+      let (r1, _, opt) = build_road turn.active s opt
       in
         ((match r1 with
-          | None -> fst (handle s (stage + 1) mar dom opt)
+          | None -> fst (handle s ((stage + 1) mod 4) mar dom opt)
           | Some road -> Action (BuyBuild (BuildRoad road))),
          opt)
   | _ -> ((Action (BuyBuild BuildCard)), opt)
