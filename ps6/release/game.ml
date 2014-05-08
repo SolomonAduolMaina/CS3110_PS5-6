@@ -10,10 +10,10 @@ type game = state
 let state_of_game g = g
 let game_of_state s = s
 
-let init_game () = game_of_state (gen_initial_state())
- 	(*let (b, pl, t, (c, r)) = game_of_state (gen_initial_state()) in
+let init_game () = (*game_of_state (gen_initial_state())*)
+ 	let (b, pl, t, (c, r)) = game_of_state (gen_initial_state()) in
 	let pl = give_everyone pl in
-	(b, pl, t, (c, r)) *)
+	(b, pl, t, (c, r)) 
 
 (* [(p1 * p2)] as line places a town at [p1] and a road from [p1] to [p2]  *)
 (* invalid move if p1 has a town already or it's at a distance of one road *)

@@ -369,3 +369,4 @@ let valid_road_build : road -> road list -> intersection list -> bool =
         in List.fold_left f false roads
     | false -> false
   
+let sop (p1, p2) = "("^(soi p1)^","^(soi p2)^")"
