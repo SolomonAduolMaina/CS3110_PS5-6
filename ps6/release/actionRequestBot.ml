@@ -343,10 +343,8 @@ let rec play_card state hand stage opt =
                 | true -> play_card state cards stage opt)
          | false -> play_card state cards stage opt)
   
-let rec
-  domestic_trade (((board, plist, turn, (colour, _)) as s)) stage mar dom opt
-                 =
-  let ((c, (inv, hand), (ks, lr, la)), rest) = get_player colour plist in
+let rec domestic_trade (((_, plist, t, _) as s)) stage mar dom opt =
+  let ((c, (inv, hand), (ks, lr, la)), rest) = get_player t.active plist in
   let cost = stage_cost stage in
   let (have, want) = account inv cost in
   let f (resource, plist) (c, (inv, _), _) =
@@ -360,8 +358,12 @@ let rec
   let sorted = List.sort f have
   in
     match (sorted, possible) with
-    | ([], _) -> handle s stage mar true opt
-    | (_, []) -> handle s stage mar true opt
+    | ([], _) ->
+        let next = if stage = 2 then 4 else stage + 1
+        in handle s (next mod 4) mar true opt
+    | (_, []) ->
+        let next = if stage = 2 then 4 else stage + 1
+        in handle s (next mod 4) mar true opt
     | _ ->
         let (res, _) = List.hd sorted in
         let ((c, resource), _) = pick_one possible in
@@ -369,12 +371,12 @@ let rec
         let gain = single_resource_cost resource
         in ((Action (DomesticTrade (c, give, gain))), opt)
 
-and maritime_trade (((board, plist, turn, (colour, _)) as s)) stage dom opt =
-  let ((c, (inv, hand), (ks, lr, la)), l) = get_player colour plist in
+and maritime_trade (((board, plist, turn, _) as s)) stage dom opt =
+  let ((c, (inv, hand), (ks, lr, la)), l) = get_player turn.active plist in
   let cost = stage_cost stage in
   let (have, want) = account inv cost in
   let ((_, ports), (insecs, roads), _, _, _) = board in
-  let f (resource, _) = least_ratio colour ports insecs resource in
+  let f (resource, _) = least_ratio turn.active ports insecs resource in
   let least_ratios = List.map f have in
   let assoc = List.combine have least_ratios in
   let f (_, r1) (_, r2) = r1 - r2 in
@@ -384,7 +386,9 @@ and maritime_trade (((board, plist, turn, (colour, _)) as s)) stage dom opt =
   let give = List.fold_left f None sorted
   in
     match give with
-    | None -> handle s stage true dom opt
+    | None ->
+        let next = if stage = 2 then 4 else stage + 1
+        in handle s (next mod 4) true dom opt
     | Some (res, _) ->
         let (gain, _) = pick_one want
         in ((Action (MaritimeTrade (res, gain))), opt)
@@ -397,32 +401,19 @@ and handle (((board, plist, turn, (colour, _)) as s)) stage mar dom opt =
     | (false, false) -> ((Action (PlayCard (get_some card))), opt)
     | _ ->
         let enough = enough_resources inv (stage_cost stage) in
-        let limit = cNUM_TRADES_PER_TURN
+        let allowed = turn.tradesmade < cNUM_TRADES_PER_TURN
         in
           if is_none turn.dicerolled
           then ((Action RollDice), opt)
           else
-            (match (enough, (turn.tradesmade)) with
-             | (true, _) -> build s stage mar dom opt
-             | (false, n) when n < (limit / 2) ->
-                 (match (mar, dom) with
-                  | (true, true) -> ((Action EndTurn), opt)
-                  | (true, false) -> domestic_trade s stage mar dom opt
-                  | (false, true) -> maritime_trade s stage dom opt
-                  | (false, false) -> domestic_trade s stage mar dom opt)
-             | (false, n) when (n >= (limit / 2)) && (n < limit) ->
-                 (match (mar, dom) with
-                  | (true, true) -> ((Action EndTurn), opt)
-                  | (true, false) ->
-                      domestic_trade s ((stage + 1) mod 4) mar dom opt
-                  | (false, true) ->
-                      maritime_trade s ((stage + 1) mod 4) dom opt
-                  | (false, false) ->
-                      domestic_trade s ((stage + 1) mod 4) mar dom opt)
-             | _ ->
-                 if not mar
-                 then maritime_trade s stage dom opt
-                 else ((Action EndTurn), opt))
+            (match (enough, allowed, mar, (stage <> 4), dom) with
+             | (true, _, _, _, _) -> build s stage mar dom opt
+             | (_, _, _, true, _) ->
+                 let next = if stage = 2 then 4 else stage + 1
+                 in build s (next mod 4) mar dom opt
+             | (_, true, _, _, false) -> domestic_trade s stage mar dom opt
+             | (_, _, false, _, _) -> maritime_trade s stage dom opt
+             | _ -> ((Action EndTurn), opt))
 
 and build (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
   match stage_cost stage with
@@ -432,7 +423,9 @@ and build (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
       let (r1, _, opt) = build_road turn.active s opt
       in
         ((match r1 with
-          | None -> fst (handle s ((stage + 1) mod 4) mar dom opt)
+          | None ->
+              let next = if stage = 2 then 4 else stage + 1
+              in fst (handle s (next mod 4) mar dom opt)
           | Some road -> Action (BuyBuild (BuildRoad road))),
          opt)
   | _ -> ((Action (BuyBuild BuildCard)), opt)
@@ -455,7 +448,9 @@ and build_town (((board, plist, turn, (_, _)) as s)) stage mar dom opt =
       let safes = List.filter f potentials
       in
         match safes with
-        | [] -> handle s stage mar dom opt
+        | [] ->
+            let next = if stage = 2 then 4 else stage + 1
+            in handle s (next mod 4) mar dom opt
         | _ ->
             let (p, _) = pick_one safes
             in ((Action (BuyBuild (BuildTown p))), opt)
