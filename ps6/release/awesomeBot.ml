@@ -184,7 +184,6 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
 		let (_, (inter_list, _), _, _, _) = b in
 		let () = update_stage_and_resources_in_interest p inter_list in
-		(* let () = print_endline ("myColor = " ^ string_of_color !myColor) in *)
     match r with
       | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> handle_RobberRequest s

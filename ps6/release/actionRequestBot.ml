@@ -317,16 +317,12 @@ let rec build_road colour (((board, plist, turn, next) as s)) opt origin =
                     let (r, n) = extend (get_some origin) colour insecs roads
                     in
                       (match is_none r with
-                       | true ->
-                           let () = print "Zaza"
-                           in continue (road_points mine) s origin
+                       | true -> continue (road_points mine) s origin
                        | false ->
                            if is_none n
                            then ((r, s, None), None)
                            else ((r, s, None), (Some (snd (get_some n)))))
-                | false ->
-                    let () = print "Jaja"
-                    in continue (road_points mine) s origin))
+                | false -> continue (road_points mine) s origin))
     | Some (p1, p2) ->
         let queue = Queue.create () in
         let map = PMap.empty in
