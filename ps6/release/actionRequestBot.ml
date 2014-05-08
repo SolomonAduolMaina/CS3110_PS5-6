@@ -439,8 +439,7 @@ and handle s orig mar dom opt origin =
               (match (enough, allowed, mar, dom, (stage = 4)) with
                | (true, _, _, _, _) -> build s stage mar dom opt origin
                | (_, _, _, _, false) ->
-                   let next = if stage = 2 then 4 else stage + 1 in
-                   let next = if lr && (next = 2) then 3 else next
+                   let next = if stage = 2 then 4 else stage + 1
                    in helper s next mar dom opt
                | (_, true, _, false, true) ->
                    domestic_trade s orig mar dom opt origin
@@ -450,8 +449,6 @@ and handle s orig mar dom opt origin =
   in helper s orig mar dom opt
 
 and build (((board, plist, turn, (_, _)) as s)) stage mar dom opt origin =
-  let ((c, (inv, hand), (ks, lr, la)), l) = get_player turn.active plist
-  in
     match stage_cost stage with
     | n when n = cCOST_TOWN -> build_town s stage mar dom opt origin
     | n when n = cCOST_CITY -> ((build_city s), (opt, origin))
@@ -460,14 +457,12 @@ and build (((board, plist, turn, (_, _)) as s)) stage mar dom opt origin =
         in
           (match r1 with
            | None ->
-               let next = if stage = 2 then 4 else stage + 1 in
-               let next = if lr && (next = 2) then 3 else next
+               let next = if stage = 2 then 4 else stage + 1
                in handle s next mar dom opt origin
            | Some r -> ((Action (BuyBuild (BuildRoad r))), (opt, origin)))
     | _ -> ((Action (BuyBuild BuildCard)), (opt, origin))
 
 and build_town (((board, plist, t, (_, _)) as s)) stage mar dom opt origin =
-  let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
   let (_, (insecs, roads), _, _, _) = board in
   let mine = get_player_roads t.active roads
   in
@@ -485,8 +480,7 @@ and build_town (((board, plist, t, (_, _)) as s)) stage mar dom opt origin =
       in
         match safes with
         | [] ->
-            let next = if stage = 2 then 4 else stage + 1 in
-            let next = if lr && (next = 2) then 3 else next
+            let next = if stage = 2 then 4 else stage + 1
             in handle s next mar dom opt origin
         | _ ->
             let (p, _) = pick_one safes
