@@ -370,8 +370,11 @@ let gen_initial_state () : state =
 (** Produces random initial states for experimenting with bots *)
 let gen_random_initial_state () : state = 
   let gen_random_map () : map =
-    let (terrains, rolls) = List.split cDEFAULT_HEXES in
-    let hexes = List.combine (randomize terrains) (randomize rolls) in
+    let desert = List.find (fun (ter,_) -> ter = Desert) cDEFAULT_HEXES in
+    let rest = list_memremove (fun (ter,_) -> ter = Desert) cDEFAULT_HEXES in
+    let (terrains, rolls) = List.split rest in
+    let h = List.combine (randomize terrains) (randomize rolls) in
+    let hexes = randomize (desert::h) in
       (hexes, cDEFAULT_PORTS)
   in
   let gen_random_board () : board =
