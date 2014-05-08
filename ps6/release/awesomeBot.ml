@@ -7,6 +7,9 @@ open BotUtil
 (** Give your bot a 2-20 character name. *)
 let name = "awesomebot"
 
+module Bot = functor (S : Soul) -> struct
+  (* If you use side effects, start/reset your bot for a new game *)
+
 (* stages refer to highest priority. If you can't meet this priority, then *)
 (* try to do something else. E.g. in stage 0, if you can't upgrade a town  *)
 (* to a city, then try and build a road. stage 0: convert 2 towns to 2     *)
@@ -23,7 +26,6 @@ let first_move = ref true
 let myColor = ref White
 let resources_from_first_town = ref []
 let goal : (point * point) option ref = ref None
-
 
 (* update resources_in_interest to include the types of resources needed   *)
 (* for cost                                                                *)
@@ -162,8 +164,6 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
   in
     DiscardMove cost
 
-module Bot = functor (S : Soul) -> struct
-	(* If you use side effects, start/reset your bot for a new game *)
   let initialize () =
     let () = first_move := true in
     let () = stage := 0 in
@@ -172,13 +172,14 @@ module Bot = functor (S : Soul) -> struct
     let () = populate_point_pieces_hashtable point_pieces in 
     let () = Hashtbl.reset piece_hex in
     let () = resources_from_first_town := [] in
+    let () = goal := None in
     ()
-
 
 	(* Invalid moves are overridden in game *)
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
 		let (_, (inter_list, _), _, _, _) = b in
 		let () = update_stage_and_resources_in_interest p inter_list in
+    (* let () = print_endline ("myColor = " ^ string_of_color !myColor) in *)
     match r with
       | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> handle_RobberRequest s
