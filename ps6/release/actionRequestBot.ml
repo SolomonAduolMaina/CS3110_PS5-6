@@ -438,16 +438,18 @@ let rec doable inv cost board colour =
           then (true, (Some (res, get)))
           else doable net cost board colour
   
-let rec
-  maritime_trade (((board, plist, turn, _) as s)) stage opt origin mar =
-  let ((c, (inv, hand), (ks, lr, la)), l) = get_player turn.active plist in
+let rec maritime_trade (((b, plist, t, _) as s)) stage opt origin mar =
+  let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
   let cost = stage_cost stage
   in
-    match ((doable inv cost board turn.active), mar) with
-    | ((true, Some (a, b)), _) ->
-        ((Action (MaritimeTrade (a, b))), (opt, origin))
-    | ((false, _), true) -> build s stage opt origin mar
-    | _ -> ((Action EndTurn), (opt, origin))
+    match enough_resources inv cost with
+    | true -> build s stage opt origin mar
+    | false ->
+        (match ((doable inv cost b t.active), mar) with
+         | ((true, Some (a, b)), _) ->
+             ((Action (MaritimeTrade (a, b))), (opt, origin))
+         | ((false, _), true) -> build s stage opt origin mar
+         | _ -> ((Action EndTurn), (opt, origin)))
 
 and domestic_trade (((_, plist, t, _) as s)) stage opt origin mar =
   let ((c, (inv, hand), (ks, lr, la)), rest) = get_player t.active plist in
@@ -497,7 +499,8 @@ and handle s orig opt origin mar =
                    let next = if lr && (next = 1) then 2 else next
                    in helper s next opt
                | (_, true, _, _, _) -> domestic_trade s orig opt origin mar
-               | (_, false, _, true, _) -> maritime_trade s orig opt origin mar
+               | (_, false, _, true, _) ->
+                   maritime_trade s orig opt origin mar
                | _ -> ((Action EndTurn), (opt, origin)))
   in helper s orig opt
 
