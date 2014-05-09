@@ -8,7 +8,6 @@ open Print
   
 open MyUtil
   
-(* open Util2 *)
 let handle_road (((board, plist, turn, _) as s)) build road =
   let (p, l) = get_player turn.active plist in
   let (c, (inv, hand), (ks, lr, la)) = p in
