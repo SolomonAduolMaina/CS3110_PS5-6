@@ -476,33 +476,35 @@ and domestic_trade (((_, plist, t, _) as s)) stage opt origin mar =
         in ((Action (DomesticTrade (c, give, gain))), (opt, origin))
 
 and handle s orig opt origin mar =
-  let rec helper (((board, plist, t, (colour, _)) as s)) stage opt =
-    let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
-    let (card, (opt1, origin)) = play_card s (reveal hand) stage opt origin
-    in
-      match ((t.cardplayed), (is_none card)) with
-      | (false, false) ->
-          ((Action (PlayCard (get_some card))), (opt1, origin))
-      | _ ->
-          let enough = enough_resources inv (stage_cost stage) in
-          let allowed = t.tradesmade < cNUM_TRADES_PER_TURN in
-          let traded = t.tradesmade > 0
-          in
-            if is_none t.dicerolled
-            then ((Action RollDice), (opt, origin))
-            else
-              (match (enough, allowed, (stage = 4), traded, mar) with
-               | (_, _, _, _, true) -> maritime_trade s orig opt origin mar
-               | (true, _, _, _, _) -> build s stage opt origin mar
-               | (_, _, false, false, _) ->
-                   let next = if stage = 2 then 4 else stage + 1 in
-                   let next = if lr && (next = 1) then 2 else next
-                   in helper s next opt
-               | (_, true, _, _, _) -> domestic_trade s orig opt origin mar
-               | (_, false, _, true, _) ->
-                   maritime_trade s orig opt origin mar
-               | _ -> ((Action EndTurn), (opt, origin)))
-  in helper s orig opt
+  try
+    let rec helper (((board, plist, t, (colour, _)) as s)) stage opt =
+      let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
+      let (card, (opt1, origin)) = play_card s (reveal hand) stage opt origin
+      in
+        match ((t.cardplayed), (is_none card)) with
+        | (false, false) ->
+            ((Action (PlayCard (get_some card))), (opt1, origin))
+        | _ ->
+            let enough = enough_resources inv (stage_cost stage) in
+            let allowed = t.tradesmade < cNUM_TRADES_PER_TURN in
+            let traded = t.tradesmade > 0
+            in
+              if is_none t.dicerolled
+              then ((Action RollDice), (opt, origin))
+              else
+                (match (enough, allowed, (stage = 4), traded, mar) with
+                 | (_, _, _, _, true) -> maritime_trade s orig opt origin mar
+                 | (true, _, _, _, _) -> build s stage opt origin mar
+                 | (_, _, false, false, _) ->
+                     let next = if stage = 2 then 4 else stage + 1 in
+                     let next = if lr && (next = 1) then 2 else next
+                     in helper s next opt
+                 | (_, true, _, _, _) -> domestic_trade s orig opt origin mar
+                 | (_, false, _, true, _) ->
+                     maritime_trade s orig opt origin mar
+                 | _ -> ((Action EndTurn), (opt, origin)))
+    in helper s orig opt
+  with | _ -> ((Action EndTurn), (opt, origin))
 
 and build (((board, plist, t, (_, _)) as s)) stage opt origin mar =
   let ((c, (inv, hand), (ks, lr, la)), rest) = get_player t.active plist
