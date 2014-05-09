@@ -471,6 +471,7 @@ and maritime_trade (board, plist, turn, _) stage opt origin =
           then ((Action (MaritimeTrade (res, get))), (opt, origin))
           else ((Action EndTurn), (opt, origin))
 
+
 and handle s orig opt origin =
   let rec helper (((board, plist, t, (colour, _)) as s)) stage opt =
     let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
@@ -496,6 +497,7 @@ and handle s orig opt origin =
                | (_, true, _, _) -> domestic_trade s orig opt origin
                | (_, false, true, _) -> maritime_trade s orig opt origin
                | _ -> ((Action EndTurn), (opt, origin)))
+
   in helper s orig opt
 
 and build (((board, plist, t, (_, _)) as s)) stage opt origin =
