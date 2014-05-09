@@ -181,7 +181,7 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeRequestBot.handle s (!stage)
-      | ActionRequest -> let m, (opt, orig) = ActionRequestBot.handle s (!stage) false false (!goal) (!origin) in
+      | ActionRequest -> let m, (opt, orig) = ActionRequestBot.handle s (!stage) (!goal) (!origin) in
 												let () = goal := opt in  let () = origin := orig in m 
 end
 

@@ -368,7 +368,15 @@ let valid_road_build : road -> road list -> intersection list -> bool =
            | _ -> bool)
         in List.fold_left f false roads
     | false -> false
-  
+
+let n_of_resource : int -> resource -> cost = 
+	fun n resource ->
+		match resource with
+		| Brick -> (n,0,0,0,0)
+		| Wool -> (0,n,0,0,0)
+		| Ore -> (0,0,n,0,0)
+		| Grain -> (0,0,0,n,0)
+		| Lumber -> (0,0,0,0,n)
 let sop (p1, p2) = "("^(soi p1)^","^(soi p2)^")"
 
 let sor (c1, (p1, p2)) = "("^( string_of_color c1)^ "," ^ (sop (p1, p2))^")"
