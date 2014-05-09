@@ -438,9 +438,11 @@ let rec doable inv cost board colour =
           then (true, (Some (res, get)))
           else doable net cost board colour
   
-let rec maritime_trade ((board, plist, turn, _) as s) stage opt origin mar =
+let rec
+  maritime_trade (((board, plist, turn, _) as s)) stage opt origin mar =
   let ((c, (inv, hand), (ks, lr, la)), l) = get_player turn.active plist in
-  let cost = stage_cost stage in
+  let cost = stage_cost stage
+  in
     match ((doable inv cost board turn.active), mar) with
     | ((true, Some (a, b)), _) ->
         ((Action (MaritimeTrade (a, b))), (opt, origin))
@@ -487,14 +489,15 @@ and handle s orig opt origin mar =
             if is_none t.dicerolled
             then ((Action RollDice), (opt, origin))
             else
-              (match (enough, allowed, (stage = 4), traded) with
-               | (true, _, _, _) -> build s stage opt origin mar
-               | (_, _, false, false) -> 
+              (match (enough, allowed, (stage = 4), traded, mar) with
+               | (_, _, _, _, true) -> maritime_trade s orig opt origin mar
+               | (true, _, _, _, _) -> build s stage opt origin mar
+               | (_, _, false, false, _) ->
                    let next = if stage = 2 then 4 else stage + 1 in
                    let next = if lr && (next = 1) then 2 else next
                    in helper s next opt
-               | (_, true, _, _) -> domestic_trade s orig opt origin mar
-               | (_, false, _, true) -> maritime_trade s orig opt origin mar
+               | (_, true, _, _, _) -> domestic_trade s orig opt origin mar
+               | (_, false, _, true, _) -> maritime_trade s orig opt origin mar
                | _ -> ((Action EndTurn), (opt, origin)))
   in helper s orig opt
 
