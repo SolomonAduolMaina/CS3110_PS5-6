@@ -3,12 +3,12 @@ open Registry
 open Constant
 open Util
 open BotUtil
-
+open Print
 (** Give your bot a 2-20 character name. *)
 let name = "awesomebot"
 
 module Bot = functor (S : Soul) -> struct
-		(* If you use side effects, start/reset your bot for a new game *)
+        (* If you use side effects, start/reset your bot for a new game *)
 
 (* stages refer to highest priority. If you can't meet this priority, then *)
 (* try to do something else. E.g. in stage 0, if you can't upgrade a town  *)
@@ -26,6 +26,7 @@ let first_move = ref true
 let myColor = ref White
 let resources_from_first_town = ref []
 let goal : (point * point) option ref = ref None
+let origin : (point * point) option ref = ref None
 
 (* update resources_in_interest to include the types of resources needed   *)
 (* for cost                                                                *)
@@ -166,21 +167,22 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
     let () = Hashtbl.reset piece_hex in
     let () = resources_from_first_town := [] in
     let () = goal := None in
+        let () = origin := None in
     ()
 
-		(* Invalid moves are overridden in game *)
+        (* Invalid moves are overridden in game *)
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
         let (_, (inter_list, _), _, _, _) = b in
         let () = update_stage_and_resources_in_interest p inter_list in
-				(* let () = print_endline ("myColor = " ^ string_of_color          *)
-				(* !myColor) in                                                    *)
+                (* let () = print_endline ("myColor = " ^ string_of_color          *)
+                (* !myColor) in                                                    *)
     match r with
       | InitialRequest -> handle_InitialRequest s
       | RobberRequest -> handle_RobberRequest s
       | DiscardRequest -> DiscardMove(0,0,0,0,0)
       | TradeRequest -> TradeRequestBot.handle s (!stage)
-      | ActionRequest -> let m, opt = ActionRequestBot.handle s (!stage) false false (!goal) in
-            let () = goal := opt in m
+      | ActionRequest -> let m, (opt, orig) = ActionRequestBot.handle s (!stage) false false (!goal) (!origin) in
+												let () = goal := opt in  let () = origin := orig in m 
 end
 
 
