@@ -430,11 +430,13 @@ let rec domestic_trade (((_, plist, t, _) as s)) stage opt origin =
   in
     match (sorted, possible) with
     | ([], _) ->
-        let () = print "failed domestic trade"
-        in maritime_trade s stage opt origin
+(*         let () = print "failed domestic trade"
+        in  *)
+        maritime_trade s stage opt origin
     | (_, []) ->
-        let () = print "failed domestic trade"
-        in maritime_trade s stage opt origin
+(*         let () = print "failed domestic trade"
+        in  *)
+        maritime_trade s stage opt origin
     | _ ->
         let (res, _) = List.hd sorted in
         let ((c, resource), _) = pick_one possible in
@@ -465,8 +467,9 @@ and maritime_trade (board, plist, turn, _) stage opt origin =
   in
     match give with
     | None ->
-        let () = print "failed maritime trade"
-        in ((Action EndTurn), (opt, origin))
+(*         let () = print "failed maritime trade"
+        in  *)
+        ((Action EndTurn), (opt, origin))
     | Some (res, ratio) ->
         let loss = n_of_resource ratio res in
         let get = fst (pick_one want) in
@@ -476,19 +479,22 @@ and maritime_trade (board, plist, turn, _) stage opt origin =
           if enough_resources net cost
           then ((Action (MaritimeTrade (res, get))), (opt, origin))
           else
-            (let () = print "failed maritime trade in here"
-             in ((Action EndTurn), (opt, origin)))
+            (
+(*               let () = print "failed maritime trade in here"
+             in  *)
+             ((Action EndTurn), (opt, origin)))
 
 and handle s orig opt origin =
   let rec helper (((board, plist, t, (colour, _)) as s)) stage opt =
-    let () = print ("stage = " ^ (soi stage)) in
+    (* let () = print ("stage = " ^ (soi stage)) in *)
     let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
     let (card, (opt1, origin)) = play_card s (reveal hand) stage opt origin
     in
       match ((t.cardplayed), (is_none card)) with
       | (false, false) ->
-          let () = print "playing card..."
-          in ((Action (PlayCard (get_some card))), (opt1, origin))
+(*           let () = print "playing card..."
+          in  *)
+          ((Action (PlayCard (get_some card))), (opt1, origin))
       | _ ->
           let enough = enough_resources inv (stage_cost stage) in
           let allowed = t.tradesmade < cNUM_TRADES_PER_TURN in
@@ -499,21 +505,25 @@ and handle s orig opt origin =
             else
               (match (enough, allowed, (stage = 4), traded) with
                | (true, _, _, _) ->
-                   let () = print "building..." in build s stage opt origin
+                   (* let () = print "building..." in  *)
+                   build s stage opt origin
                | (_, _, false, false) ->
-                   let () = print "trying next build..." in
+                   (* let () = print "trying next build..." in *)
                    let next = if stage = 2 then 4 else stage + 1 in
                    let next = if lr && (next = 1) then 2 else next
                    in helper s next opt
                | (_, true, _, _) ->
-                   let () = print "trying domestic trade..."
-                   in domestic_trade s orig opt origin
+(*                    let () = print "trying domestic trade..."
+                   in  *)
+                   domestic_trade s orig opt origin
                | (_, false, true, _) ->
-                   let () = print "trying maritime trade..."
-                   in maritime_trade s orig opt origin
+                   (* let () = print "trying maritime trade..."
+                   in  *)
+                   maritime_trade s orig opt origin
                | _ ->
-                   let () = print "ending turn..."
-                   in ((Action EndTurn), (opt, origin)))
+(*                    let () = print "ending turn..."
+                   in  *)
+                   ((Action EndTurn), (opt, origin)))
   in helper s orig opt
 
 and build (((board, plist, t, (_, _)) as s)) stage opt origin =
