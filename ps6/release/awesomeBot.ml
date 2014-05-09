@@ -49,13 +49,19 @@ let update_stage_and_resources_in_interest player_list inter_list =
 (* army. => resources_in_interest = cCOST_CARD                             *)
   let ((_, _, (_, longestroad, _)), _) = get_player (!myColor) player_list in
   let num_cities = num_settlements (!myColor) City inter_list in
-    let num_towns = num_settlements (!myColor) Town inter_list in
-  match (!stage)with
-  | 0 -> if num_cities = 2 then (stage := 1; update_resources_in_interest cCOST_ROAD)
+  let num_towns = num_settlements (!myColor) Town inter_list in
+  match (!stage), longestroad with
+  | 0, _ -> 
+		if num_cities = 2 then (stage := 1; update_resources_in_interest cCOST_ROAD)
     else (stage := 0; update_resources_in_interest cCOST_CITY)
-  | 1 -> if longestroad then (stage := 2; update_resources_in_interest cCOST_TOWN) else ()
-  | 2 -> if num_towns = 1 then (stage := 3; update_resources_in_interest cCOST_CITY) else () 
-  | 3 -> if num_cities = 3 then (stage := 4; update_resources_in_interest cCOST_CARD) else ()
+  | 1, true -> (stage := 2; update_resources_in_interest cCOST_TOWN)
+	| _, false -> (stage := 1; update_resources_in_interest cCOST_ROAD)
+  | 2,_ -> 
+		if num_towns = 1 then (stage := 3; update_resources_in_interest cCOST_CITY) 
+		else () 
+  | 3,_ -> 
+		if num_cities = 3 then (stage := 4; update_resources_in_interest cCOST_CARD)
+		else ()
   | _ -> ()
 
 
