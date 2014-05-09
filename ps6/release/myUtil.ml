@@ -423,56 +423,27 @@ let least_ratio : color -> port list -> intersection list -> resource -> ratio =
 let get_player_roads (c : color) (roads : road list) : road list =
 	fst (List.partition (fun (x, _) -> x = c) roads)
 
-(* return the color of the player who has the longest road and the length  *)
-(* of his long road                                                        *)
-let who_has_longest_road (roads : road list) (inters : intersection list) : color * int =
-	let color_list = [Blue ; Red ; Orange ; White] in
-	let partition_roads = List.map (fun color -> get_player_roads color roads) color_list in
-	let players_roads = List.combine color_list partition_roads in
-	let f (color, color_roads) = longest_road color color_roads inters in
-	let longest_roads_lengths = List.map f players_roads in
-	let lst = List.combine color_list longest_roads_lengths in
-	let my_compare (_, x) (_, y) = compare y x in
-	let max = List.sort my_compare lst in
-	match max with
-	| [] -> failwith "<who_has_longest_road> impossible"
-	| (c, len):: t -> (c, len)
-
-(* return the color of the player who currently holds the trophy of the    *)
-(* longest road, and the length of his longest road. If no one holds the   *)
-(* trophy, then return None                                                *)
-let current_holder_of_longest_road (pl : player list) (roads : road list) (inters : intersection list) : (color * int) option =
-	let rec helper = function
-		| [] -> None
-		| (c, _, (_, longestroad, _)):: t ->
-				if longestroad then Some c else helper t
+let update_lr_trophy colour plist roads insecs : player list =
+	let f (list, opt) ((c, _, _) as p) =
+		let mine = get_player_roads c roads in
+		let longest = longest_road c mine insecs in
+		let pair = (p, longest) in
+		if c = colour then (list, Some pair) else ((pair :: list), opt) in
+	let (pairs, me) = List.fold_left f ([], None) plist in
+	let me = get_some me in
+	let f (((c, bank, (ks, lr, la)), n), l) ((c', bank', (ks', lr', la')), n') =
+		match (n' >= n) && lr' with
+		| true ->
+				let l = (c, bank, (ks, false, la)) :: l
+				in (((c', bank', (ks', lr', la')), n'), l)
+		| false ->
+				let l = (c', bank', (ks', false, la')) :: l
+				in (((c, bank, (ks, lr, la)), n), l) in
+	let (((c, bank, (ks, lr, la)), n), l) = List.fold_left f (me, []) pairs
 	in
-	let x = helper pl
-	in
-	if is_none x then None
-	else Some (get_some x, longest_road (get_some x) (get_player_roads (get_some x) roads) inters)
-
-(* check and update the holder of the longest road trophy *)
-let update_longest_road_trophy (pl : player list) (roads : road list) (inters : intersection list) : player list =
-	let current_holder = current_holder_of_longest_road pl roads inters in
-	let (new_holder, length) = who_has_longest_road roads inters in
-	match current_holder with
-	| None -> begin
-				if length < cMIN_LONGEST_ROAD then pl
-				else (
-					let ((c, h, (k, _, army)), ps) = get_player new_holder pl in
-					(c, h, (k, true, army)):: ps
-				)
-			end
-	| Some (color, len) -> begin
-				if color = new_holder || len >= length then pl
-				else (
-					let ((c, h, (k, _, army)), ps) = get_player new_holder pl in
-					let pl' = (c, h, (k, true, army)):: ps in
-					let ((c', h', (k', _, army')), ps') = get_player new_holder pl' in
-					(c', h', (k', false, army')):: ps'
-				)
-			end
+	if n >= cMIN_LONGEST_ROAD
+	then (c, bank, (ks, true, la)) :: l
+	else (c, bank, (ks, false, la)) :: l
 
 (** Returns the number of victory point associated with the type of settlement *)
 let settlement_victory_point (set : settlement) : int =
@@ -525,12 +496,11 @@ let longest_roads : road list -> intersection list -> string =
 				| false -> string ^ ", " ^ (string_of_color c) ^ " " ^ (soi longest) in
 			"["^List.fold_left f "" player_roads ^"]"
 
-
 let give_everyone : player list -> player list =
 	fun plist ->
 			let f plist (c, (inv, hand), ts) =
 				let l = [] in
 				let hand = wrap_reveal (l @ (reveal hand)) in
-				let n = 50 in
-				(c, ((plus_resources inv (n, 0, 0, 0, 0)), hand), ts) :: plist
-			in List.fold_left f [] plist			
+				let n = 10 in
+				(c, ((plus_resources inv (n, n, n, n, n)), hand), ts) :: plist
+			in List.fold_left f [] plist

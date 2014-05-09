@@ -99,9 +99,9 @@ let play_knight : state -> playcard option =
       in
         match (is_none opt) && steal with
         | true ->
-            let point = (fst (pick_one intersection)) in
-						let piece = fst (pick_one (adjacent_pieces point)) in
-            Some (PlayKnight (piece, (Some c)))
+            let point = fst (pick_one intersection) in
+            let piece = fst (pick_one (adjacent_pieces point))
+            in Some (PlayKnight (piece, (Some c)))
         | false -> opt in
     let playcard = List.fold_left f None leaders
     in if is_none playcard then None else playcard
@@ -429,12 +429,8 @@ let rec domestic_trade (((_, plist, t, _) as s)) stage opt origin =
   let sorted = List.sort f have
   in
     match (sorted, possible) with
-    | ([], _) ->
-        let () = print "failed domestic trade"
-        in maritime_trade s stage opt origin
-    | (_, []) ->
-        let () = print "failed domestic trade"
-        in maritime_trade s stage opt origin
+    | ([], _) -> maritime_trade s stage opt origin
+    | (_, []) -> maritime_trade s stage opt origin
     | _ ->
         let (res, _) = List.hd sorted in
         let ((c, resource), _) = pick_one possible in
@@ -464,9 +460,7 @@ and maritime_trade (board, plist, turn, _) stage opt origin =
   let give = List.fold_left f None sorted
   in
     match give with
-    | None ->
-        let () = print "failed maritime trade"
-        in ((Action EndTurn), (opt, origin))
+    | None -> ((Action EndTurn), (opt, origin))
     | Some (res, ratio) ->
         let loss = n_of_resource ratio res in
         let get = fst (pick_one want) in
@@ -475,20 +469,16 @@ and maritime_trade (board, plist, turn, _) stage opt origin =
         in
           if enough_resources net cost
           then ((Action (MaritimeTrade (res, get))), (opt, origin))
-          else
-            (let () = print "failed maritime trade in here"
-             in ((Action EndTurn), (opt, origin)))
+          else ((Action EndTurn), (opt, origin))
 
 and handle s orig opt origin =
   let rec helper (((board, plist, t, (colour, _)) as s)) stage opt =
-    let () = print ("stage = " ^ (soi stage)) in
     let ((c, (inv, hand), (ks, lr, la)), l) = get_player t.active plist in
     let (card, (opt1, origin)) = play_card s (reveal hand) stage opt origin
     in
       match ((t.cardplayed), (is_none card)) with
       | (false, false) ->
-          let () = print "playing card..."
-          in ((Action (PlayCard (get_some card))), (opt1, origin))
+          ((Action (PlayCard (get_some card))), (opt1, origin))
       | _ ->
           let enough = enough_resources inv (stage_cost stage) in
           let allowed = t.tradesmade < cNUM_TRADES_PER_TURN in
@@ -498,22 +488,14 @@ and handle s orig opt origin =
             then ((Action RollDice), (opt, origin))
             else
               (match (enough, allowed, (stage = 4), traded) with
-               | (true, _, _, _) ->
-                   let () = print "building..." in build s stage opt origin
+               | (true, _, _, _) -> build s stage opt origin
                | (_, _, false, false) ->
-                   let () = print "trying next build..." in
                    let next = if stage = 2 then 4 else stage + 1 in
                    let next = if lr && (next = 1) then 2 else next
                    in helper s next opt
-               | (_, true, _, _) ->
-                   let () = print "trying domestic trade..."
-                   in domestic_trade s orig opt origin
-               | (_, false, true, _) ->
-                   let () = print "trying maritime trade..."
-                   in maritime_trade s orig opt origin
-               | _ ->
-                   let () = print "ending turn..."
-                   in ((Action EndTurn), (opt, origin)))
+               | (_, true, _, _) -> domestic_trade s orig opt origin
+               | (_, false, true, _) -> maritime_trade s orig opt origin
+               | _ -> ((Action EndTurn), (opt, origin)))
   in helper s orig opt
 
 and build (((board, plist, t, (_, _)) as s)) stage opt origin =
@@ -534,7 +516,6 @@ and build (((board, plist, t, (_, _)) as s)) stage opt origin =
     | _ -> ((Action (BuyBuild BuildCard)), (opt, origin))
 
 and build_town (((board, plist, t, (_, _)) as s)) stage opt origin =
-  let ((c, (inv, hand), (ks, lr, la)), rest) = get_player t.active plist in
   let (_, (insecs, roads), _, _, _) = board in
   let mine = get_player_roads t.active roads
   in
@@ -551,10 +532,7 @@ and build_town (((board, plist, t, (_, _)) as s)) stage opt origin =
       let safes = List.filter f potentials
       in
         match safes with
-        | [] ->
-            let next = if stage = 2 then 4 else stage + 1 in
-            let next = if lr && (next = 1) then 2 else next
-            in handle s next opt origin
+        | [] -> handle s 1 opt origin
         | _ ->
             let (p, _) = pick_one safes
             in ((Action (BuyBuild (BuildTown p))), (opt, origin))

@@ -24,7 +24,7 @@ let handle_road (((board, plist, turn, _) as s)) build road =
         let newinv = subtract_resources inv cost in
         let p = (c, (newinv, hand), (ks, lr, la)) in
         let roads = road :: roads in
-        let plist = update_longest_road_trophy (p :: l) roads insecs in
+        let plist = update_lr_trophy c (p :: l) roads insecs in
         let b = (a1, (insecs, roads), deck, a4, a5)
         in ((b, plist, turn, ((turn.active), ActionRequest)), true)
     | _ -> ((HandleEndTurn.handle s), false)

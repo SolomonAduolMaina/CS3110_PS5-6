@@ -77,7 +77,7 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
           match (valid, allowed, sane) with
           | (true, true, true) ->
               let roads = road :: roads in
-              let plist = update_longest_road_trophy plist roads insecs in
+              let plist = update_lr_trophy t.active plist roads insecs in
               let b = (a1, (insecs, roads), deck, a4, a5)
               in ((b, plist, t, (c, ActionRequest)), true)
           | _ -> ((HandleEndTurn.handle s), false)
