@@ -326,7 +326,7 @@ let rec which_road path points point s origin =
             | [] | [ _ ] -> ((Some (x, y)), None)
             | _ -> which_road (y :: xs) points point s origin)
        | (false, false) ->
-           let ((opt, _, _), _) = (None, None) in
+           let ((opt, _, _), _) = continue points s origin in
            let (_, road) = get_some opt in ((Some road), None)
        | (false, true) -> which_road (y :: xs) points point s origin)
   | [ x ] -> ((Some (x, point)), None)
@@ -350,7 +350,7 @@ let rec build_road colour (((board, plist, turn, next) as s)) opt origin =
                     let (r, n) = extend (get_some origin) colour insecs roads
                     in
                       (match is_none r with
-                       | true -> (None, s, None), None
+                       | true -> continue (road_points mine) s origin
                        | false ->
                            let roads = (get_some r) :: roads in
                            let board = (a1, (insecs, roads), a2, a3, a4) in
@@ -359,7 +359,7 @@ let rec build_road colour (((board, plist, turn, next) as s)) opt origin =
                              if is_none n
                              then ((r, s, None), None)
                              else ((r, s, None), (Some (snd (get_some n)))))
-                | false -> (None, s, None), None))
+                | false -> continue (road_points mine) s origin))
     | Some (p1, p2) ->
         let queue = Queue.create () in
         let map = PMap.empty in
@@ -369,7 +369,7 @@ let rec build_road colour (((board, plist, turn, next) as s)) opt origin =
         let points = road_points (get_player_roads turn.active roads)
         in
           (match which_road path points p2 s origin with
-           | (None, _) -> (None, s, None), origin
+           | (None, _) -> failwith "No way"
            | (Some (x, y), None) ->
                let roads = ((turn.active), (x, y)) :: roads in
                let board = (a1, (insecs, roads), a2, a3, a4) in
