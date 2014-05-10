@@ -72,7 +72,7 @@ let handle_road : state -> (road * (road option)) -> (state * bool) =
         let (a1, (insecs, roads), deck, a4, a5) = board in
         let valid = valid_road_build road roads insecs in
         let sane = t.active = (fst road) in
-        let allowed = (player_roads_built c roads) <= cMAX_ROADS_PER_PLAYER
+        let allowed = (player_roads_built c roads) < cMAX_ROADS_PER_PLAYER
         in
           match (valid, allowed, sane) with
           | (true, true, true) ->
