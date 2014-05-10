@@ -2,6 +2,6 @@
 
 open Babybot
 
-open AwesomeBot
+open Prioritybot
 
 

@@ -1,11 +1,17 @@
+(* 
+  Authors: 
+    Humam Alwassel (haa54) & Solomon Maina (sam524)
+ *)
+
 open Definition
 open Registry
 open Constant
 open Util
 open BotUtil
 open Print
+
 (** Give your bot a 2-20 character name. *)
-let name = "awesomebot"
+let name = "prioritybot"
 
 module Bot = functor (S : Soul) -> struct
 				(* If you use side effects, start/reset your bot for a new game *)
@@ -178,7 +184,7 @@ let handle_DiscardRequest (((_, _, _, _, _), pl, _, _) : state) : move =
 		let () = mar := false in
     ()
 
-				(* Invalid moves are overridden in game *)
+	(* Invalid moves are overridden in game *)
   let handle_request ((b, p, t, (c, r)) as s : state) : move = 
 		let (_, (inter_list, _), _, _, _) = b in
 		let () = update_stage_and_resources_in_interest p inter_list in
